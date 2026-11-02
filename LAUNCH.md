@@ -96,9 +96,10 @@ Technical SEO removes obstacles; it does not create demand.
   interpretation paragraphs are already better than most of what ranks.
 - **Be where the readers are** — r/networking, r/sysadmin, r/ITCareerQuestions.
   These are also heavily cited by AI answer engines, so it serves SEO and GEO at once.
-- **Fix the thin pages.** `contact` is under 600 characters and offers no actual
-  contact route; `about` has no named author. For a site giving advice people run in
-  production, a real author with credentials helps both E-E-A-T and AdSense review.
+- **Fix the thin pages.** `contact` is under 600 characters, and its only routes are a
+  downloadable request brief and the per-sheet GitHub issue link — there is no address
+  a reader can write to. `about` has no named author. For a site giving advice people
+  run in production, a real author with credentials helps both E-E-A-T and AdSense review.
 
 ---
 
