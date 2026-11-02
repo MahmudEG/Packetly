@@ -22,8 +22,8 @@ TOPICS = ['cloud', 'cybersecurity', 'identity-microsoft-365', 'infrastructure',
           'it-fundamentals', 'networking']
 
 # ---- content ----------------------------------------------------------
-assert len(sheets) == 39, len(sheets)
-assert len({s['id'] for s in sheets}) == 39
+assert len(sheets) == 47, len(sheets)
+assert len({s['id'] for s in sheets}) == len(sheets)
 required = {'Windows', 'Active Directory', 'Microsoft Graph', 'Entra ID', 'Exchange Online',
             'Azure', 'FortiGate', 'Sophos', 'Cisco', 'Juniper', 'Ubiquiti', 'HPE', 'Dell',
             'Dell Data Domain'}
@@ -73,11 +73,22 @@ for s in sheets:
     assert '"@type": "TechArticle"' in page
     assert '<p></p>' not in body, 'empty paragraph in ' + s['id']
     if s.get('walkthrough'):
-        assert len(s['walkthrough']) == len(s['rows']) == 4
-        assert all(len(step) > 90 for step in s['walkthrough'])
+        assert len(s['walkthrough']) == len(s['rows']) >= 5
+        assert all(len(step) > 60 for step in s['walkthrough'])
         assert 'Walkthrough' in body and s['updated'] in page
         assert '"@type": "HowTo"' in page
         assert 'id="step-4"' in body
+    assert s.get('walkthrough'), 'missing walkthrough: ' + s['id']
+    case = s['case']
+    assert case['title'] and case['symptom'] and case['interpretation'] and case['verification']
+    assert len(case['steps']) >= 4
+    assert 'Practical case:' in body and 'Fictional teaching scenario' in body
+    for step in case['steps']:
+        assert step['action'] in [r[0] for r in s['rows']], (s['id'], step['action'])
+        assert len(step['detail']) > 50
+    assert len({r[0] for r in s['rows']}) == len(s['rows']), 'duplicate command: ' + s['id']
+    for source in s.get('sources', []):
+        assert source['url'].startswith('https://') and source['url'] in page
 
 # ---- info pages are server-rendered, not empty shells ------------------
 for n in INFO:
@@ -97,7 +108,7 @@ for s in sheets:
 # ---- sitemap, robots, llms, assets -------------------------------------
 root = ET.parse(p / 'sitemap.xml').getroot()
 ns = '{http://www.sitemaps.org/schemas/sitemap/0.9}'
-assert len(root) == 51, len(root)
+assert len(root) == 59, len(root)
 assert all(u.find(ns + 'lastmod') is not None for u in root)
 locs = {u.find(ns + 'loc').text for u in root}
 assert locs == ({BASE + '/'} | {BASE + '/sheets/%s/' % s['id'] for s in sheets}
@@ -137,6 +148,6 @@ assert 'noindex' in head_of(read('404.html'))
 assert 'adsbygoogle' not in read('404.html')
 assert 'reports.js' not in home
 
-print('PASS: %d sheets, %d pages, unique titles/descriptions, canonical + OG + Twitter on all 51 '
+print('PASS: %d sheets with aligned walkthroughs and worked cases, %d pages, unique titles/descriptions, canonical + OG + Twitter on all 59 '
       'URLs, structured data, crumbs, related links, sitemap lastmod, AI crawler rules, llms.txt, '
       'og.png, %d topic hubs.' % (len(sheets), len(pages), len(TOPICS)))

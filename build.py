@@ -7,6 +7,7 @@ written by this script; everything else under docs/ is generated.
 import json, pathlib, html, re
 from guides import GUIDES
 from pages import INFO
+from enrich import enrich
 p = pathlib.Path(__file__).parent / 'docs'; p.mkdir(exist_ok=True)
 F='https://docs.fortinet.com/document/fortigate/7.4.0/cli-troubleshooting-cheat-sheet/420966/cli-troubleshooting-cheat-sheet'
 C='https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9400/software/release/26-x/command_reference/b_26x_9400_cr/interface_and_hardware_commands.html'
@@ -31,6 +32,7 @@ for s in data:
  s['product']='FortiGate' if s['vendor']=='Fortinet' else s['vendor']
  s['updated']='2026-11-01'
 data.extend(GUIDES)
+enrich(data)
 
 # ===========================================================  site constants
 BASE = 'https://packetly.ly'
@@ -53,12 +55,12 @@ for g in groups.values():
     g.sort(key=lambda x: x['title'])
 SLUG = {c: re.sub(r'[^a-z0-9]+', '-', c.lower()).strip('-') for c in groups}
 INTRO = {
-    'Cloud': 'Cloud networking references for Azure and provider-neutral fundamentals: subscriptions, virtual networks, subnets, route tables and security rules, with the commands that inspect each one.',
+    'Cloud': 'Cloud references for Azure, AWS and Kubernetes: inventory, virtual networks, effective routes, security groups, pod restarts and readiness, with practical investigation cases.',
     'Cybersecurity': 'Security inspection references for FortiGate, Sophos and Kali Linux: firewall and cluster health, IPsec tunnels, session and traffic investigation, port discovery and packet analysis.',
-    'IT fundamentals': 'Everyday troubleshooting references for Windows and Linux hosts: addressing, DNS resolution, TCP reachability, service state, event logs and listening sockets.',
+    'IT fundamentals': 'Everyday troubleshooting references for Windows and Linux hosts: addressing, DNS resolution, TCP reachability, systemd services, journals, event logs and listening sockets.',
     'Identity & Microsoft 365': 'Identity and Microsoft 365 references for Active Directory, Entra ID, Microsoft Graph and Exchange Online: users and groups, replication health, sign-in investigation, mailboxes and message tracing.',
-    'Infrastructure': 'Server and storage references for HPE ProLiant, Dell PowerEdge and Dell Data Domain: iLO and iDRAC health, hardware inventory, capacity reporting and replication checks.',
-    'Networking': 'Switching and routing references for Cisco, Juniper, FortiGate, HPE Aruba and Ubiquiti: interface state, VLANs and trunks, routing tables, neighbour discovery and ARP.',
+    'Infrastructure': 'Infrastructure references for HPE, Dell, Linux, Windows DHCP and Docker: hardware health, storage capacity, inodes, DHCP leases, container exits and replication checks.',
+    'Networking': 'Network references for Cisco, Juniper, FortiGate, HPE Aruba, Ubiquiti and curl: interfaces, VLANs, routes, neighbors, ARP, HTTP redirects and TLS certificate investigation.',
 }
 TOPICS = {SLUG[c]: c for c in groups}
 
@@ -217,6 +219,24 @@ for s in data:
             art += ('<section id="step-' + str(i) + '"><h3>Step ' + str(i) + ': ' + e(b) + '</h3>'
                     '<p><code>' + e(a) + '</code></p><p>' + e(step) + '</p></section>')
 
+    case = s['case']
+    art += ('<section class="case-study" id="practical-case"><p class="eyebrow">WORKED INCIDENT</p>'
+            '<h2>Practical case: ' + e(case['title']) + '</h2>'
+            '<p class="case-label">Fictional teaching scenario; observations are examples, not captured production output.</p>'
+            '<h3>Situation</h3><p>' + e(case['symptom']) + '</p>'
+            '<h3>Investigation sequence</h3>')
+    for i, step in enumerate(case['steps'], 1):
+        art += ('<section class="step"><h3>' + str(i) + '. ' + e(step['purpose'])
+                + '</h3><code>' + e(step['action']) + '</code><p>' + e(step['detail']) + '</p></section>')
+    if case.get('evidence'):
+        art += '<h3>Example findings</h3><p>' + e(case['evidence']) + '</p>'
+    art += ('<h3>Interpret the findings</h3><p>' + e(case['interpretation']) + '</p>'
+            '<h3>Verify the outcome</h3><p>' + e(case['verification']) + '</p>')
+    if case.get('escalation'):
+        art += '<h3>Escalation handoff</h3><p>' + e(case['escalation']) + '</p>'
+    art += '</section>'
+    for source in s.get('sources', []):
+        art += '<p><a href="' + e(source['url']) + '" rel="noopener" target="_blank">' + e(source['label']) + '</a></p>'
     art += ('<p><a href="' + e(s['source']) + '" rel="nofollow noopener" target="_blank">'
             + e(s.get('sourceLabel', 'Official documentation')) + '</a></p>')
     if rel:

@@ -2,17 +2,19 @@
 
 > Free cheat sheets for IT, cybersecurity and network engineers. Inspection commands for Windows, Active Directory, Entra ID, Azure, FortiGate, Cisco, Juniper, Sophos, Ubiquiti, HPE, Dell and Linux, each with a plain-English walkthrough.
 
-Packetly publishes 39 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
+Packetly publishes 47 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
 
 ## Cheat sheets
 
 ### [Cloud cheat sheets](https://packetly.ly/topics/cloud/)
 
-Cloud networking references for Azure and provider-neutral fundamentals: subscriptions, virtual networks, subnets, route tables and security rules, with the commands that inspect each one.
+Cloud references for Azure, AWS and Kubernetes: inventory, virtual networks, effective routes, security groups, pod restarts and readiness, with practical investigation cases.
 
+- [AWS EC2 network path inspection](https://packetly.ly/sheets/aws-ec2-network-path-inspection/): Connect AWS identity, instance state, subnets, route tables, security groups and network ACLs in one inspection workflow.
 - [Azure subscription and resource inventory](https://packetly.ly/sheets/azure-subscription-and-resource-inventory/): Check CLI context and inventory resources in the intended subscription.
 - [Azure virtual network inspection](https://packetly.ly/sheets/azure-virtual-network-inspection/): Inspect virtual networks, subnets and security group inventory.
 - [Cloud network fundamentals](https://packetly.ly/sheets/cloud-network-fundamentals/): Connect subnets, routes, security rules, and DNS into one model.
+- [Kubernetes pod crash and readiness investigation](https://packetly.ly/sheets/kubernetes-pod-crash-and-readiness-investigation/): Trace a failing pod through context, scheduling, container state, current logs, previous logs and namespace events.
 
 ### [Cybersecurity cheat sheets](https://packetly.ly/topics/cybersecurity/)
 
@@ -30,9 +32,11 @@ Security inspection references for FortiGate, Sophos and Kali Linux: firewall an
 
 ### [IT fundamentals cheat sheets](https://packetly.ly/topics/it-fundamentals/)
 
-Everyday troubleshooting references for Windows and Linux hosts: addressing, DNS resolution, TCP reachability, service state, event logs and listening sockets.
+Everyday troubleshooting references for Windows and Linux hosts: addressing, DNS resolution, TCP reachability, systemd services, journals, event logs and listening sockets.
 
 - [Linux network essentials](https://packetly.ly/sheets/linux-network-essentials/): A small toolkit for inspecting a Linux host’s network.
+- [Linux systemd service failure triage](https://packetly.ly/sheets/linux-systemd-service-failure-triage/): Connect service state, exit codes, unit configuration and journal events without hiding evidence behind a restart.
+- [Windows DNS resolution investigation](https://packetly.ly/sheets/windows-dns-resolution-investigation/): Separate resolver selection, stale cache, missing records and service reachability in a Windows DNS incident.
 - [Windows network troubleshooting](https://packetly.ly/sheets/windows-network-troubleshooting/): Inspect addressing, DNS resolution and TCP reachability with PowerShell.
 - [Windows services and event logs](https://packetly.ly/sheets/windows-services-and-event-logs/): Build a focused picture of service state and recent system errors.
 
@@ -51,17 +55,20 @@ Identity and Microsoft 365 references for Active Directory, Entra ID, Microsoft 
 
 ### [Infrastructure cheat sheets](https://packetly.ly/topics/infrastructure/)
 
-Server and storage references for HPE ProLiant, Dell PowerEdge and Dell Data Domain: iLO and iDRAC health, hardware inventory, capacity reporting and replication checks.
+Infrastructure references for HPE, Dell, Linux, Windows DHCP and Docker: hardware health, storage capacity, inodes, DHCP leases, container exits and replication checks.
 
 - [Dell Data Domain capacity and health](https://packetly.ly/sheets/dell-data-domain-capacity-and-health/): Inspect filesystem state, capacity and active protection-appliance alerts.
 - [Dell Data Domain replication checks](https://packetly.ly/sheets/dell-data-domain-replication-checks/): Inspect replication contexts and distinguish idle replication from a stalled copy.
 - [Dell PowerEdge hardware inventory](https://packetly.ly/sheets/dell-poweredge-hardware-inventory/): Capture firmware and hardware inventory before planning maintenance.
 - [Dell PowerEdge iDRAC health checks](https://packetly.ly/sheets/dell-poweredge-idrac-health-checks/): Read PowerEdge identity, power state and hardware event history.
+- [Docker container health and restart investigation](https://packetly.ly/sheets/docker-container-health-and-restart-investigation/): Inspect container exit state, health checks, bounded logs, resource usage and published ports during a restart incident.
 - [HPE ProLiant iLO health overview](https://packetly.ly/sheets/hpe-proliant-ilo-health-overview/): Read ProLiant health and hardware events through iLO.
+- [Linux disk space and inode investigation](https://packetly.ly/sheets/linux-disk-space-and-inode-investigation/): Distinguish exhausted bytes, exhausted inodes, mount layout and directory growth before deleting any files.
+- [Windows DHCP scope and lease investigation](https://packetly.ly/sheets/windows-dhcp-scope-and-lease-investigation/): Inspect DHCP scope capacity, leases, reservations, options and failover before changing a production scope.
 
 ### [Networking cheat sheets](https://packetly.ly/topics/networking/)
 
-Switching and routing references for Cisco, Juniper, FortiGate, HPE Aruba and Ubiquiti: interface state, VLANs and trunks, routing tables, neighbour discovery and ARP.
+Network references for Cisco, Juniper, FortiGate, HPE Aruba, Ubiquiti and curl: interfaces, VLANs, routes, neighbors, ARP, HTTP redirects and TLS certificate investigation.
 
 - [Cisco IOS essentials](https://packetly.ly/sheets/cisco-ios-essentials/): Get oriented, inspect interfaces, and understand your device.
 - [Cisco VLANs & trunks](https://packetly.ly/sheets/cisco-vlans-trunks/): Understand access VLANs, tagged links, and Layer 2 boundaries.
@@ -70,6 +77,7 @@ Switching and routing references for Cisco, Juniper, FortiGate, HPE Aruba and Ub
 - [Cisco routing basics](https://packetly.ly/sheets/cisco-routing-basics/): Read connected, static, and learned routes with confidence.
 - [FortiGate routing & ARP](https://packetly.ly/sheets/fortigate-routing-arp/): Follow a packet from its next hop to the routing table.
 - [HPE Aruba CX switching essentials](https://packetly.ly/sheets/hpe-aruba-cx-switching-essentials/): Inspect AOS-CX switch interfaces and VLANs with platform-specific commands.
+- [HTTP and TLS troubleshooting with curl](https://packetly.ly/sheets/http-and-tls-troubleshooting-with-curl/): Separate DNS, TCP, certificate validation, redirects and HTTP status with bounded curl requests.
 - [Juniper Junos CLI essentials](https://packetly.ly/sheets/juniper-junos-cli-essentials/): Get oriented in Junos operational mode and inspect the chassis.
 - [Juniper routes and neighbor checks](https://packetly.ly/sheets/juniper-routes-and-neighbor-checks/): Inspect routes, ARP entries and discovered neighbors in Junos.
 - [Ubiquiti UniFi device connectivity](https://packetly.ly/sheets/ubiquiti-unifi-device-connectivity/): Follow adoption and management connectivity through the UniFi console.
