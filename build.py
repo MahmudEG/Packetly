@@ -1,6 +1,13 @@
+"""Generates the Packetly static site into docs/.
+
+guides.py holds the long-form field guides, pages.py the standalone page copy.
+docs/app.js, docs/style.css and docs/consent.js are hand-authored and are not
+written by this script; everything else under docs/ is generated.
+"""
 import json, pathlib, html
 from guides import GUIDES
-p=pathlib.Path(__file__).parent/'docs';p.mkdir(exist_ok=True)
+from pages import INFO
+p = pathlib.Path(__file__).parent / 'docs'; p.mkdir(exist_ok=True)
 F='https://docs.fortinet.com/document/fortigate/7.4.0/cli-troubleshooting-cheat-sheet/420966/cli-troubleshooting-cheat-sheet'
 C='https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9400/software/release/26-x/command_reference/b_26x_9400_cr/interface_and_hardware_commands.html'
 specs=[
@@ -24,33 +31,299 @@ for s in data:
  s['product']='FortiGate' if s['vendor']=='Fortinet' else s['vendor']
  s['updated']='2026-11-01'
 data.extend(GUIDES)
-(p/'data.js').write_text('window.SHEETS='+json.dumps(data)+';',encoding='utf-8')
-shell='''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Packetly — IT, cybersecurity & network cheat sheets</title><meta name="description" content="Practical Fortinet, Cisco, Linux and cloud cheat sheets. Search commands, follow walkthroughs, and print clean references."><meta name="theme-color" content="#101310"><meta property="og:title" content="Packetly — Less searching. More solving."><meta property="og:description" content="Your field guide to IT, cybersecurity and networking."><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23c6f36b'/%3E%3Cpath d='M10 28V12h13l6 8-6 8H10m7-10v5h6' fill='none' stroke='%23101310' stroke-width='3'/%3E%3C/svg%3E"><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',wait_for_update:500});try{if(localStorage.getItem('packetly-consent')==='granted')gtag('consent','update',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted'})}catch(e){}</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-QG6N52FTQC"></script><script>gtag('js',new Date());gtag('config','G-QG6N52FTQC');</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4081538671702116" crossorigin="anonymous"></script><link rel="stylesheet" href="/style.css"><script defer src="/data.js"></script><script defer src="/app.js"></script><script defer src="/consent.js"></script></head><body><aside><a class="brand" href="/">▰ <span>packetly<span class="dot">.</span></span></a><div class="aside-label">YOUR FIELD GUIDE</div><nav><a href="/" class="navlink active">▦ <span>All cheat sheets</span><b>12</b></a><button id="saved">▱ <span>Bookmarks</span><b id="savecount">0</b></button><button id="path">⌁ <span>Learning path</span><small>NEW</small></button></nav><div class="aside-label">EXPLORE BY TOPIC</div><nav id="sidecats"></nav><div class="aside-bottom"><div class="status"><i></i> Built for the real world</div><p>Less tab hopping.<br>More problem solving.</p><a href="/about/">About Packetly ↗</a></div></aside><div class="workspace"><header><div class="crumb">The knowledge base <span>/</span> <strong id="crumb">All cheat sheets</strong></div><div class="head-right"><span class="online">● Always in your toolkit</span><button id="theme" aria-label="Toggle color theme">☼</button><a class="github" href="/about/">About the project ↗</a></div></header><main id="main"></main><footer><a class="brand" href="/">▰ packetly.</a><span>Practical knowledge. One sheet away.</span><div><a href="/editorial/">Editorial policy</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="/contact/">Contact</a></div><small>© 2026 Packetly · Independent reference. Not affiliated with vendors.</small></footer></div><div id="toast" role="status"></div></body></html>'''
-shell=shell.replace('<b>12</b>','<b>'+str(len(data))+'</b>').replace('Practical Fortinet, Cisco, Linux and cloud cheat sheets.','Practical Windows, Active Directory, Microsoft Graph, Entra ID, Exchange Online, Azure, FortiGate, Sophos, Cisco, Juniper, Ubiquiti, HPE, Dell and Data Domain cheat sheets.')
-home_content='<section><h1>IT, cybersecurity and network cheat sheets</h1><p>Find practical Microsoft, Fortinet, Cisco, Juniper, Sophos, Ubiquiti, HPE and Dell references.</p>'+''.join('<article><h2><a href="/sheets/'+s['id']+'/">'+s['title']+'</a></h2><p>'+s['description']+'</p></article>' for s in data)+'</section>'
-(p/'index.html').write_text(shell.replace('<main id="main"></main>','<main id="main">'+home_content+'</main>'),encoding='utf-8')
-base='https://packetly.ly'
-for s in data:
- d=p/'sheets'/s['id'];d.mkdir(parents=True,exist_ok=True)
- table=''.join('<tr><td><code>'+html.escape(a)+'</code></td><td>'+html.escape(b)+'</td></tr>' for a,b in s['rows'])
- walkthrough=''
- if s.get('walkthrough'):
-  walkthrough='<h2>Walkthrough</h2><p>'+html.escape(s['prerequisites'])+'</p>'+''.join('<section><h3>'+html.escape(row[1])+'</h3><code>'+html.escape(row[0])+'</code><p>'+html.escape(step)+'</p></section>' for row,step in zip(s['rows'],s['walkthrough']))
- fallback='<article><h1>'+html.escape(s['title'])+'</h1><p>'+html.escape(s['description'])+'</p><p>'+html.escape(s.get('scope',''))+'</p><table>'+table+'</table>'+walkthrough+'<a href="'+s['source']+'">Official documentation</a></article>'
- page=shell.replace('<main id="main"></main>','<main id="main">'+fallback+'</main>').replace('<title>Packetly — IT, cybersecurity & network cheat sheets</title>','<title>'+s['title']+' cheat sheet | Packetly</title>').replace('</head>','<link rel="canonical" href="'+base+'/sheets/'+s['id']+'/"><script type="application/ld+json">'+json.dumps({'@context':'https://schema.org','@type':'TechArticle','headline':s['title'],'description':s['description'],'dateModified':'2026-11-01','author':{'@type':'Organization','name':'Packetly'},'inLanguage':'en'})+'</script></head>')
- page=page.replace('"dateModified": "2026-11-01"','"dateModified": "'+s['updated']+'"')
- import re
- page=re.sub(r'<meta name="description" content="[^"]*">','<meta name="description" content="'+html.escape(s['description'],quote=True)+'">',page)
- (d/'index.html').write_text(page,encoding='utf-8')
-for name in ['about','editorial','privacy','terms','contact']:
- d=p/name;d.mkdir(exist_ok=True);(d/'index.html').write_text(shell,encoding='utf-8')
-(p/'robots.txt').write_text('User-agent: *\nAllow: /\nSitemap: '+base+'/sitemap.xml')
-(p/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join('<url><loc>'+base+x+'</loc></url>' for x in ['/']+['/sheets/'+s['id']+'/' for s in data]+['/about/','/editorial/','/privacy/','/terms/','/contact/'])+'</urlset>')
 
-# --- GitHub Pages extras ---
-ADS='<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4081538671702116" crossorigin="anonymous"></script>'
-(p/'ads.txt').write_bytes(b'google.com, pub-4081538671702116, DIRECT, f08c47fec0942fa0'+bytes([10]))
-(p/'CNAME').write_bytes(b'packetly.ly')  # no trailing newline: matches what the Pages UI writes
-(p/'.nojekyll').write_text('',encoding='utf-8')
-notfound='<article class="detail prose"><div class="eyebrow" style="margin-top:35px">PACKETLY / 404</div><h1>That page is not in the library.</h1><p>The address may have changed or the sheet may have been renamed.</p><a href="/" class="secondary" style="display:inline-flex;align-items:center;margin-top:15px">Back to all cheat sheets</a></article>'
-(p/'404.html').write_text(shell.replace(ADS,'').replace('<main id="main"></main>','<main id="main">'+notfound+'</main>').replace('<title>Packetly','<title>Page not found | Packetly').replace('<script defer src="/data.js"></script>','').replace('<script defer src="/app.js"></script>',''),encoding='utf-8')
+# ===========================================================  site constants
+BASE = 'https://packetly.ly'
+NAME = 'Packetly'
+BLURB = ('Free cheat sheets for IT, cybersecurity and network engineers. '
+         'Inspection commands for Windows, Active Directory, Entra ID, Azure, '
+         'FortiGate, Cisco, Juniper, Sophos, Ubiquiti, HPE, Dell and Linux, '
+         'each with a plain-English walkthrough.')
+UPDATED = max(s['updated'] for s in data)
+
+e = lambda x: html.escape(str(x), quote=True)
+ld = lambda o: '<script type="application/ld+json">' + json.dumps(o, ensure_ascii=False) + '</script>'
+
+FONT = ('<link rel="preconnect" href="https://fonts.googleapis.com">'
+        '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
+        '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?'
+        'family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">')
+ICON = ("<link rel=\"icon\" href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'"
+        " viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23c6f36b'/%3E%3Cpath"
+        " d='M10 28V12h13l6 8-6 8H10m7-10v5h6' fill='none' stroke='%23101310'"
+        " stroke-width='3'/%3E%3C/svg%3E\">")
+CONSENT = ("<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}"
+           "gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',"
+           "ad_personalization:'denied',analytics_storage:'denied',wait_for_update:500});"
+           "try{if(localStorage.getItem('packetly-consent')==='granted')gtag('consent','update',"
+           "{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',"
+           "analytics_storage:'granted'})}catch(e){}</script>")
+GTAG = ('<script async src="https://www.googletagmanager.com/gtag/js?id=G-QG6N52FTQC"></script>'
+        "<script>gtag('js',new Date());gtag('config','G-QG6N52FTQC');</script>")
+ADS = ('<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js'
+       '?client=ca-pub-4081538671702116" crossorigin="anonymous"></script>')
+ASSETS = ('<link rel="stylesheet" href="/style.css"><script defer src="/data.js"></script>'
+          '<script defer src="/app.js"></script><script defer src="/consent.js"></script>')
+
+ORG = {'@type': 'Organization', '@id': BASE + '/#org', 'name': NAME, 'url': BASE + '/',
+       'description': BLURB,
+       'logo': {'@type': 'ImageObject', 'url': BASE + '/og.png', 'width': 1200, 'height': 630}}
+
+
+def body(main, nsheets):
+    return ('<body><aside><a class="brand" href="/">\u25b0 <span>packetly<span class="dot">.</span>'
+            '</span></a><div class="aside-label">YOUR FIELD GUIDE</div><nav>'
+            '<a href="/" class="navlink active">\u25a6 <span>All cheat sheets</span><b>' + str(nsheets) + '</b></a>'
+            '<button id="saved">\u25b1 <span>Bookmarks</span><b id="savecount">0</b></button>'
+            '<button id="path">\u2341 <span>Learning path</span><small>NEW</small></button></nav>'
+            '<div class="aside-label">EXPLORE BY TOPIC</div><nav id="sidecats"></nav>'
+            '<div class="aside-bottom"><div class="status"><i></i> Built for the real world</div>'
+            '<p>Less tab hopping.<br>More problem solving.</p>'
+            '<a href="/about/">About Packetly \u2197</a></div></aside>'
+            '<div class="workspace"><header><div class="crumb">The knowledge base <span>/</span> '
+            '<strong id="crumb">All cheat sheets</strong></div><div class="head-right">'
+            '<span class="online">\u25cf Always in your toolkit</span>'
+            '<button id="theme" aria-label="Toggle color theme">\u263c</button>'
+            '<a class="github" href="/about/">About the project \u2197</a></div></header>'
+            '<main id="main">' + main + '</main><footer><a class="brand" href="/">\u25b0 packetly.</a>'
+            '<span>Practical knowledge. One sheet away.</span><div>'
+            '<a href="/editorial/">Editorial policy</a><a href="/privacy/">Privacy</a>'
+            '<a href="/terms/">Terms</a><a href="/contact/">Contact</a></div>'
+            '<small>\u00a9 2026 Packetly \u00b7 Independent reference. Not affiliated with vendors.</small>'
+            '</footer></div><div id="toast" role="status"></div></body></html>')
+
+
+def page(title, desc, path, main, extra='', robots=None, ads=True):
+    url = BASE + path
+    kind = 'article' if path.startswith('/sheets/') else 'website'
+    r = robots or 'index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1'
+    head = ('<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+            '<title>' + e(title) + '</title>'
+            '<meta name="description" content="' + e(desc) + '">'
+            '<meta name="robots" content="' + r + '">'
+            '<link rel="canonical" href="' + url + '">'
+            '<meta name="theme-color" content="#101310">'
+            '<meta property="og:type" content="' + kind + '">'
+            '<meta property="og:site_name" content="' + NAME + '">'
+            '<meta property="og:locale" content="en_US">'
+            '<meta property="og:title" content="' + e(title) + '">'
+            '<meta property="og:description" content="' + e(desc) + '">'
+            '<meta property="og:url" content="' + url + '">'
+            '<meta property="og:image" content="' + BASE + '/og.png">'
+            '<meta property="og:image:width" content="1200">'
+            '<meta property="og:image:height" content="630">'
+            '<meta property="og:image:alt" content="Packetly cheat sheets">'
+            '<meta name="twitter:card" content="summary_large_image">'
+            '<meta name="twitter:title" content="' + e(title) + '">'
+            '<meta name="twitter:description" content="' + e(desc) + '">'
+            '<meta name="twitter:image" content="' + BASE + '/og.png">'
+            + ICON + FONT + CONSENT + GTAG + (ADS if ads else '') + ASSETS + extra)
+    return '<!doctype html><html lang="en"><head>' + head + '</head>' + body(main, len(data))
+
+
+# ===============================================================  client data
+(p / 'data.js').write_text(
+    'window.SHEETS=' + json.dumps(data, ensure_ascii=False) + ';'
+    'window.PAGES=' + json.dumps(INFO, ensure_ascii=False) + ';', encoding='utf-8')
+
+# ==================================================================  homepage
+groups = {}
+for s in data:
+    groups.setdefault(s['category'], []).append(s)
+
+home = ('<section><h1>IT, cybersecurity and network cheat sheets</h1>'
+        '<p>' + e(BLURB) + '</p>'
+        '<p>Every sheet lists the command, what it inspects, and how to read the output, '
+        'with a step-by-step walkthrough and a link to the vendor\u2019s own documentation. '
+        'All ' + str(len(data)) + ' are free, need no account, and print cleanly.</p>')
+for cat in sorted(groups):
+    home += '<div class="home-group"><h2>' + e(cat) + '</h2><ul>'
+    for s in sorted(groups[cat], key=lambda x: x['title']):
+        home += ('<li><a href="/sheets/' + s['id'] + '/">' + e(s['title']) + '</a> \u2014 '
+                 + e(s['description']) + '</li>')
+    home += '</ul></div>'
+home += '</section>'
+
+home_ld = ld({'@context': 'https://schema.org', '@graph': [
+    ORG,
+    {'@type': 'WebSite', '@id': BASE + '/#site', 'url': BASE + '/', 'name': NAME,
+     'description': BLURB, 'inLanguage': 'en', 'publisher': {'@id': BASE + '/#org'}},
+    {'@type': 'CollectionPage', '@id': BASE + '/#page', 'url': BASE + '/',
+     'name': 'IT, cybersecurity and network cheat sheets', 'description': BLURB,
+     'isPartOf': {'@id': BASE + '/#site'}, 'inLanguage': 'en',
+     'mainEntity': {'@type': 'ItemList', 'numberOfItems': len(data),
+                    'itemListElement': [{'@type': 'ListItem', 'position': i + 1,
+                                         'url': BASE + '/sheets/' + s['id'] + '/',
+                                         'name': s['title']} for i, s in enumerate(data)]}}]})
+
+(p / 'index.html').write_text(
+    page('Packetly \u2014 IT, cybersecurity & network cheat sheets', BLURB, '/', home, home_ld),
+    encoding='utf-8')
+
+# =============================================================  sheet pages
+for s in data:
+    url = BASE + '/sheets/' + s['id'] + '/'
+    d = p / 'sheets' / s['id']
+    d.mkdir(parents=True, exist_ok=True)
+
+    rel = [x for x in data if x['id'] != s['id'] and x['vendor'] == s['vendor']]
+    rel += [x for x in data if x['id'] != s['id'] and x['category'] == s['category'] and x not in rel]
+    rel = rel[:4]
+
+    kind = s.get('kind', 'Command')
+    label = kind if kind != 'Command' else ('Concept' if s['vendor'] == 'Vendor neutral' else 'Command')
+
+    art = ('<article><nav class="crumbs"><a href="/">All cheat sheets</a><span>/</span>'
+           + e(s['category']) + '<span>/</span>' + e(s['title']) + '</nav>'
+           '<h1>' + e(s['title']) + ' cheat sheet</h1>'
+           '<p>' + e(s['description']) + '</p>')
+    if s.get('scope'):
+        art += '<p>' + e(s['scope']) + '</p>'
+    art += ('<p>Updated <time datetime="' + s['updated'] + '">' + s['updated'] + '</time> \u00b7 '
+            + e(s['vendor']) + ' \u00b7 ' + str(s['time']) + ' min read</p>'
+            '<table><thead><tr><th>' + e(label) + '</th><th>What it does</th></tr></thead><tbody>'
+            + ''.join('<tr><td><code>' + e(a) + '</code></td><td>' + e(b) + '</td></tr>'
+                      for a, b in s['rows'])
+            + '</tbody></table>')
+
+    if s.get('walkthrough'):
+        art += '<h2>Walkthrough</h2><p>' + e(s['prerequisites']) + '</p>'
+        for i, ((a, b), step) in enumerate(zip(s['rows'], s['walkthrough']), 1):
+            art += ('<section id="step-' + str(i) + '"><h3>Step ' + str(i) + ': ' + e(b) + '</h3>'
+                    '<p><code>' + e(a) + '</code></p><p>' + e(step) + '</p></section>')
+
+    art += ('<p><a href="' + e(s['source']) + '" rel="nofollow noopener" target="_blank">'
+            + e(s.get('sourceLabel', 'Official documentation')) + '</a></p>')
+    if rel:
+        art += ('<nav class="related-static"><h2>Related cheat sheets</h2><ul>'
+                + ''.join('<li><a href="/sheets/' + x['id'] + '/">' + e(x['title']) + '</a></li>'
+                          for x in rel) + '</ul></nav>')
+    art += '</article>'
+
+    graph = [
+        {'@type': 'TechArticle', '@id': url + '#article', 'headline': s['title'] + ' cheat sheet',
+         'description': s['description'], 'datePublished': '2026-11-01', 'dateModified': s['updated'],
+         'inLanguage': 'en', 'url': url, 'mainEntityOfPage': url,
+         'author': {'@id': BASE + '/#org'}, 'publisher': {'@id': BASE + '/#org'},
+         'about': s['product'], 'keywords': ', '.join(
+             [s['title'], s['product'], s['category'], 'cheat sheet', 'commands']),
+         'proficiencyLevel': s.get('level', 'Beginner'),
+         'image': BASE + '/og.png'},
+        ORG,
+        {'@type': 'BreadcrumbList', '@id': url + '#crumbs', 'itemListElement': [
+            {'@type': 'ListItem', 'position': 1, 'name': 'All cheat sheets', 'item': BASE + '/'},
+            {'@type': 'ListItem', 'position': 2, 'name': s['title']}]},
+    ]
+    if s.get('walkthrough'):
+        graph.append({'@type': 'HowTo', '@id': url + '#howto',
+                      'name': s['title'] + ' walkthrough',
+                      'description': s['description'], 'totalTime': 'PT' + str(s['time']) + 'M',
+                      'inLanguage': 'en',
+                      'step': [{'@type': 'HowToStep', 'position': i, 'name': b, 'text': step,
+                                'url': url + '#step-' + str(i)}
+                               for i, ((a, b), step) in enumerate(zip(s['rows'], s['walkthrough']), 1)]})
+
+    (d / 'index.html').write_text(
+        page(s['title'] + ' cheat sheet | Packetly', s['description'],
+             '/sheets/' + s['id'] + '/', art,
+             ld({'@context': 'https://schema.org', '@graph': graph})), encoding='utf-8')
+
+# ==============================================================  info pages
+INFO_DESC = {
+    'about': 'What Packetly is, who it is for, and how the cheat sheets are put together.',
+    'editorial': 'How Packetly sources, scopes and revises its command references.',
+    'privacy': 'What Packetly stores, what Google Analytics and AdSense collect, and how to opt out.',
+    'terms': 'Terms of use for Packetly\u2019s educational command references.',
+    'contact': 'How to report an error in a cheat sheet or request a new reference.',
+}
+for name, copy in INFO.items():
+    title, paras = copy[0], copy[1:]
+    d = p / name
+    d.mkdir(exist_ok=True)
+    art = ('<article class="detail prose"><nav class="crumbs"><a href="/">All cheat sheets</a>'
+           '<span>/</span>' + e(name.capitalize()) + '</nav><h1>' + e(title) + '</h1>'
+           + ''.join('<p>' + e(x) + '</p>' for x in paras) + '</article>')
+    crumbs = ld({'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
+        {'@type': 'ListItem', 'position': 1, 'name': 'All cheat sheets', 'item': BASE + '/'},
+        {'@type': 'ListItem', 'position': 2, 'name': title}]})
+    (d / 'index.html').write_text(
+        page(title.rstrip('.') + ' | Packetly', INFO_DESC[name], '/' + name + '/', art, crumbs),
+        encoding='utf-8')
+
+# ===============================================  robots, sitemap, llms.txt
+AI_BOTS = ['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-User',
+           'Claude-SearchBot', 'PerplexityBot', 'Perplexity-User', 'Google-Extended',
+           'Applebot-Extended', 'CCBot', 'Amazonbot', 'meta-externalagent', 'Bingbot']
+robots = 'User-agent: *\nAllow: /\n\n'
+robots += ''.join('User-agent: %s\nAllow: /\n\n' % b for b in AI_BOTS)
+robots += 'Sitemap: %s/sitemap.xml\n' % BASE
+(p / 'robots.txt').write_bytes(robots.encode('utf-8'))
+
+urls = [('/', UPDATED)] + [('/sheets/%s/' % s['id'], s['updated']) for s in data] \
+       + [('/%s/' % n, UPDATED) for n in INFO]
+(p / 'sitemap.xml').write_bytes(
+    ('<?xml version="1.0" encoding="UTF-8"?>'
+     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+     + ''.join('<url><loc>%s%s</loc><lastmod>%s</lastmod></url>' % (BASE, u, m) for u, m in urls)
+     + '</urlset>').encode('utf-8'))
+
+llms = ['# Packetly', '', '> ' + BLURB, '',
+        'Packetly publishes %d command references for IT, cybersecurity and network engineers. '
+        'Each sheet pairs a command with what it inspects and how to interpret the output, '
+        'and links to the vendor documentation it is based on. Content is editorial, '
+        'not vendor certification material.' % len(data), '', '## Cheat sheets', '']
+for cat in sorted(groups):
+    llms.append('### ' + cat)
+    for s in sorted(groups[cat], key=lambda x: x['title']):
+        llms.append('- [%s](%s/sheets/%s/): %s' % (s['title'], BASE, s['id'], s['description']))
+    llms.append('')
+llms += ['## About', '']
+llms += ['- [%s](%s/%s/): %s' % (INFO[n][0].rstrip('.'), BASE, n, INFO_DESC[n]) for n in INFO]
+(p / 'llms.txt').write_bytes(('\n'.join(llms) + '\n').encode('utf-8'))
+
+# ===========================================================  sharing image
+try:
+    from PIL import Image, ImageDraw, ImageFont
+
+    def font(size, bold=True):
+        for path in ['C:/Windows/Fonts/segoeuib.ttf' if bold else 'C:/Windows/Fonts/segoeui.ttf',
+                     'C:/Windows/Fonts/arialbd.ttf' if bold else 'C:/Windows/Fonts/arial.ttf',
+                     '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf']:
+            try:
+                return ImageFont.truetype(path, size)
+            except OSError:
+                continue
+        return ImageFont.load_default()
+
+    img = Image.new('RGB', (1200, 630), '#111411')
+    dr = ImageDraw.Draw(img)
+    dr.rounded_rectangle([80, 78, 152, 150], 18, fill='#c3ed7a')
+    dr.polygon([(97, 131), (124, 97), (139, 97), (112, 131)], fill='#111411')
+    dr.text((176, 114), 'packetly.', font=font(58), fill='#edf0e8', anchor='lm')
+    dr.text((80, 250), 'Less searching.', font=font(86), fill='#edf0e8')
+    dr.text((80, 346), 'More solving.', font=font(86), fill='#c3ed7a')
+    dr.text((80, 492), 'IT  \u00b7  CYBERSECURITY  \u00b7  NETWORKING  \u00b7  CLOUD',
+            font=font(26, False), fill='#8c9681')
+    dr.text((80, 540), '%d free cheat sheets \u00b7 packetly.ly' % len(data),
+            font=font(26, False), fill='#8c9681')
+    dr.rectangle([0, 622, 1200, 630], fill='#c3ed7a')
+    img.save(p / 'og.png', optimize=True)
+    print('og.png written')
+except ImportError:
+    print('Pillow missing: keeping the existing og.png')
+
+# ======================================================  GitHub Pages extras
+(p / 'ads.txt').write_bytes(b'google.com, pub-4081538671702116, DIRECT, f08c47fec0942fa0' + bytes([10]))
+(p / 'CNAME').write_bytes(b'packetly.ly')
+(p / '.nojekyll').write_text('', encoding='utf-8')
+
+nf = ('<article class="detail prose"><h1>That page is not in the library.</h1>'
+      '<p>The address may have changed or the sheet may have been renamed.</p>'
+      '<p><a href="/">Back to all cheat sheets</a></p></article>')
+(p / '404.html').write_text(
+    page('Page not found | Packetly', 'That page is not in the library.', '/404.html', nf,
+         robots='noindex,follow', ads=False)
+    .replace('<script defer src="/data.js"></script>', '')
+    .replace('<script defer src="/app.js"></script>', ''), encoding='utf-8')
+
+print('built %d sheets + %d pages' % (len(data), len(INFO)))

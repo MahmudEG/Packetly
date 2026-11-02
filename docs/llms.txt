@@ -1,0 +1,66 @@
+# Packetly
+
+> Free cheat sheets for IT, cybersecurity and network engineers. Inspection commands for Windows, Active Directory, Entra ID, Azure, FortiGate, Cisco, Juniper, Sophos, Ubiquiti, HPE, Dell and Linux, each with a plain-English walkthrough.
+
+Packetly publishes 39 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
+
+## Cheat sheets
+
+### Cloud
+- [Azure subscription and resource inventory](https://packetly.ly/sheets/azure-subscription-and-resource-inventory/): Check CLI context and inventory resources in the intended subscription.
+- [Azure virtual network inspection](https://packetly.ly/sheets/azure-virtual-network-inspection/): Inspect virtual networks, subnets and security group inventory.
+- [Cloud network fundamentals](https://packetly.ly/sheets/cloud-network-fundamentals/): Connect subnets, routes, security rules, and DNS into one model.
+
+### Cybersecurity
+- [FortiGate CLI essentials](https://packetly.ly/sheets/fortigate-cli-essentials/): The everyday commands for finding your way around a FortiGate.
+- [FortiGate HA & system health](https://packetly.ly/sheets/fortigate-ha-system-health/): Check cluster membership and baseline appliance health.
+- [FortiGate VPN health](https://packetly.ly/sheets/fortigate-vpn-health/): Inspect IPsec tunnel health and security associations.
+- [FortiGate session inspection](https://packetly.ly/sheets/fortigate-session-inspection/): Connect policy decisions with live traffic sessions.
+- [Kali Burp Suite proxy basics](https://packetly.ly/sheets/kali-burp-suite-proxy-basics/): Inspect requests from a local training application with Burp’s built-in browser.
+- [Kali Nmap discovery essentials](https://packetly.ly/sheets/kali-nmap-discovery-essentials/): Discover a lab host’s exposed TCP services and interpret scan states.
+- [Kali Wireshark packet analysis](https://packetly.ly/sheets/kali-wireshark-packet-analysis/): Use display filters to inspect DNS, TCP handshakes and one lab conversation.
+- [Sophos Firewall CLI health checks](https://packetly.ly/sheets/sophos-firewall-cli-health-checks/): Gather appliance version, uptime and resource diagnostics in Device Console.
+- [Sophos Firewall traffic investigation](https://packetly.ly/sheets/sophos-firewall-traffic-investigation/): Use log filters to connect a connection failure with firewall decisions.
+
+### IT fundamentals
+- [Linux network essentials](https://packetly.ly/sheets/linux-network-essentials/): A small toolkit for inspecting a Linux host’s network.
+- [Windows network troubleshooting](https://packetly.ly/sheets/windows-network-troubleshooting/): Inspect addressing, DNS resolution and TCP reachability with PowerShell.
+- [Windows services and event logs](https://packetly.ly/sheets/windows-services-and-event-logs/): Build a focused picture of service state and recent system errors.
+
+### Identity & Microsoft 365
+- [Active Directory replication health](https://packetly.ly/sheets/active-directory-replication-health/): Compare domain-controller replication and locate recent failures.
+- [Active Directory users and groups](https://packetly.ly/sheets/active-directory-users-and-groups/): Inspect domain identity, user status and group membership using RSAT.
+- [Entra ID devices and tenant overview](https://packetly.ly/sheets/entra-id-devices-and-tenant-overview/): Inspect tenant context, device identities and join state without changing access.
+- [Entra ID sign-in investigation](https://packetly.ly/sheets/entra-id-sign-in-investigation/): Review recent sign-ins and distinguish authentication from policy failures.
+- [Exchange Online mailbox inspection](https://packetly.ly/sheets/exchange-online-mailbox-inspection/): Connect to Exchange Online and review mailbox identity and quotas.
+- [Exchange Online message tracing](https://packetly.ly/sheets/exchange-online-message-tracing/): Trace a recent sender and examine the events for a specific message.
+- [Microsoft Graph connection and user lookup](https://packetly.ly/sheets/microsoft-graph-connection-and-user-lookup/): Connect to the correct tenant and inspect directory user records.
+- [Microsoft Graph query and paging basics](https://packetly.ly/sheets/microsoft-graph-query-and-paging-basics/): Find users with server-side filters and handle complete result sets.
+
+### Infrastructure
+- [Dell Data Domain capacity and health](https://packetly.ly/sheets/dell-data-domain-capacity-and-health/): Inspect filesystem state, capacity and active protection-appliance alerts.
+- [Dell Data Domain replication checks](https://packetly.ly/sheets/dell-data-domain-replication-checks/): Inspect replication contexts and distinguish idle replication from a stalled copy.
+- [Dell PowerEdge hardware inventory](https://packetly.ly/sheets/dell-poweredge-hardware-inventory/): Capture firmware and hardware inventory before planning maintenance.
+- [Dell PowerEdge iDRAC health checks](https://packetly.ly/sheets/dell-poweredge-idrac-health-checks/): Read PowerEdge identity, power state and hardware event history.
+- [HPE ProLiant iLO health overview](https://packetly.ly/sheets/hpe-proliant-ilo-health-overview/): Read ProLiant health and hardware events through iLO.
+
+### Networking
+- [Cisco IOS essentials](https://packetly.ly/sheets/cisco-ios-essentials/): Get oriented, inspect interfaces, and understand your device.
+- [Cisco VLANs & trunks](https://packetly.ly/sheets/cisco-vlans-trunks/): Understand access VLANs, tagged links, and Layer 2 boundaries.
+- [Cisco interface diagnostics](https://packetly.ly/sheets/cisco-interface-diagnostics/): Find link failures and read the counters that matter.
+- [Cisco neighbor discovery](https://packetly.ly/sheets/cisco-neighbor-discovery/): Map the devices directly connected to your switch.
+- [Cisco routing basics](https://packetly.ly/sheets/cisco-routing-basics/): Read connected, static, and learned routes with confidence.
+- [FortiGate routing & ARP](https://packetly.ly/sheets/fortigate-routing-arp/): Follow a packet from its next hop to the routing table.
+- [HPE Aruba CX switching essentials](https://packetly.ly/sheets/hpe-aruba-cx-switching-essentials/): Inspect AOS-CX switch interfaces and VLANs with platform-specific commands.
+- [Juniper Junos CLI essentials](https://packetly.ly/sheets/juniper-junos-cli-essentials/): Get oriented in Junos operational mode and inspect the chassis.
+- [Juniper routes and neighbor checks](https://packetly.ly/sheets/juniper-routes-and-neighbor-checks/): Inspect routes, ARP entries and discovered neighbors in Junos.
+- [Ubiquiti UniFi device connectivity](https://packetly.ly/sheets/ubiquiti-unifi-device-connectivity/): Follow adoption and management connectivity through the UniFi console.
+- [Ubiquiti UniFi switch port checks](https://packetly.ly/sheets/ubiquiti-unifi-switch-port-checks/): Inspect switch port state, VLAN assignment and PoE budget.
+
+## About
+
+- [A field guide for connected minds](https://packetly.ly/about/): What Packetly is, who it is for, and how the cheat sheets are put together.
+- [Useful references, clear scope](https://packetly.ly/editorial/): How Packetly sources, scopes and revises its command references.
+- [Privacy, in plain language](https://packetly.ly/privacy/): What Packetly stores, what Google Analytics and AdSense collect, and how to opt out.
+- [Use the guide with context](https://packetly.ly/terms/): Terms of use for Packetly’s educational command references.
+- [Help make the next sheet better](https://packetly.ly/contact/): How to report an error in a cheat sheet or request a new reference.
