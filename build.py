@@ -41,6 +41,11 @@ BLURB = ('Free cheat sheets for IT, cybersecurity and network engineers. '
          'each with a plain-English walkthrough.')
 UPDATED = max(s['updated'] for s in data)
 
+# Search engine ownership verification. Paste the token only (the content="..."
+# value from the HTML tag method), then rebuild and push. Empty means no tag.
+GOOGLE_VERIFY = ''
+BING_VERIFY = ''
+
 groups = {}
 for s in data:
     groups.setdefault(s['category'], []).append(s)
@@ -119,7 +124,11 @@ def page(title, desc, path, main, extra='', robots=None, ads=True):
             '<meta name="robots" content="' + r + '">'
             '<link rel="canonical" href="' + url + '">'
             '<meta name="theme-color" content="#101310">'
-            '<meta property="og:type" content="' + kind + '">'
+            + ('<meta name="google-site-verification" content="' + GOOGLE_VERIFY + '">'
+               if GOOGLE_VERIFY else '')
+            + ('<meta name="msvalidate.01" content="' + BING_VERIFY + '">'
+               if BING_VERIFY else '')
+            +             '<meta property="og:type" content="' + kind + '">'
             '<meta property="og:site_name" content="' + NAME + '">'
             '<meta property="og:locale" content="en_US">'
             '<meta property="og:title" content="' + e(title) + '">'
