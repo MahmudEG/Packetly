@@ -4,7 +4,7 @@ guides.py holds the long-form field guides, pages.py the standalone page copy.
 docs/app.js, docs/style.css and docs/consent.js are hand-authored and are not
 written by this script; everything else under docs/ is generated.
 """
-import json, pathlib, html
+import json, pathlib, html, re
 from guides import GUIDES
 from pages import INFO
 p = pathlib.Path(__file__).parent / 'docs'; p.mkdir(exist_ok=True)
@@ -40,6 +40,22 @@ BLURB = ('Free cheat sheets for IT, cybersecurity and network engineers. '
          'FortiGate, Cisco, Juniper, Sophos, Ubiquiti, HPE, Dell and Linux, '
          'each with a plain-English walkthrough.')
 UPDATED = max(s['updated'] for s in data)
+
+groups = {}
+for s in data:
+    groups.setdefault(s['category'], []).append(s)
+for g in groups.values():
+    g.sort(key=lambda x: x['title'])
+SLUG = {c: re.sub(r'[^a-z0-9]+', '-', c.lower()).strip('-') for c in groups}
+INTRO = {
+    'Cloud': 'Cloud networking references for Azure and provider-neutral fundamentals: subscriptions, virtual networks, subnets, route tables and security rules, with the commands that inspect each one.',
+    'Cybersecurity': 'Security inspection references for FortiGate, Sophos and Kali Linux: firewall and cluster health, IPsec tunnels, session and traffic investigation, port discovery and packet analysis.',
+    'IT fundamentals': 'Everyday troubleshooting references for Windows and Linux hosts: addressing, DNS resolution, TCP reachability, service state, event logs and listening sockets.',
+    'Identity & Microsoft 365': 'Identity and Microsoft 365 references for Active Directory, Entra ID, Microsoft Graph and Exchange Online: users and groups, replication health, sign-in investigation, mailboxes and message tracing.',
+    'Infrastructure': 'Server and storage references for HPE ProLiant, Dell PowerEdge and Dell Data Domain: iLO and iDRAC health, hardware inventory, capacity reporting and replication checks.',
+    'Networking': 'Switching and routing references for Cisco, Juniper, FortiGate, HPE Aruba and Ubiquiti: interface state, VLANs and trunks, routing tables, neighbour discovery and ARP.',
+}
+TOPICS = {SLUG[c]: c for c in groups}
 
 e = lambda x: html.escape(str(x), quote=True)
 ld = lambda o: '<script type="application/ld+json">' + json.dumps(o, ensure_ascii=False) + '</script>'
@@ -124,21 +140,20 @@ def page(title, desc, path, main, extra='', robots=None, ads=True):
 # ===============================================================  client data
 (p / 'data.js').write_text(
     'window.SHEETS=' + json.dumps(data, ensure_ascii=False) + ';'
-    'window.PAGES=' + json.dumps(INFO, ensure_ascii=False) + ';', encoding='utf-8')
+    'window.PAGES=' + json.dumps(INFO, ensure_ascii=False) + ';'
+    'window.TOPICS=' + json.dumps(TOPICS, ensure_ascii=False) + ';'
+    'window.TOPIC_INTRO=' + json.dumps(INTRO, ensure_ascii=False) + ';', encoding='utf-8')
 
 # ==================================================================  homepage
-groups = {}
-for s in data:
-    groups.setdefault(s['category'], []).append(s)
-
 home = ('<section><h1>IT, cybersecurity and network cheat sheets</h1>'
         '<p>' + e(BLURB) + '</p>'
         '<p>Every sheet lists the command, what it inspects, and how to read the output, '
         'with a step-by-step walkthrough and a link to the vendor\u2019s own documentation. '
         'All ' + str(len(data)) + ' are free, need no account, and print cleanly.</p>')
 for cat in sorted(groups):
-    home += '<div class="home-group"><h2>' + e(cat) + '</h2><ul>'
-    for s in sorted(groups[cat], key=lambda x: x['title']):
+    home += ('<div class="home-group"><h2><a href="/topics/' + SLUG[cat] + '/">'
+             + e(cat) + ' cheat sheets</a></h2><ul>')
+    for s in groups[cat]:
         home += ('<li><a href="/sheets/' + s['id'] + '/">' + e(s['title']) + '</a> \u2014 '
                  + e(s['description']) + '</li>')
     home += '</ul></div>'
@@ -174,7 +189,8 @@ for s in data:
     label = kind if kind != 'Command' else ('Concept' if s['vendor'] == 'Vendor neutral' else 'Command')
 
     art = ('<article><nav class="crumbs"><a href="/">All cheat sheets</a><span>/</span>'
-           + e(s['category']) + '<span>/</span>' + e(s['title']) + '</nav>'
+           '<a href="/topics/' + SLUG[s['category']] + '/">' + e(s['category']) + '</a>'
+           '<span>/</span>' + e(s['title']) + '</nav>'
            '<h1>' + e(s['title']) + ' cheat sheet</h1>'
            '<p>' + e(s['description']) + '</p>')
     if s.get('scope'):
@@ -212,7 +228,9 @@ for s in data:
         ORG,
         {'@type': 'BreadcrumbList', '@id': url + '#crumbs', 'itemListElement': [
             {'@type': 'ListItem', 'position': 1, 'name': 'All cheat sheets', 'item': BASE + '/'},
-            {'@type': 'ListItem', 'position': 2, 'name': s['title']}]},
+            {'@type': 'ListItem', 'position': 2, 'name': s['category'],
+             'item': BASE + '/topics/' + SLUG[s['category']] + '/'},
+            {'@type': 'ListItem', 'position': 3, 'name': s['title']}]},
     ]
     if s.get('walkthrough'):
         graph.append({'@type': 'HowTo', '@id': url + '#howto',
@@ -250,6 +268,44 @@ for name, copy in INFO.items():
         page(title.rstrip('.') + ' | Packetly', INFO_DESC[name], '/' + name + '/', art, crumbs),
         encoding='utf-8')
 
+# ===============================================================  hubs
+for cat in sorted(groups):
+    slug, sheets_in = SLUG[cat], groups[cat]
+    path = '/topics/%s/' % slug
+    url = BASE + path
+    d = p / 'topics' / slug
+    d.mkdir(parents=True, exist_ok=True)
+    title = cat + ' cheat sheets'
+    desc = INTRO[cat]
+
+    art = ('<article><nav class="crumbs"><a href="/">All cheat sheets</a><span>/</span>'
+           + e(cat) + '</nav><h1>' + e(title) + '</h1><p>' + e(desc) + '</p>'
+           '<p>' + str(len(sheets_in)) + ' free reference'
+           + ('s' if len(sheets_in) != 1 else '') + ' in this topic. Each lists the command, '
+           'what it inspects and how to read the result.</p><ul>')
+    for s in sheets_in:
+        art += ('<li><a href="/sheets/' + s['id'] + '/">' + e(s['title']) + '</a> \u2014 '
+                + e(s['description']) + '</li>')
+    art += ('</ul><nav class="related-static"><h2>Other topics</h2><ul>'
+            + ''.join('<li><a href="/topics/' + SLUG[c] + '/">' + e(c) + ' cheat sheets</a></li>'
+                      for c in sorted(groups) if c != cat)
+            + '</ul></nav></article>')
+
+    hub_ld = ld({'@context': 'https://schema.org', '@graph': [
+        {'@type': 'CollectionPage', '@id': url + '#page', 'url': url, 'name': title,
+         'description': desc, 'inLanguage': 'en', 'isPartOf': {'@id': BASE + '/#site'},
+         'mainEntity': {'@type': 'ItemList', 'numberOfItems': len(sheets_in),
+                        'itemListElement': [{'@type': 'ListItem', 'position': i + 1,
+                                             'url': BASE + '/sheets/' + s['id'] + '/',
+                                             'name': s['title']}
+                                            for i, s in enumerate(sheets_in)]}},
+        {'@type': 'BreadcrumbList', '@id': url + '#crumbs', 'itemListElement': [
+            {'@type': 'ListItem', 'position': 1, 'name': 'All cheat sheets', 'item': BASE + '/'},
+            {'@type': 'ListItem', 'position': 2, 'name': cat}]}]})
+
+    (d / 'index.html').write_text(
+        page(title + ' | Packetly', desc, path, art, hub_ld), encoding='utf-8')
+
 # ===============================================  robots, sitemap, llms.txt
 AI_BOTS = ['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-User',
            'Claude-SearchBot', 'PerplexityBot', 'Perplexity-User', 'Google-Extended',
@@ -259,8 +315,11 @@ robots += ''.join('User-agent: %s\nAllow: /\n\n' % b for b in AI_BOTS)
 robots += 'Sitemap: %s/sitemap.xml\n' % BASE
 (p / 'robots.txt').write_bytes(robots.encode('utf-8'))
 
-urls = [('/', UPDATED)] + [('/sheets/%s/' % s['id'], s['updated']) for s in data] \
-       + [('/%s/' % n, UPDATED) for n in INFO]
+urls = ([('/', UPDATED)]
+        + [('/topics/%s/' % SLUG[c], max(s['updated'] for s in groups[c]))
+           for c in sorted(groups)]
+        + [('/sheets/%s/' % s['id'], s['updated']) for s in data]
+        + [('/%s/' % n, UPDATED) for n in INFO])
 (p / 'sitemap.xml').write_bytes(
     ('<?xml version="1.0" encoding="UTF-8"?>'
      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
@@ -273,8 +332,11 @@ llms = ['# Packetly', '', '> ' + BLURB, '',
         'and links to the vendor documentation it is based on. Content is editorial, '
         'not vendor certification material.' % len(data), '', '## Cheat sheets', '']
 for cat in sorted(groups):
-    llms.append('### ' + cat)
-    for s in sorted(groups[cat], key=lambda x: x['title']):
+    llms.append('### [%s cheat sheets](%s/topics/%s/)' % (cat, BASE, SLUG[cat]))
+    llms.append('')
+    llms.append(INTRO[cat])
+    llms.append('')
+    for s in groups[cat]:
         llms.append('- [%s](%s/sheets/%s/): %s' % (s['title'], BASE, s['id'], s['description']))
     llms.append('')
 llms += ['## About', '']
@@ -326,4 +388,4 @@ nf = ('<article class="detail prose"><h1>That page is not in the library.</h1>'
     .replace('<script defer src="/data.js"></script>', '')
     .replace('<script defer src="/app.js"></script>', ''), encoding='utf-8')
 
-print('built %d sheets + %d pages' % (len(data), len(INFO)))
+print('built %d sheets + %d hubs + %d pages' % (len(data), len(groups), len(INFO)))

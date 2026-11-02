@@ -3,12 +3,23 @@ import json, pathlib, re, xml.etree.ElementTree as ET
 
 p = pathlib.Path('docs')
 raw = (p / 'data.js').read_text(encoding='utf-8')
-cut = raw.index(';window.PAGES=')
-sheets = json.loads(raw[len('window.SHEETS='):cut])
-pages = json.loads(raw[cut + len(';window.PAGES='):-1])
+
+
+def globl(name, nxt=None):
+    i = raw.index('window.%s=' % name) + len('window.%s=' % name)
+    j = raw.index(';window.%s=' % nxt) if nxt else len(raw) - 1
+    return json.loads(raw[i:j])
+
+
+sheets = globl('SHEETS', 'PAGES')
+pages = globl('PAGES', 'TOPICS')
+topics = globl('TOPICS', 'TOPIC_INTRO')
+intros = globl('TOPIC_INTRO')
 
 BASE = 'https://packetly.ly'
 INFO = ['about', 'editorial', 'privacy', 'terms', 'contact']
+TOPICS = ['cloud', 'cybersecurity', 'identity-microsoft-365', 'infrastructure',
+          'it-fundamentals', 'networking']
 
 # ---- content ----------------------------------------------------------
 assert len(sheets) == 39, len(sheets)
@@ -31,7 +42,8 @@ def head_of(html_text):
 titles, descs = set(), set()
 for rel, path in ([('index.html', '/')]
                   + [('sheets/%s/index.html' % s['id'], '/sheets/%s/' % s['id']) for s in sheets]
-                  + [('%s/index.html' % n, '/%s/' % n) for n in INFO]):
+                  + [('%s/index.html' % n, '/%s/' % n) for n in INFO]
+                  + [('topics/%s/index.html' % c, '/topics/%s/' % c) for c in TOPICS]):
     page = read(rel)
     head = head_of(page)
     assert '<link rel="canonical" href="%s%s">' % (BASE, path) in head, rel
@@ -85,11 +97,12 @@ for s in sheets:
 # ---- sitemap, robots, llms, assets -------------------------------------
 root = ET.parse(p / 'sitemap.xml').getroot()
 ns = '{http://www.sitemaps.org/schemas/sitemap/0.9}'
-assert len(root) == 45, len(root)
+assert len(root) == 51, len(root)
 assert all(u.find(ns + 'lastmod') is not None for u in root)
 locs = {u.find(ns + 'loc').text for u in root}
-assert locs == {BASE + '/'} | {BASE + '/sheets/%s/' % s['id'] for s in sheets} \
-       | {BASE + '/%s/' % n for n in INFO}
+assert locs == ({BASE + '/'} | {BASE + '/sheets/%s/' % s['id'] for s in sheets}
+                | {BASE + '/%s/' % n for n in INFO}
+                | {BASE + '/topics/%s/' % c for c in TOPICS})
 
 robots = read('robots.txt')
 for bot in ['GPTBot', 'ClaudeBot', 'PerplexityBot', 'Google-Extended', 'OAI-SearchBot']:
@@ -101,6 +114,22 @@ assert llms.startswith('# Packetly')
 for s in sheets:
     assert '/sheets/%s/' % s['id'] in llms, 'llms.txt missing ' + s['id']
 
+# hubs: every sheet reachable from its topic, every topic from the homepage
+seen = set()
+for c in TOPICS:
+    hub = read('topics/%s/index.html' % c)
+    assert '"@type": "CollectionPage"' in hub and '"@type": "ItemList"' in hub, c
+    assert '/topics/%s/' % c in home, 'homepage does not link topic ' + c
+    for s in sheets:
+        if '/sheets/%s/' % s['id'] in hub:
+            seen.add(s['id'])
+assert seen == {s['id'] for s in sheets}, 'sheets missing from every hub'
+for s in sheets:
+    page = read('sheets/%s/index.html' % s['id'])
+    assert '/topics/' in page, 'no topic link on ' + s['id']
+
+assert set(topics) == set(TOPICS), set(topics)
+assert set(intros) == set(topics.values()) and all(len(v) > 80 for v in intros.values())
 assert (p / 'og.png').stat().st_size > 5000
 assert (p / 'CNAME').read_bytes() == b'packetly.ly'
 assert (p / '.nojekyll').exists()
@@ -108,6 +137,6 @@ assert 'noindex' in head_of(read('404.html'))
 assert 'adsbygoogle' not in read('404.html')
 assert 'reports.js' not in home
 
-print('PASS: %d sheets, %d pages, unique titles/descriptions, canonical + OG + Twitter on all 45 '
+print('PASS: %d sheets, %d pages, unique titles/descriptions, canonical + OG + Twitter on all 51 '
       'URLs, structured data, crumbs, related links, sitemap lastmod, AI crawler rules, llms.txt, '
-      'og.png.' % (len(sheets), len(pages)))
+      'og.png, %d topic hubs.' % (len(sheets), len(pages), len(TOPICS)))

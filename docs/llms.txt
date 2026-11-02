@@ -6,12 +6,18 @@ Packetly publishes 39 command references for IT, cybersecurity and network engin
 
 ## Cheat sheets
 
-### Cloud
+### [Cloud cheat sheets](https://packetly.ly/topics/cloud/)
+
+Cloud networking references for Azure and provider-neutral fundamentals: subscriptions, virtual networks, subnets, route tables and security rules, with the commands that inspect each one.
+
 - [Azure subscription and resource inventory](https://packetly.ly/sheets/azure-subscription-and-resource-inventory/): Check CLI context and inventory resources in the intended subscription.
 - [Azure virtual network inspection](https://packetly.ly/sheets/azure-virtual-network-inspection/): Inspect virtual networks, subnets and security group inventory.
 - [Cloud network fundamentals](https://packetly.ly/sheets/cloud-network-fundamentals/): Connect subnets, routes, security rules, and DNS into one model.
 
-### Cybersecurity
+### [Cybersecurity cheat sheets](https://packetly.ly/topics/cybersecurity/)
+
+Security inspection references for FortiGate, Sophos and Kali Linux: firewall and cluster health, IPsec tunnels, session and traffic investigation, port discovery and packet analysis.
+
 - [FortiGate CLI essentials](https://packetly.ly/sheets/fortigate-cli-essentials/): The everyday commands for finding your way around a FortiGate.
 - [FortiGate HA & system health](https://packetly.ly/sheets/fortigate-ha-system-health/): Check cluster membership and baseline appliance health.
 - [FortiGate VPN health](https://packetly.ly/sheets/fortigate-vpn-health/): Inspect IPsec tunnel health and security associations.
@@ -22,12 +28,18 @@ Packetly publishes 39 command references for IT, cybersecurity and network engin
 - [Sophos Firewall CLI health checks](https://packetly.ly/sheets/sophos-firewall-cli-health-checks/): Gather appliance version, uptime and resource diagnostics in Device Console.
 - [Sophos Firewall traffic investigation](https://packetly.ly/sheets/sophos-firewall-traffic-investigation/): Use log filters to connect a connection failure with firewall decisions.
 
-### IT fundamentals
+### [IT fundamentals cheat sheets](https://packetly.ly/topics/it-fundamentals/)
+
+Everyday troubleshooting references for Windows and Linux hosts: addressing, DNS resolution, TCP reachability, service state, event logs and listening sockets.
+
 - [Linux network essentials](https://packetly.ly/sheets/linux-network-essentials/): A small toolkit for inspecting a Linux host’s network.
 - [Windows network troubleshooting](https://packetly.ly/sheets/windows-network-troubleshooting/): Inspect addressing, DNS resolution and TCP reachability with PowerShell.
 - [Windows services and event logs](https://packetly.ly/sheets/windows-services-and-event-logs/): Build a focused picture of service state and recent system errors.
 
-### Identity & Microsoft 365
+### [Identity & Microsoft 365 cheat sheets](https://packetly.ly/topics/identity-microsoft-365/)
+
+Identity and Microsoft 365 references for Active Directory, Entra ID, Microsoft Graph and Exchange Online: users and groups, replication health, sign-in investigation, mailboxes and message tracing.
+
 - [Active Directory replication health](https://packetly.ly/sheets/active-directory-replication-health/): Compare domain-controller replication and locate recent failures.
 - [Active Directory users and groups](https://packetly.ly/sheets/active-directory-users-and-groups/): Inspect domain identity, user status and group membership using RSAT.
 - [Entra ID devices and tenant overview](https://packetly.ly/sheets/entra-id-devices-and-tenant-overview/): Inspect tenant context, device identities and join state without changing access.
@@ -37,14 +49,20 @@ Packetly publishes 39 command references for IT, cybersecurity and network engin
 - [Microsoft Graph connection and user lookup](https://packetly.ly/sheets/microsoft-graph-connection-and-user-lookup/): Connect to the correct tenant and inspect directory user records.
 - [Microsoft Graph query and paging basics](https://packetly.ly/sheets/microsoft-graph-query-and-paging-basics/): Find users with server-side filters and handle complete result sets.
 
-### Infrastructure
+### [Infrastructure cheat sheets](https://packetly.ly/topics/infrastructure/)
+
+Server and storage references for HPE ProLiant, Dell PowerEdge and Dell Data Domain: iLO and iDRAC health, hardware inventory, capacity reporting and replication checks.
+
 - [Dell Data Domain capacity and health](https://packetly.ly/sheets/dell-data-domain-capacity-and-health/): Inspect filesystem state, capacity and active protection-appliance alerts.
 - [Dell Data Domain replication checks](https://packetly.ly/sheets/dell-data-domain-replication-checks/): Inspect replication contexts and distinguish idle replication from a stalled copy.
 - [Dell PowerEdge hardware inventory](https://packetly.ly/sheets/dell-poweredge-hardware-inventory/): Capture firmware and hardware inventory before planning maintenance.
 - [Dell PowerEdge iDRAC health checks](https://packetly.ly/sheets/dell-poweredge-idrac-health-checks/): Read PowerEdge identity, power state and hardware event history.
 - [HPE ProLiant iLO health overview](https://packetly.ly/sheets/hpe-proliant-ilo-health-overview/): Read ProLiant health and hardware events through iLO.
 
-### Networking
+### [Networking cheat sheets](https://packetly.ly/topics/networking/)
+
+Switching and routing references for Cisco, Juniper, FortiGate, HPE Aruba and Ubiquiti: interface state, VLANs and trunks, routing tables, neighbour discovery and ARP.
+
 - [Cisco IOS essentials](https://packetly.ly/sheets/cisco-ios-essentials/): Get oriented, inspect interfaces, and understand your device.
 - [Cisco VLANs & trunks](https://packetly.ly/sheets/cisco-vlans-trunks/): Understand access VLANs, tagged links, and Layer 2 boundaries.
 - [Cisco interface diagnostics](https://packetly.ly/sheets/cisco-interface-diagnostics/): Find link failures and read the counters that matter.
