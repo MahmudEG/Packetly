@@ -22,7 +22,7 @@ TOPICS = ['cloud', 'cybersecurity', 'identity-microsoft-365', 'infrastructure',
           'it-fundamentals', 'networking']
 
 # ---- content ----------------------------------------------------------
-assert len(sheets) == 47, len(sheets)
+assert len(sheets) == 57, len(sheets)
 assert len({s['id'] for s in sheets}) == len(sheets)
 required = {'Windows', 'Active Directory', 'Microsoft Graph', 'Entra ID', 'Exchange Online',
             'Azure', 'FortiGate', 'Sophos', 'Cisco', 'Juniper', 'Ubiquiti', 'HPE', 'Dell',
@@ -108,7 +108,7 @@ for s in sheets:
 # ---- sitemap, robots, llms, assets -------------------------------------
 root = ET.parse(p / 'sitemap.xml').getroot()
 ns = '{http://www.sitemaps.org/schemas/sitemap/0.9}'
-assert len(root) == 59, len(root)
+assert len(root) == 69, len(root)
 assert all(u.find(ns + 'lastmod') is not None for u in root)
 locs = {u.find(ns + 'loc').text for u in root}
 assert locs == ({BASE + '/'} | {BASE + '/sheets/%s/' % s['id'] for s in sheets}
@@ -148,6 +148,6 @@ assert 'noindex' in head_of(read('404.html'))
 assert 'adsbygoogle' not in read('404.html')
 assert 'reports.js' not in home
 
-print('PASS: %d sheets with aligned walkthroughs and worked cases, %d pages, unique titles/descriptions, canonical + OG + Twitter on all 59 '
+print('PASS: %d sheets with aligned walkthroughs and worked cases, %d pages, unique titles/descriptions, canonical + OG + Twitter on all 69 '
       'URLs, structured data, crumbs, related links, sitemap lastmod, AI crawler rules, llms.txt, '
       'og.png, %d topic hubs.' % (len(sheets), len(pages), len(TOPICS)))

@@ -55,12 +55,12 @@ for g in groups.values():
     g.sort(key=lambda x: x['title'])
 SLUG = {c: re.sub(r'[^a-z0-9]+', '-', c.lower()).strip('-') for c in groups}
 INTRO = {
-    'Cloud': 'Cloud references for Azure, AWS and Kubernetes: inventory, virtual networks, effective routes, security groups, pod restarts and readiness, with practical investigation cases.',
+    'Cloud': 'Cloud references for Azure, AWS, Kubernetes and Terraform: inventory, virtual networks, effective routes, security groups, pod readiness, workspaces and recorded infrastructure state, with practical investigation cases.',
     'Cybersecurity': 'Security inspection references for FortiGate, Sophos and Kali Linux: firewall and cluster health, IPsec tunnels, session and traffic investigation, port discovery and packet analysis.',
-    'IT fundamentals': 'Everyday troubleshooting references for Windows and Linux hosts: addressing, DNS resolution, TCP reachability, systemd services, journals, event logs and listening sockets.',
-    'Identity & Microsoft 365': 'Identity and Microsoft 365 references for Active Directory, Entra ID, Microsoft Graph and Exchange Online: users and groups, replication health, sign-in investigation, mailboxes and message tracing.',
-    'Infrastructure': 'Infrastructure references for HPE, Dell, Linux, Windows DHCP and Docker: hardware health, storage capacity, inodes, DHCP leases, container exits and replication checks.',
-    'Networking': 'Network references for Cisco, Juniper, FortiGate, HPE Aruba, Ubiquiti and curl: interfaces, VLANs, routes, neighbors, ARP, HTTP redirects and TLS certificate investigation.',
+    'IT fundamentals': 'Everyday troubleshooting references for Windows and Linux hosts: addressing, DNS resolution, TCP reachability, systemd services, journals, event logs, time synchronization, Git changes and listening sockets.',
+    'Identity & Microsoft 365': 'Identity and Microsoft 365 references for Active Directory, Entra ID, Microsoft Graph and Exchange Online: users and groups, replication health, sign-in investigation, mailboxes, message tracing and Group Policy application.',
+    'Infrastructure': 'Infrastructure references for servers, storage, databases and automation: HPE and Dell health, Linux capacity, Windows DHCP and SMB, Docker, Ansible, Redis, PostgreSQL and MySQL investigations.',
+    'Networking': 'Network references for Cisco, Juniper, FortiGate, HPE Aruba, Ubiquiti, curl and NGINX: interfaces, VLANs, routes, neighbors, ARP, HTTP redirects, TLS certificates and reverse-proxy upstream investigation.',
 }
 TOPICS = {SLUG[c]: c for c in groups}
 
