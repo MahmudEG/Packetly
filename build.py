@@ -50,7 +50,7 @@ for name in ['about','editorial','privacy','terms','contact']:
 # --- GitHub Pages extras ---
 ADS='<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4081538671702116" crossorigin="anonymous"></script>'
 (p/'ads.txt').write_bytes(b'google.com, pub-4081538671702116, DIRECT, f08c47fec0942fa0'+bytes([10]))
-(p/'CNAME').write_bytes(b'packetly.ly'+bytes([10]))
+(p/'CNAME').write_bytes(b'packetly.ly')  # no trailing newline: matches what the Pages UI writes
 (p/'.nojekyll').write_text('',encoding='utf-8')
 notfound='<article class="detail prose"><div class="eyebrow" style="margin-top:35px">PACKETLY / 404</div><h1>That page is not in the library.</h1><p>The address may have changed or the sheet may have been renamed.</p><a href="/" class="secondary" style="display:inline-flex;align-items:center;margin-top:15px">Back to all cheat sheets</a></article>'
 (p/'404.html').write_text(shell.replace(ADS,'').replace('<main id="main"></main>','<main id="main">'+notfound+'</main>').replace('<title>Packetly','<title>Page not found | Packetly').replace('<script defer src="/data.js"></script>','').replace('<script defer src="/app.js"></script>',''),encoding='utf-8')
