@@ -2,7 +2,7 @@
 
 > Free cheat sheets for IT, cybersecurity and network engineers. Inspection commands for Windows, Active Directory, Entra ID, Azure, FortiGate, Cisco, Juniper, Sophos, Ubiquiti, HPE, Dell and Linux, each with a plain-English walkthrough.
 
-Packetly publishes 61 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
+Packetly publishes 62 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
 
 ## Cheat sheets
 
@@ -94,6 +94,7 @@ Network references for Cisco, Juniper, FortiGate, HPE Aruba, Ubiquiti, curl and 
 - [Juniper Junos CLI essentials](https://packetly.ly/sheets/juniper-junos-cli-essentials/): Get oriented in Junos operational mode and inspect the chassis.
 - [Juniper routes and neighbor checks](https://packetly.ly/sheets/juniper-routes-and-neighbor-checks/): Inspect routes, ARP entries and discovered neighbors in Junos.
 - [NGINX reverse proxy upstream investigation](https://packetly.ly/sheets/nginx-reverse-proxy-upstream-investigation/): Connect configuration tests, service logs, listener state and direct upstream requests during a reverse-proxy outage.
+- [Ubiquiti UniFi USW Layer 3 discovery and adoption](https://packetly.ly/sheets/ubiquiti-unifi-usw-layer-3-discovery-and-adoption/): Discover and adopt a UniFi USW switch when the UniFi Network application is on another subnet or site.
 - [Ubiquiti UniFi device connectivity](https://packetly.ly/sheets/ubiquiti-unifi-device-connectivity/): Follow adoption and management connectivity through the UniFi console.
 - [Ubiquiti UniFi switch port checks](https://packetly.ly/sheets/ubiquiti-unifi-switch-port-checks/): Inspect switch port state, VLAN assignment and PoE budget.
 
