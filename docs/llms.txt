@@ -2,7 +2,7 @@
 
 > Free cheat sheets for IT, cybersecurity and network engineers. Inspection commands for Windows, Active Directory, Entra ID, Azure, FortiGate, Cisco, Juniper, Sophos, Ubiquiti, HPE, Dell and Linux, each with a plain-English walkthrough.
 
-Packetly publishes 60 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
+Packetly publishes 61 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
 
 ## Cheat sheets
 
@@ -75,6 +75,7 @@ Infrastructure references for servers, storage, databases and automation: HPE an
 - [VCF 9 ESXi host root password recovery](https://packetly.ly/sheets/vcf-9-esxi-host-root-password-recovery/): Recover a managed ESXi host root account through vCenter and PowerCLI, and reconcile VCF credential management.
 - [VCF 9 ESXi monitoring and troubleshooting commands](https://packetly.ly/sheets/vcf-9-esxi-monitoring-and-troubleshooting-commands/): Inspect ESXi 9 identity, resources, networking, storage and time when investigating a VCF workload issue.
 - [VCF 9 license server deployment and registration](https://packetly.ly/sheets/vcf-9-license-server-deployment-and-registration/): Plan and verify the dedicated VCF License Server deployment and registration for VCF 9.1.
+- [VCF 9 vCenter appliance root password recovery](https://packetly.ly/sheets/vcf-9-vcenter-appliance-root-password-recovery/): Reset a forgotten vCenter Server Appliance root password through an authorized SSO administrator and reconcile the VCF credential.
 - [Windows DHCP scope and lease investigation](https://packetly.ly/sheets/windows-dhcp-scope-and-lease-investigation/): Inspect DHCP scope capacity, leases, reservations, options and failover before changing a production scope.
 - [Windows SMB share access investigation](https://packetly.ly/sheets/windows-smb-share-access-investigation/): Separate TCP reachability, client SMB connections, share permissions, filesystem ACLs and server-side sessions.
 
