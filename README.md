@@ -1,6 +1,6 @@
 # Packetly
 
-Practical IT, cybersecurity and networking cheat sheets — 57 field guides covering
+Practical IT, cybersecurity and networking cheat sheets — 60 field guides covering
 Windows, Active Directory, Microsoft Graph, Entra ID, Exchange Online, Azure,
 FortiGate, Sophos, Cisco, Juniper, Ubiquiti, HPE, Dell, Dell Data Domain, Kali, Linux,
 Docker, Kubernetes, curl, AWS, Git, Ansible, Terraform, Redis, PostgreSQL, MySQL and NGINX. Every sheet includes command interpretation,

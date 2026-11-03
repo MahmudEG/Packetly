@@ -2,7 +2,7 @@
 
 > Free cheat sheets for IT, cybersecurity and network engineers. Inspection commands for Windows, Active Directory, Entra ID, Azure, FortiGate, Cisco, Juniper, Sophos, Ubiquiti, HPE, Dell and Linux, each with a plain-English walkthrough.
 
-Packetly publishes 57 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
+Packetly publishes 60 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
 
 ## Cheat sheets
 
@@ -72,6 +72,9 @@ Infrastructure references for servers, storage, databases and automation: HPE an
 - [MySQL connection and InnoDB lock investigation](https://packetly.ly/sheets/mysql-connection-and-innodb-lock-investigation/): Inspect MySQL identity, connection saturation, running sessions, active InnoDB transactions and lock dependencies.
 - [PostgreSQL session and blocking investigation](https://packetly.ly/sheets/postgresql-session-and-blocking-investigation/): Inspect database identity, connection counts, wait events, blocking relationships and long transactions using bounded SQL queries.
 - [Redis memory and latency investigation](https://packetly.ly/sheets/redis-memory-and-latency-investigation/): Compare Redis identity, memory pressure, eviction counters, client connections and slow-command evidence without scanning the keyspace.
+- [VCF 9 ESXi host root password recovery](https://packetly.ly/sheets/vcf-9-esxi-host-root-password-recovery/): Recover a managed ESXi host root account through vCenter and PowerCLI, and reconcile VCF credential management.
+- [VCF 9 ESXi monitoring and troubleshooting commands](https://packetly.ly/sheets/vcf-9-esxi-monitoring-and-troubleshooting-commands/): Inspect ESXi 9 identity, resources, networking, storage and time when investigating a VCF workload issue.
+- [VCF 9 license server deployment and registration](https://packetly.ly/sheets/vcf-9-license-server-deployment-and-registration/): Plan and verify the dedicated VCF License Server deployment and registration for VCF 9.1.
 - [Windows DHCP scope and lease investigation](https://packetly.ly/sheets/windows-dhcp-scope-and-lease-investigation/): Inspect DHCP scope capacity, leases, reservations, options and failover before changing a production scope.
 - [Windows SMB share access investigation](https://packetly.ly/sheets/windows-smb-share-access-investigation/): Separate TCP reachability, client SMB connections, share permissions, filesystem ACLs and server-side sessions.
 

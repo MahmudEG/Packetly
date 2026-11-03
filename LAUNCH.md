@@ -8,7 +8,7 @@ Facts you will need:
 | | |
 | --- | --- |
 | Site | `https://packetly.ly` |
-| Sitemap | `https://packetly.ly/sitemap.xml` (69 URLs) |
+| Sitemap | `https://packetly.ly/sitemap.xml` (72 URLs) |
 | Repo | `MahmudEG/Packetly`, Pages from `main` → `/docs` |
 | DNS host | Libyan Spider (`ns1`–`ns5.ns.ly`) |
 | Analytics | GA4 `G-QG6N52FTQC` |
@@ -38,7 +38,7 @@ property on `https://packetly.ly/` covers the whole site.
 6. **Sitemaps** → submit `sitemap.xml`.
 7. **URL Inspection** → enter `https://packetly.ly/` → **Request indexing**.
    Do the same for two or three sheets you care most about. The quota is small;
-   don't try to submit all 69.
+   don't try to submit all 72.
 
 Expect nothing for days, then partial coverage. "Discovered – currently not indexed"
 is normal for a new domain and does not mean something is broken.
