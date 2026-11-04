@@ -1,8 +1,8 @@
 """Generates the Packetly static site into docs/.
 
 guides.py holds the long-form field guides, pages.py the standalone page copy.
-docs/app.js, docs/style.css and docs/consent.js are hand-authored and are not
-written by this script; everything else under docs/ is generated.
+docs/app.js, docs/fx.js, docs/style.css and docs/consent.js are hand-authored and
+are not written by this script; everything else under docs/ is generated.
 """
 import json, pathlib, html, re
 from guides import GUIDES
@@ -86,7 +86,8 @@ GTAG = ('<script async src="https://www.googletagmanager.com/gtag/js?id=G-QG6N52
 ADS = ('<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js'
        '?client=ca-pub-4081538671702116" crossorigin="anonymous"></script>')
 ASSETS = ('<link rel="stylesheet" href="/style.css"><script defer src="/data.js"></script>'
-          '<script defer src="/app.js"></script><script defer src="/consent.js"></script>')
+          '<script defer src="/app.js"></script><script defer src="/fx.js"></script>'
+          '<script defer src="/consent.js"></script>')
 
 ORG = {'@type': 'Organization', '@id': BASE + '/#org', 'name': NAME, 'url': BASE + '/',
        'description': BLURB,
