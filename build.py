@@ -162,6 +162,9 @@ home = ('<section><h1>IT, cybersecurity and network cheat sheets</h1>'
         '<p>Every sheet lists the command, what it inspects, and how to read the output, '
         'with a step-by-step walkthrough and a link to the vendor\u2019s own documentation. '
         'All ' + str(len(data)) + ' are free, need no account, and print cleanly.</p>')
+home += ('<section class="home-group"><h2>Recently added</h2><ul>'
+         + ''.join('<li><a href="/sheets/' + e(s['id']) + '/">' + e(s['title']) + '</a> — ' + e(s['description']) + '</li>' for s in reversed(data[-5:]))
+         + '</ul></section>')
 for cat in sorted(groups):
     home += ('<div class="home-group"><h2><a href="/topics/' + SLUG[cat] + '/">'
              + e(cat) + ' cheat sheets</a></h2><ul>')
