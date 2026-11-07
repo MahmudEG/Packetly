@@ -654,3 +654,92 @@ guide('Ubiquiti UniFi USW Layer 3 discovery and adoption', 'Ubiquiti', 'Networki
   'Provide switch MAC, model, management VLAN/IP, application FQDN, inform URL without credentials, TCP 8080 test source and timestamps to the network or UniFi administrator. Avoid factory reset until ownership and an approved recovery path are established.'))
 NEW_GUIDES[-1]['kind']='Step'
 NEW_GUIDES[-1]['updated']='2026-11-03'
+
+guide('Kubernetes service endpoint troubleshooting', 'Kubernetes', 'Cloud',
+ 'Trace a Service through selectors, pod readiness, EndpointSlices and service ports.',
+ 'Kubernetes with EndpointSlice support and kubectl read access to the target namespace.',
+ 'Replace production, web, app=web and the pod name. Confirm the context and use an authorized account; these commands inspect resources without changing them.',
+ [('Kubernetes service debugging','https://kubernetes.io/docs/tasks/debug/debug-application/debug-service/'),('Kubernetes EndpointSlices','https://kubernetes.io/docs/concepts/services-networking/endpoint-slices/')], [
+ ('kubectl config current-context','Confirm the cluster context','Compare the selected context with the approved cluster inventory. Context names can be arbitrary local labels, so verify the endpoint through your organization’s inventory before interpreting production results.'),
+ ('kubectl get service web -n production -o wide','Inspect Service addresses and ports','Record the ClusterIP, service ports and selector for the affected Service. A ClusterIP being assigned does not prove that any backend is ready or that the application is listening on its target port.'),
+ ('kubectl describe service web -n production','Inspect Service selector and endpoint summary','Compare the selector, port and targetPort with the deployed application. A named target port must match the pod’s declared container port name; the summary is a starting point, not a substitute for inspecting EndpointSlices.'),
+ ('kubectl get pods -n production -l app=web -o wide --show-labels','Inspect selected pods and readiness','Use the selector actually shown by the Service rather than assuming app=web. Check labels, readiness and node placement; a Running pod can still be unready or expose the wrong application port.'),
+ ('kubectl get endpointslice -n production -l kubernetes.io/service-name=web -o yaml','Inspect EndpointSlice addresses and conditions','Compare endpoint addresses, ports and readiness conditions with the intended pods. A missing or unready endpoint narrows the investigation to selection or readiness; avoid sharing full resource output if it contains internal addresses.')],
+ ('A Service has no ready backends','Clients receive errors from a ClusterIP even though the web pods are running.',[(0,'Verify the cluster context and production namespace before inspecting resources.'),(2,'Read the Service selector and target port from the actual Service definition.'),(3,'Compare selected pod labels and readiness against the selector.'),(4,'Inspect EndpointSlices for ready addresses corresponding to those pods.')],
+ 'Illustrative findings: the Service selects app=web, but the deployed pods have app=frontend and the EndpointSlice has no ready backends.',
+ 'A selector mismatch explains the empty backend list in this example. An empty list can also reflect pod readiness or other Service configuration, so inspect those separately.',
+ 'After the workload owner corrects the selector or pod labels through the approved deployment, confirm ready EndpointSlices and test the Service from an authorized client.',
+ 'Send the namespace, Service selector, pod labels, endpoint conditions and timestamps to the application platform owner.'))
+NEW_GUIDES[-1]['updated']='2026-11-07'
+
+guide('Docker network connectivity inspection', 'Docker', 'Infrastructure',
+ 'Inspect container network membership, addressing, port publication and bounded application logs.',
+ 'Docker Engine CLI against the intended local or remote Docker daemon; network behavior differs for Docker Desktop and Linux hosts.',
+ 'Replace web and app-net with exact container and network names. Confirm the Docker context first; inspect output can contain internal addresses and configuration.',
+ [('Docker network inspect','https://docs.docker.com/reference/cli/docker/network/inspect/'),('Docker network list','https://docs.docker.com/reference/cli/docker/network/ls/'),('Docker container inspect','https://docs.docker.com/reference/cli/docker/container/inspect/'),('Docker published ports','https://docs.docker.com/reference/cli/docker/container/port/')], [
+ ('docker context show','Confirm the Docker context','Record the active context and check it against the incident environment. A similarly named container can exist on another daemon; endpoint overrides can also affect where the CLI connects.'),
+ ('docker network ls','List available Docker networks','Find the intended network name, ID and driver. A network existing on the daemon does not prove that the application containers are attached or that their services are responding.'),
+ ('docker network inspect app-net','Inspect a network and attached containers','Compare the network ID, driver, subnet and listed container endpoints with the intended deployment. Treat IP addresses as implementation details that can change when containers are recreated.'),
+ ('docker inspect --format "{{json .NetworkSettings.Networks}}" web','Inspect one container’s network attachments','Compare the exact container’s network names and addresses with the peer’s attachments. A shared network enables a possible path but does not establish application readiness or listening ports.'),
+ ('docker port web','Inspect published host ports','Check the host address and port mapped to the container. Published host ports and container-to-container ports are separate paths; a mapping does not prove that the process inside is listening.'),
+ ('docker logs --since 30m --tail 100 --timestamps web','Review a bounded application log sample','Compare connection and startup errors with the incident time. Logging drivers and retention affect what is available; redact credentials and application data before sharing any excerpts.')],
+ ('A frontend cannot reach its backend container','A frontend and backend work individually, but requests between them fail after a deployment.',[(0,'Confirm the CLI targets the daemon running the affected workload.'),(1,'List the networks and identify the expected application network.'),(2,'Inspect the network membership for the frontend and backend.'),(3,'Compare the exact attachments of the affected container with its peer.')],
+ 'Illustrative findings: the frontend is attached to app-net but the backend was recreated on another network.',
+ 'The membership mismatch is a supported explanation for the missing shared network path. Service name resolution and the backend listener still need separate verification.',
+ 'After the owner corrects the approved deployment configuration, inspect both attachments again and test the application through its normal path.',
+ 'Provide daemon context, container IDs, network IDs and sanitized error timestamps to the deployment owner.'))
+NEW_GUIDES[-1]['updated']='2026-11-07'
+
+guide('DNS record investigation with dig', 'BIND', 'Networking',
+ 'Compare DNS answers, authoritative servers, response codes and TCP fallback using dig.',
+ 'BIND 9 dig on a host with access to the intended DNS resolvers. Queries send DNS traffic.',
+ 'Replace app.example.com, example.com and 192.0.2.53 with approved names and resolvers. Compare results from the affected network; public and internal DNS can intentionally differ.',
+ [('ISC BIND dig manual','https://bind9.readthedocs.io/en/latest/manpages.html#dig-dns-lookup-utility')], [
+ ('dig app.example.com A','Query an IPv4 host record','Read the response status, answer section, TTL and responding server. NXDOMAIN and a timeout are different observations. A successful A answer does not establish application or TLS health.'),
+ ('dig app.example.com AAAA','Query the IPv6 host record','Compare any IPv6 answer with the application’s supported network path. No AAAA answer can be expected for an IPv4-only service; an answer alone does not prove IPv6 reachability.'),
+ ('dig @192.0.2.53 app.example.com A','Query a chosen resolver','Replace the documentation address with an approved DNS server and compare its response with the default resolver. Differences can result from split DNS, caches or resolver configuration.'),
+ ('dig example.com NS','Find nameservers advertised for a zone','Record the returned nameserver names and TTL, then verify authority for the actual zone with the DNS owner. An NS answer from a recursive resolver can itself be cached.'),
+ ('dig +tcp @192.0.2.53 app.example.com A','Repeat the query over TCP','Compare the TCP result with the normal query to help investigate transport filtering or truncated responses. A successful TCP query does not prove that every UDP path or application resolver works.'),
+ ('dig -x 192.0.2.25','Inspect reverse DNS for an address','Replace the documentation address with an authorized target. PTR data can be absent or independently managed and should not be assumed to match the forward record.')],
+ ('Two clients receive different service addresses','An internal application resolves to different addresses from two client networks.',[(0,'Capture the default A answer and responding resolver from each client network.'),(2,'Query the intended internal resolver explicitly and record the answer and TTL.'),(1,'Check whether an IPv6 answer changes the application path.'),(4,'Compare TCP DNS behavior if normal queries time out or are truncated.')],
+ 'Illustrative findings: one resolver returns the intended internal address while another returns a public address for the same name.',
+ 'Different answers support investigating resolver selection or split-horizon DNS. They do not by themselves establish which answer is incorrect or whether a cache is stale.',
+ 'After the DNS owner applies the approved correction, repeat queries from the affected client and verify the application by its normal hostname.',
+ 'Provide query time, client network, resolver addresses, response codes and TTLs to the DNS owner.'))
+NEW_GUIDES[-1]['updated']='2026-11-07'
+
+guide('Windows TCP listener and process investigation', 'Windows', 'IT fundamentals',
+ 'Map a TCP listener to its owning process and compare local binding with a remote connectivity test.',
+ 'Windows PowerShell with the NetTCPIP module. Some process details require elevated read privileges.',
+ 'Replace port 443 and server.example.com with the approved service. Run listener checks on the server and the TCP probe on an authorized client; the probe sends traffic.',
+ [('Microsoft Get-NetTCPConnection','https://learn.microsoft.com/en-us/powershell/module/nettcpip/get-nettcpconnection'),('Microsoft Test-NetConnection','https://learn.microsoft.com/en-us/powershell/module/nettcpip/test-netconnection')], [
+ ('Get-NetTCPConnection -State Listen','List TCP listeners','Inspect local addresses, local ports and owning PIDs. A listener on loopback is not a listener on every interface. The command is a point-in-time view and does not list UDP sockets.'),
+ ('Get-NetTCPConnection -LocalPort 443 -State Listen','Inspect the service port','Replace 443 with the intended TCP port and compare the binding with the service design. No result can mean the process is not listening at that moment or that the wrong port was inspected.'),
+ ('Get-NetTCPConnection -LocalPort 443 -State Listen | Select-Object LocalAddress,LocalPort,OwningProcess','Capture listener address and process ID','Record the exact PID and address for the incident. An address of 127.0.0.1 is local-only; an all-interface binding is still subject to host and network policy.'),
+ ('Get-Process -Id 1234','Identify the process owning the listener','Replace 1234 with the PID from the previous result. A PID can be reused after a process exits, so collect both observations close together and confirm the application owner.'),
+ ('Get-NetTCPConnection -State Established','Inspect current established TCP connections','Compare local and remote endpoints with a known healthy baseline. Existing established connections do not establish that new clients can connect or that application authentication succeeds.'),
+ ('Test-NetConnection server.example.com -Port 443 -InformationLevel Detailed','Test TCP from an affected client','Run from the client network and inspect TcpTestSucceeded, source address and interface. A successful TCP handshake does not validate HTTP, TLS certificates or user authorization.')],
+ ('A web service works locally but remote users time out','A Windows-hosted web service answers on the server itself but clients cannot connect.',[(1,'Check the expected listener on the server and record the port.'),(2,'Inspect the local bind address and PID for that listener.'),(3,'Match the PID to the expected application process and confirm that it has not restarted between observations.'),(5,'Run the same TCP port test from an authorized affected client.')],
+ 'Illustrative findings: the expected process listens only on 127.0.0.1:443, while a remote client TCP test fails.',
+ 'The loopback-only binding is a supported explanation for remote connectivity failure. Check the application’s intended exposure and firewall path before changing any setting.',
+ 'After an approved binding correction, repeat the listener and client TCP checks, then verify the normal application and TLS flow.',
+ 'Share server identity, bind address, process ID, client source and test timestamps with the application owner.'))
+NEW_GUIDES[-1]['updated']='2026-11-07'
+
+guide('TLS certificate inspection with OpenSSL', 'OpenSSL', 'Cybersecurity',
+ 'Inspect the presented TLS certificate, hostname validation and certificate expiration using OpenSSL.',
+ 'OpenSSL 3.x CLI and an approved TLS endpoint. Examples assume a POSIX shell and a PEM certificate file.',
+ 'Replace app.example.com and server.pem with the authorized hostname and certificate file. The s_client commands contact the remote service. Never share private keys or paste secrets into commands.',
+ [('OpenSSL s_client reference','https://docs.openssl.org/3.0/man1/openssl-s_client/'),('OpenSSL x509 reference','https://docs.openssl.org/3.0/man1/openssl-x509/')], [
+ ('openssl version','Identify the OpenSSL version','Record the OpenSSL release and compare supported options with the installed manual. Trust-store configuration and TLS behavior can vary across builds and platforms.'),
+ ('openssl s_client -connect app.example.com:443 -servername app.example.com -showcerts </dev/null','Inspect the server-presented certificate chain','Specify the hostname for SNI and inspect the returned certificates and handshake messages. A displayed chain is the server-provided chain, not necessarily a verified trust chain; output can include internal names.'),
+ ('openssl s_client -connect app.example.com:443 -servername app.example.com -verify_hostname app.example.com -verify_return_error </dev/null','Check hostname and certificate validation','Use the expected DNS name for SNI and hostname verification. Trust depends on the OpenSSL trust store and any explicitly configured CA files; compare it with the client environment experiencing the issue.'),
+ ('openssl x509 -in server.pem -noout -subject -issuer -dates','Inspect a saved certificate’s identity and dates','Read the subject, issuer and validity period from the public PEM certificate file. This command does not contact the server and cannot establish which certificate a load balancer is currently serving.'),
+ ('openssl x509 -in server.pem -noout -ext subjectAltName','Inspect subject alternative names','Compare the DNS name clients use with the certificate subject alternative names. Hostname matching rules and wildcard scope matter; use explicit hostname verification as well as reading the extension.'),
+ ('openssl x509 -in server.pem -checkend 604800 -noout','Check whether a certificate expires within seven days','The interval is in seconds. Use the command exit status with the output and confirm the file represents the certificate in question; this is not a complete chain or hostname validation.')],
+ ('A browser reports a certificate name mismatch','Users reach an HTTPS endpoint but the browser rejects the presented certificate.',[(0,'Record the OpenSSL version and the hostname users actually enter.'),(1,'Inspect the certificate presented with the expected SNI hostname.'),(2,'Run explicit hostname verification using the same hostname.'),(4,'Compare the public certificate subject alternative names with the requested host.')],
+ 'Illustrative findings: the server presents a certificate for old.example.com and explicit verification for app.example.com fails.',
+ 'The observed hostname mismatch explains the verification failure for this connection. It does not establish whether DNS, load-balancer selection or certificate deployment caused the wrong certificate to be presented.',
+ 'After the certificate or endpoint owner corrects the approved configuration, repeat the hostname validation and test the normal browser path with trust checks enabled.',
+ 'Provide the hostname, endpoint address, certificate issuer, validity dates and validation error to the certificate or load-balancer owner; never include private keys.'))
+NEW_GUIDES[-1]['updated']='2026-11-07'

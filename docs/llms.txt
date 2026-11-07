@@ -2,7 +2,7 @@
 
 > Free cheat sheets for IT, cybersecurity and network engineers. Inspection commands for Windows, Active Directory, Entra ID, Azure, FortiGate, Cisco, Juniper, Sophos, Ubiquiti, HPE, Dell and Linux, each with a plain-English walkthrough.
 
-Packetly publishes 62 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
+Packetly publishes 67 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
 
 ## Cheat sheets
 
@@ -15,6 +15,7 @@ Cloud references for Azure, AWS, Kubernetes and Terraform: inventory, virtual ne
 - [Azure virtual network inspection](https://packetly.ly/sheets/azure-virtual-network-inspection/): Inspect virtual networks, subnets and security group inventory.
 - [Cloud network fundamentals](https://packetly.ly/sheets/cloud-network-fundamentals/): Connect subnets, routes, security rules, and DNS into one model.
 - [Kubernetes pod crash and readiness investigation](https://packetly.ly/sheets/kubernetes-pod-crash-and-readiness-investigation/): Trace a failing pod through context, scheduling, container state, current logs, previous logs and namespace events.
+- [Kubernetes service endpoint troubleshooting](https://packetly.ly/sheets/kubernetes-service-endpoint-troubleshooting/): Trace a Service through selectors, pod readiness, EndpointSlices and service ports.
 - [Terraform workspace and state inspection](https://packetly.ly/sheets/terraform-workspace-and-state-inspection/): Verify the active workspace, provider requirements, configuration validity and recorded resources before planning infrastructure changes.
 
 ### [Cybersecurity cheat sheets](https://packetly.ly/topics/cybersecurity/)
@@ -30,6 +31,7 @@ Security inspection references for FortiGate, Sophos and Kali Linux: firewall an
 - [Kali Wireshark packet analysis](https://packetly.ly/sheets/kali-wireshark-packet-analysis/): Use display filters to inspect DNS, TCP handshakes and one lab conversation.
 - [Sophos Firewall CLI health checks](https://packetly.ly/sheets/sophos-firewall-cli-health-checks/): Gather appliance version, uptime and resource diagnostics in Device Console.
 - [Sophos Firewall traffic investigation](https://packetly.ly/sheets/sophos-firewall-traffic-investigation/): Use log filters to connect a connection failure with firewall decisions.
+- [TLS certificate inspection with OpenSSL](https://packetly.ly/sheets/tls-certificate-inspection-with-openssl/): Inspect the presented TLS certificate, hostname validation and certificate expiration using OpenSSL.
 
 ### [IT fundamentals cheat sheets](https://packetly.ly/topics/it-fundamentals/)
 
@@ -39,6 +41,7 @@ Everyday troubleshooting references for Windows and Linux hosts: addressing, DNS
 - [Linux network essentials](https://packetly.ly/sheets/linux-network-essentials/): A small toolkit for inspecting a Linux host’s network.
 - [Linux systemd service failure triage](https://packetly.ly/sheets/linux-systemd-service-failure-triage/): Connect service state, exit codes, unit configuration and journal events without hiding evidence behind a restart.
 - [Windows DNS resolution investigation](https://packetly.ly/sheets/windows-dns-resolution-investigation/): Separate resolver selection, stale cache, missing records and service reachability in a Windows DNS incident.
+- [Windows TCP listener and process investigation](https://packetly.ly/sheets/windows-tcp-listener-and-process-investigation/): Map a TCP listener to its owning process and compare local binding with a remote connectivity test.
 - [Windows network troubleshooting](https://packetly.ly/sheets/windows-network-troubleshooting/): Inspect addressing, DNS resolution and TCP reachability with PowerShell.
 - [Windows services and event logs](https://packetly.ly/sheets/windows-services-and-event-logs/): Build a focused picture of service state and recent system errors.
 - [Windows time synchronization investigation](https://packetly.ly/sheets/windows-time-synchronization-investigation/): Inspect time source, synchronization status, peer configuration and measured offset before forcing a clock change.
@@ -67,6 +70,7 @@ Infrastructure references for servers, storage, databases and automation: HPE an
 - [Dell PowerEdge hardware inventory](https://packetly.ly/sheets/dell-poweredge-hardware-inventory/): Capture firmware and hardware inventory before planning maintenance.
 - [Dell PowerEdge iDRAC health checks](https://packetly.ly/sheets/dell-poweredge-idrac-health-checks/): Read PowerEdge identity, power state and hardware event history.
 - [Docker container health and restart investigation](https://packetly.ly/sheets/docker-container-health-and-restart-investigation/): Inspect container exit state, health checks, bounded logs, resource usage and published ports during a restart incident.
+- [Docker network connectivity inspection](https://packetly.ly/sheets/docker-network-connectivity-inspection/): Inspect container network membership, addressing, port publication and bounded application logs.
 - [HPE ProLiant iLO health overview](https://packetly.ly/sheets/hpe-proliant-ilo-health-overview/): Read ProLiant health and hardware events through iLO.
 - [Linux disk space and inode investigation](https://packetly.ly/sheets/linux-disk-space-and-inode-investigation/): Distinguish exhausted bytes, exhausted inodes, mount layout and directory growth before deleting any files.
 - [MySQL connection and InnoDB lock investigation](https://packetly.ly/sheets/mysql-connection-and-innodb-lock-investigation/): Inspect MySQL identity, connection saturation, running sessions, active InnoDB transactions and lock dependencies.
@@ -88,6 +92,7 @@ Network references for Cisco, Juniper, FortiGate, HPE Aruba, Ubiquiti, curl and 
 - [Cisco interface diagnostics](https://packetly.ly/sheets/cisco-interface-diagnostics/): Find link failures and read the counters that matter.
 - [Cisco neighbor discovery](https://packetly.ly/sheets/cisco-neighbor-discovery/): Map the devices directly connected to your switch.
 - [Cisco routing basics](https://packetly.ly/sheets/cisco-routing-basics/): Read connected, static, and learned routes with confidence.
+- [DNS record investigation with dig](https://packetly.ly/sheets/dns-record-investigation-with-dig/): Compare DNS answers, authoritative servers, response codes and TCP fallback using dig.
 - [FortiGate routing & ARP](https://packetly.ly/sheets/fortigate-routing-arp/): Follow a packet from its next hop to the routing table.
 - [HPE Aruba CX switching essentials](https://packetly.ly/sheets/hpe-aruba-cx-switching-essentials/): Inspect AOS-CX switch interfaces and VLANs with platform-specific commands.
 - [HTTP and TLS troubleshooting with curl](https://packetly.ly/sheets/http-and-tls-troubleshooting-with-curl/): Separate DNS, TCP, certificate validation, redirects and HTTP status with bounded curl requests.
