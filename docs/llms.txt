@@ -2,7 +2,7 @@
 
 > Free cheat sheets for IT, cybersecurity and network engineers. Inspection commands for Windows, Active Directory, Entra ID, Azure, FortiGate, Cisco, Juniper, Sophos, Ubiquiti, HPE, Dell and Linux, each with a plain-English walkthrough.
 
-Packetly publishes 67 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
+Packetly publishes 72 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
 
 ## Cheat sheets
 
@@ -14,6 +14,7 @@ Cloud references for Azure, AWS, Kubernetes and Terraform: inventory, virtual ne
 - [Azure subscription and resource inventory](https://packetly.ly/sheets/azure-subscription-and-resource-inventory/): Check CLI context and inventory resources in the intended subscription.
 - [Azure virtual network inspection](https://packetly.ly/sheets/azure-virtual-network-inspection/): Inspect virtual networks, subnets and security group inventory.
 - [Cloud network fundamentals](https://packetly.ly/sheets/cloud-network-fundamentals/): Connect subnets, routes, security rules, and DNS into one model.
+- [Kubernetes deployment rollout investigation](https://packetly.ly/sheets/kubernetes-deployment-rollout-investigation/): Inspect deployment rollout status, ReplicaSets, pod readiness and events during a stalled release.
 - [Kubernetes pod crash and readiness investigation](https://packetly.ly/sheets/kubernetes-pod-crash-and-readiness-investigation/): Trace a failing pod through context, scheduling, container state, current logs, previous logs and namespace events.
 - [Kubernetes service endpoint troubleshooting](https://packetly.ly/sheets/kubernetes-service-endpoint-troubleshooting/): Trace a Service through selectors, pod readiness, EndpointSlices and service ports.
 - [Terraform workspace and state inspection](https://packetly.ly/sheets/terraform-workspace-and-state-inspection/): Verify the active workspace, provider requirements, configuration validity and recorded resources before planning infrastructure changes.
@@ -29,6 +30,7 @@ Security inspection references for FortiGate, Sophos and Kali Linux: firewall an
 - [Kali Burp Suite proxy basics](https://packetly.ly/sheets/kali-burp-suite-proxy-basics/): Inspect requests from a local training application with Burp’s built-in browser.
 - [Kali Nmap discovery essentials](https://packetly.ly/sheets/kali-nmap-discovery-essentials/): Discover a lab host’s exposed TCP services and interpret scan states.
 - [Kali Wireshark packet analysis](https://packetly.ly/sheets/kali-wireshark-packet-analysis/): Use display filters to inspect DNS, TCP handshakes and one lab conversation.
+- [OpenSSH client connection investigation](https://packetly.ly/sheets/openssh-client-connection-investigation/): Inspect OpenSSH client configuration, host keys and verbose connection stages without weakening host verification.
 - [Sophos Firewall CLI health checks](https://packetly.ly/sheets/sophos-firewall-cli-health-checks/): Gather appliance version, uptime and resource diagnostics in Device Console.
 - [Sophos Firewall traffic investigation](https://packetly.ly/sheets/sophos-firewall-traffic-investigation/): Use log filters to connect a connection failure with firewall decisions.
 - [TLS certificate inspection with OpenSSL](https://packetly.ly/sheets/tls-certificate-inspection-with-openssl/): Inspect the presented TLS certificate, hostname validation and certificate expiration using OpenSSL.
@@ -69,10 +71,12 @@ Infrastructure references for servers, storage, databases and automation: HPE an
 - [Dell Data Domain replication checks](https://packetly.ly/sheets/dell-data-domain-replication-checks/): Inspect replication contexts and distinguish idle replication from a stalled copy.
 - [Dell PowerEdge hardware inventory](https://packetly.ly/sheets/dell-poweredge-hardware-inventory/): Capture firmware and hardware inventory before planning maintenance.
 - [Dell PowerEdge iDRAC health checks](https://packetly.ly/sheets/dell-poweredge-idrac-health-checks/): Read PowerEdge identity, power state and hardware event history.
+- [Docker Compose service state investigation](https://packetly.ly/sheets/docker-compose-service-state-investigation/): Inspect the effective Compose service model, container state and recent service logs.
 - [Docker container health and restart investigation](https://packetly.ly/sheets/docker-container-health-and-restart-investigation/): Inspect container exit state, health checks, bounded logs, resource usage and published ports during a restart incident.
 - [Docker network connectivity inspection](https://packetly.ly/sheets/docker-network-connectivity-inspection/): Inspect container network membership, addressing, port publication and bounded application logs.
 - [HPE ProLiant iLO health overview](https://packetly.ly/sheets/hpe-proliant-ilo-health-overview/): Read ProLiant health and hardware events through iLO.
 - [Linux disk space and inode investigation](https://packetly.ly/sheets/linux-disk-space-and-inode-investigation/): Distinguish exhausted bytes, exhausted inodes, mount layout and directory growth before deleting any files.
+- [Linux memory pressure investigation](https://packetly.ly/sheets/linux-memory-pressure-investigation/): Compare available memory, swap, process usage and kernel messages when a Linux host slows down.
 - [MySQL connection and InnoDB lock investigation](https://packetly.ly/sheets/mysql-connection-and-innodb-lock-investigation/): Inspect MySQL identity, connection saturation, running sessions, active InnoDB transactions and lock dependencies.
 - [PostgreSQL session and blocking investigation](https://packetly.ly/sheets/postgresql-session-and-blocking-investigation/): Inspect database identity, connection counts, wait events, blocking relationships and long transactions using bounded SQL queries.
 - [Redis memory and latency investigation](https://packetly.ly/sheets/redis-memory-and-latency-investigation/): Compare Redis identity, memory pressure, eviction counters, client connections and slow-command evidence without scanning the keyspace.
@@ -102,6 +106,7 @@ Network references for Cisco, Juniper, FortiGate, HPE Aruba, Ubiquiti, curl and 
 - [Ubiquiti UniFi USW Layer 3 discovery and adoption](https://packetly.ly/sheets/ubiquiti-unifi-usw-layer-3-discovery-and-adoption/): Discover and adopt a UniFi USW switch when the UniFi Network application is on another subnet or site.
 - [Ubiquiti UniFi device connectivity](https://packetly.ly/sheets/ubiquiti-unifi-device-connectivity/): Follow adoption and management connectivity through the UniFi console.
 - [Ubiquiti UniFi switch port checks](https://packetly.ly/sheets/ubiquiti-unifi-switch-port-checks/): Inspect switch port state, VLAN assignment and PoE budget.
+- [Windows route selection and VPN troubleshooting](https://packetly.ly/sheets/windows-route-selection-and-vpn-troubleshooting/): Inspect route selection, interface metrics and the source path for a destination on a Windows host.
 
 ## About
 

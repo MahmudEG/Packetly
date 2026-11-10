@@ -743,3 +743,89 @@ guide('TLS certificate inspection with OpenSSL', 'OpenSSL', 'Cybersecurity',
  'After the certificate or endpoint owner corrects the approved configuration, repeat the hostname validation and test the normal browser path with trust checks enabled.',
  'Provide the hostname, endpoint address, certificate issuer, validity dates and validation error to the certificate or load-balancer owner; never include private keys.'))
 NEW_GUIDES[-1]['updated']='2026-11-07'
+
+guide('Windows route selection and VPN troubleshooting','Windows','Networking',
+ 'Inspect route selection, interface metrics and the source path for a destination on a Windows host.',
+ 'Windows 10/11 or Windows Server with NetTCPIP PowerShell module.',
+ 'Run on the affected host and replace 192.0.2.25 with the approved destination. VPN policy, route compartments and other filters can affect the observed path.',
+ [('Microsoft Get-NetRoute','https://learn.microsoft.com/en-us/powershell/module/nettcpip/get-netroute'),('Microsoft Find-NetRoute','https://learn.microsoft.com/en-us/powershell/module/nettcpip/find-netroute'),('Microsoft Test-NetConnection','https://learn.microsoft.com/en-us/powershell/module/nettcpip/test-netconnection')],[
+ ('Get-NetIPConfiguration','Inspect interface configuration','Identify active adapters, their IP addresses and gateways. VPN and physical adapters may both be present; note the interface associated with the affected traffic.'),
+ ('Get-NetRoute -AddressFamily IPv4','List IPv4 routes','Compare destination prefixes, next hops, interface indexes and route metrics. The longest matching prefix matters before comparing metrics for otherwise equivalent routes.'),
+ ('Get-NetIPInterface -AddressFamily IPv4','Inspect IPv4 interface metrics','Compare the interface metrics and connection states with the affected route. Automatic metrics and changes in VPN state can affect selection; capture output during the incident.'),
+ ('Find-NetRoute -RemoteIPAddress 192.0.2.25','Find the selected local address and route','Replace the documentation address with the actual destination. Record the selected source address, route and interface, then check the return path separately.'),
+ ('Test-NetConnection 192.0.2.25 -Port 443 -InformationLevel Detailed','Test an approved TCP service','Run from the affected host and inspect the selected source interface and TcpTestSucceeded. A TCP connection alone does not prove that TLS or the application works.')],
+ ('VPN users reach the wrong path','A user cannot connect to an internal service after enabling a VPN.',[(0,'Record active addresses and gateways with the VPN connected.'),(1,'Compare specific destination prefixes and next hops in the IPv4 route table.'),(3,'Find the route and source address selected for the actual service address.'),(4,'Test the approved service port and record the client source interface.')],
+ 'Illustrative findings: a more-specific route points to the physical adapter rather than the expected VPN interface.',
+ 'The selected route explains the observed forward-path mismatch in this example. Verify the intended VPN configuration and return route before proposing a change.',
+ 'After the VPN owner applies an approved correction, repeat the route lookup and application test from the affected host.',
+ 'Provide the destination, route prefixes, interface indexes and incident time to the network team.'))
+NEW_GUIDES[-1]['updated']='2026-11-10'
+
+guide('Kubernetes deployment rollout investigation','Kubernetes','Cloud',
+ 'Inspect deployment rollout status, ReplicaSets, pod readiness and events during a stalled release.',
+ 'kubectl and read access to Deployments, ReplicaSets, Pods and Events in the target namespace.',
+ 'Replace production, web and app=web with the real namespace, Deployment and verified selector. These commands inspect resources and do not undo a rollout.',
+ [('Kubernetes deployments','https://kubernetes.io/docs/concepts/workloads/controllers/deployment/'),('kubectl rollout status','https://kubernetes.io/docs/reference/kubectl/generated/kubectl_rollout/kubectl_rollout_status/')],[
+ ('kubectl config current-context','Confirm the selected cluster','Compare the locally configured context with the approved cluster inventory before collecting evidence; similar context names can refer to different environments.'),
+ ('kubectl get deployment web -n production -o wide','Inspect deployment replica counts','Compare desired, ready, up-to-date and available replicas with the intended rollout. A Deployment object existing does not prove all new pods are serving.'),
+ ('kubectl rollout status deployment/web -n production --watch=false','Read current rollout status','This returns the current status without an ongoing watch. If the rollout changes, repeat the command and correlate the output with Deployment conditions and event timestamps.'),
+ ('kubectl get replicasets -n production -l app=web','Compare ReplicaSet revisions','Use the actual Deployment selector, which may differ from this example. Compare desired, current and ready counts to distinguish old replicas from the newest rollout.'),
+ ('kubectl get pods -n production -l app=web -o wide','Inspect selected pod state','Review readiness, restarts and node placement for the selected pods. Running is not equivalent to ready; inspect the specific pod further when status or readiness is unexpected.'),
+ ('kubectl describe deployment web -n production','Read conditions and recent events','Compare available and progressing conditions and recent events with the rollout window. Events are temporary and can be aggregated; use centralized logs for older evidence.')],
+ ('A rollout stalls with unavailable replicas','A new application release remains partially available after deployment.',[(0,'Verify the current context and intended namespace before inspecting the deployment.'),(1,'Record desired and available replica counts during the incident.'),(3,'Compare old and new ReplicaSet counts using the verified selector.'),(4,'Inspect readiness and restart status for the pods belonging to the new revision.')],
+ 'Illustrative findings: old replicas remain ready while the new ReplicaSet has zero ready pods.',
+ 'The rollout is waiting on new replicas in this example. Pod events and logs are needed to distinguish image, configuration, scheduling or readiness failures.',
+ 'After the application owner resolves the cause, repeat the rollout status and confirm expected available replicas and a normal application request.',
+ 'Send Deployment and ReplicaSet identities, conditions and sanitized event times to the platform owner.'))
+NEW_GUIDES[-1]['updated']='2026-11-10'
+
+guide('Docker Compose service state investigation','Docker','Infrastructure',
+ 'Inspect the effective Compose service model, container state and recent service logs.',
+ 'Docker Compose v2 in a trusted project directory, connected to the intended Docker daemon.',
+ 'Use the same Compose files, project name and environment as the deployment. Configuration and logs can expose secrets; these commands do not start, stop or recreate services.',
+ [('Docker Compose config','https://docs.docker.com/reference/cli/docker/compose/config/'),('Docker Compose ps','https://docs.docker.com/reference/cli/docker/compose/ps/'),('Docker Compose logs','https://docs.docker.com/reference/cli/docker/compose/logs/')],[
+ ('docker context show','Confirm the active Docker context','Compare the context with the deployment host. Environment or command-line endpoint overrides may change the actual daemon, so confirm the approved operating context before drawing conclusions.'),
+ ('docker compose config --services','List services in the effective model','Run from the intended project and compare the resulting service names with deployment documentation. File selection, profiles and environment can change the model.'),
+ ('docker compose config --quiet','Validate the effective Compose model','This checks whether Compose can parse and resolve the model without printing it. A valid model does not prove that images, networks, credentials or application dependencies work.'),
+ ('docker compose ps --all','Inspect project container states','Compare the service name, state and exit information with the expected project. This view depends on the selected project; an empty result does not establish that no containers exist on the daemon.'),
+ ('docker compose logs --since 30m --tail 100 --timestamps web','Inspect a bounded service log window','Replace web with the affected service and correlate the first relevant error with the failure time. Logging driver and retention settings affect availability; redact secrets before sharing.')],
+ ('A Compose service exits after a configuration change','A web service exits immediately after a deployment configuration update.',[(0,'Confirm the active daemon and intended Compose project before investigation.'),(1,'List effective services using the same files and project context as the deployment.'),(3,'Capture the affected container state and exit information.'),(4,'Review the bounded service logs around the first failed start.')],
+ 'Illustrative findings: the intended project contains web, its container exits, and its logs report a missing required setting.',
+ 'A missing application setting is the leading hypothesis in this example. Compose model validation alone cannot establish that application-level settings are sufficient.',
+ 'After the owner corrects the deployment through the approved process, verify stable container state and a normal service request.',
+ 'Provide context, project, service name, exit time and a sanitized error excerpt to the application owner.'))
+NEW_GUIDES[-1]['updated']='2026-11-10'
+
+guide('Linux memory pressure investigation','Linux','Infrastructure',
+ 'Compare available memory, swap, process usage and kernel messages when a Linux host slows down.',
+ 'Linux with procps utilities and systemd journal access. Container limits can differ from host totals.',
+ 'Use authorized read access on the affected host. Commands provide point-in-time evidence and do not clear caches, kill processes or change memory limits.',
+ [('procps free manual','https://man7.org/linux/man-pages/man1/free.1.html'),('procps ps manual','https://man7.org/linux/man-pages/man1/ps.1.html'),('systemd journalctl manual','https://www.freedesktop.org/software/systemd/man/latest/journalctl.html')],[
+ ('free -h','Inspect memory and swap totals','Compare the available memory estimate and swap use with the host baseline. Low free memory by itself is not proof of pressure because the kernel also uses memory for cache.'),
+ ('cat /proc/meminfo','Read detailed kernel memory accounting','Inspect MemAvailable, SwapTotal and SwapFree alongside the host’s context. Values are point-in-time counters; compare repeated samples and monitoring rather than inferring a trend from one reading.'),
+ ('ps -eo pid,comm,rss --sort=-rss','List processes by resident memory','Compare resident set sizes and identify process owners. RSS values are not additive accounting of unique memory because shared pages can be counted in multiple processes.'),
+ ('journalctl -k --since "1 hour ago" -n 100 --no-pager','Inspect recent kernel messages','Look for memory-related events within the incident window. An absent message does not exclude prior pressure if journal permissions, retention or the selected time window hide it.'),
+ ('systemctl --failed --no-pager','List systemd units in failed state','Check for failed services around the incident. A failed unit does not by itself establish an out-of-memory cause; correlate service and kernel logs with timestamps.')],
+ ('A server slows down and a service exits','An application stops responding during a period of unusually high host memory consumption.',[(0,'Capture available memory and swap usage at the time of the incident.'),(2,'Identify the highest resident-memory processes and their owners.'),(3,'Check the kernel journal for memory-related events during the same window.'),(4,'Inspect failed unit status and correlate it with the application timeline.')],
+ 'Illustrative findings: available memory drops sharply and the kernel journal records an out-of-memory kill affecting the application.',
+ 'The kernel event supports a memory-kill diagnosis for that process. Determine whether workload growth, limits or another cause led to the pressure before changing sizing.',
+ 'After the owner applies an approved correction, monitor available memory and application stability over a comparable workload period.',
+ 'Send timed memory samples, affected process identity and relevant redacted kernel messages to the system and application owners.'))
+NEW_GUIDES[-1]['updated']='2026-11-10'
+
+guide('OpenSSH client connection investigation','OpenSSH','Cybersecurity',
+ 'Inspect OpenSSH client configuration, host keys and verbose connection stages without weakening host verification.',
+ 'OpenSSH client on a workstation with authorized access to the target host.',
+ 'Replace admin and server.example.com with your approved account and host. Connection attempts contact the server. Verify host-key fingerprints through a trusted independent channel before accepting any change.',
+ [('OpenSSH client manual','https://man.openbsd.org/ssh.1'),('OpenSSH client configuration manual','https://man.openbsd.org/ssh_config.5'),('OpenSSH ssh-keygen manual','https://man.openbsd.org/ssh-keygen.1')],[
+ ('ssh -V','Identify the client version','Record the OpenSSH client version when investigating configuration or algorithm compatibility. A version alone does not establish which algorithms the server offers.'),
+ ('ssh -G server.example.com','Inspect effective client configuration','Read the resolved host name, port, user and identity settings after client configuration is applied. This is a local configuration inspection; it does not connect or prove the destination is reachable.'),
+ ('ssh-keygen -F server.example.com','Find known-host entries','Inspect existing known_hosts matches for the target. An entry or fingerprint mismatch requires verification through an independent trusted channel; do not automatically remove the existing key.'),
+ ('ssh -vvv admin@server.example.com','Inspect a connection attempt','Review verbose connection, host-key and authentication stages to locate the failure. Logs can reveal usernames, network topology and key paths, so sanitize them before sharing.'),
+ ('ssh -o ConnectTimeout=10 admin@server.example.com','Attempt a bounded connection','Use an authorized account and expected host name. ConnectTimeout limits connection establishment and the initial handshake, not necessarily every later interactive authentication step.')],
+ ('SSH fails after a server migration','An administrator sees a host-key warning when connecting to a recently migrated server.',[(0,'Record the client version and operating environment before comparing behavior.'),(1,'Inspect the effective destination, port and user to ensure the intended host is selected.'),(2,'Find the existing known-host entry and compare its fingerprint with trusted inventory.'),(3,'If appropriate, capture the connection stage without accepting an unverified replacement key.')],
+ 'Illustrative findings: the resolved destination is correct, but its presented host key differs from the previously recorded key.',
+ 'A mismatch may be legitimate after migration or indicate an unexpected endpoint. The warning alone cannot distinguish those cases; confirm the new fingerprint out of band.',
+ 'After the administrator verifies and updates host-key trust using the approved process, reconnect with verification enabled and confirm the intended server identity.',
+ 'Provide the hostname, resolved address and independently verified fingerprints to the server owner; do not share private keys.'))
+NEW_GUIDES[-1]['updated']='2026-11-10'
