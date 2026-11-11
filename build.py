@@ -100,7 +100,7 @@ def body(main, nsheets):
             '<a href="/" class="navlink active">\u25a6 <span>All cheat sheets</span><b>' + str(nsheets) + '</b></a>'
             '<button id="saved">\u25b1 <span>Bookmarks</span><b id="savecount">0</b></button>'
             '<button id="path">\u2341 <span>Learning path</span><small>NEW</small></button></nav>'
-            '<div class="aside-label">EXPLORE BY TOPIC</div><nav id="sidecats"></nav>'
+            '<div class="aside-label">EXPLORE BY TOPIC</div><nav id="sidecats">' + ''.join('<a class="navlink" href="/topics/' + SLUG[cat] + '/">' + e(cat) + '</a>' for cat in sorted(groups)) + '</nav>'
             '<div class="aside-bottom"><div class="status"><i></i> Built for the real world</div>'
             '<p>Less tab hopping.<br>More problem solving.</p>'
             '<a href="/about/">About Packetly \u2197</a></div></aside>'
@@ -257,6 +257,7 @@ for s in data:
          'about': s['product'], 'keywords': ', '.join(
              [s['title'], s['product'], s['category'], 'cheat sheet', 'commands']),
          'proficiencyLevel': s.get('level', 'Beginner'),
+         'citation': list(dict.fromkeys([s['source']] + [ref['url'] for ref in s.get('sources', [])])),
          'image': BASE + '/og.png'},
         ORG,
         {'@type': 'BreadcrumbList', '@id': url + '#crumbs', 'itemListElement': [
