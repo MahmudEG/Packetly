@@ -761,6 +761,7 @@ guide('Windows route selection and VPN troubleshooting','Windows','Networking',
  'Provide the destination, route prefixes, interface indexes and incident time to the network team.'))
 NEW_GUIDES[-1]['updated']='2026-11-10'
 
+
 guide('Kubernetes deployment rollout investigation','Kubernetes','Cloud',
  'Inspect deployment rollout status, ReplicaSets, pod readiness and events during a stalled release.',
  'kubectl and read access to Deployments, ReplicaSets, Pods and Events in the target namespace.',
@@ -829,3 +830,89 @@ guide('OpenSSH client connection investigation','OpenSSH','Cybersecurity',
  'After the administrator verifies and updates host-key trust using the approved process, reconnect with verification enabled and confirm the intended server identity.',
  'Provide the hostname, resolved address and independently verified fingerprints to the server owner; do not share private keys.'))
 NEW_GUIDES[-1]['updated']='2026-11-10'
+
+guide('Windows firewall policy inspection','Windows','Cybersecurity',
+ 'Inspect active Windows firewall profiles, rules and port filters when investigating a blocked connection.',
+ 'Windows with the NetSecurity PowerShell module; policy visibility depends on permissions.',
+ 'Run on the affected endpoint with authorized read access. Replace the example rule display name. These commands inspect policy and do not change rules.',
+ [('Microsoft firewall profiles','https://learn.microsoft.com/en-us/powershell/module/netsecurity/get-netfirewallprofile'),('Microsoft firewall rules','https://learn.microsoft.com/en-us/powershell/module/netsecurity/get-netfirewallrule'),('Microsoft port filters','https://learn.microsoft.com/en-us/powershell/module/netsecurity/get-netfirewallportfilter')],[
+ ('Get-NetConnectionProfile','Identify network connection profiles','Record the interface and network category for the affected path. An endpoint can have multiple interfaces with different categories, so identify which one carries the incident traffic.'),
+ ('Get-NetFirewallProfile -PolicyStore ActiveStore','Inspect effective profile settings','Compare enabled state and default inbound and outbound actions for the active profile. Profile settings alone do not evaluate every rule, application filter or IPsec condition.'),
+ ('Get-NetFirewallRule -PolicyStore ActiveStore -Enabled True -Direction Inbound','List enabled inbound rules','Review relevant rule names, actions and profiles in the active policy store. A matching display name does not establish that every address, port or program filter matches the connection.'),
+ ("Get-NetFirewallRule -PolicyStore ActiveStore -DisplayName 'Example service' | Get-NetFirewallPortFilter",'Inspect ports for a selected rule','Replace the display name with the confirmed rule. Check protocol and local and remote port filters, then separately inspect address, program, service and profile conditions.'),
+ ("Get-NetFirewallRule -PolicyStore ActiveStore -DisplayName 'Example service' | Get-NetFirewallAddressFilter",'Inspect address restrictions for a selected rule','Compare allowed local and remote address ranges with the actual flow. Effective policy can include multiple rules, block rules and other conditions; this is not a complete effective-access calculation.')],
+ ('A service is reachable from one subnet only','A Windows service accepts connections from one approved subnet but not another.',[(0,'Identify the network profile on the interface carrying the affected connection.'),(1,'Review effective defaults for that profile in the active store.'),(3,'Check the relevant service rule protocol and port filter.'),(4,'Compare the rule remote address filter with both client subnets.')],
+ 'Illustrative findings: the rule covers the correct TCP port but its remote address filter includes only the working subnet.',
+ 'The address restriction is a supported explanation in this example. Other matching block rules or network controls still need consideration before changing policy.',
+ 'After the policy owner approves a scoped correction, test from both authorized subnets and inspect the active rule again.',
+ 'Provide the endpoint, interface profile, connection tuple and relevant sanitized rule filters to the security owner.'))
+NEW_GUIDES[-1]['updated']='2026-11-11'
+
+guide('Kubernetes persistent volume claim investigation','Kubernetes','Cloud',
+ 'Investigate a pending persistent volume claim using claim events, storage classes and bound volumes.',
+ 'Kubernetes cluster with kubectl read access to PVCs, pods and relevant storage resources.',
+ 'Replace production and data-web with the actual namespace and claim. Confirm cluster context and use authorized read access; these commands do not delete claims, volumes or workloads.',
+ [('Kubernetes persistent volumes','https://kubernetes.io/docs/concepts/storage/persistent-volumes/'),('Kubernetes storage classes','https://kubernetes.io/docs/concepts/storage/storage-classes/'),('kubectl describe','https://kubernetes.io/docs/reference/kubectl/generated/kubectl_describe/')],[
+ ('kubectl config current-context','Confirm the cluster context','Compare the locally named context with the authorized cluster inventory. Similar local names can refer to different environments, so establish the target before interpreting resources.'),
+ ('kubectl get pvc data-web -n production -o wide','Inspect the claim status','Record status, storage class, requested size and any bound volume. A Pending claim is a symptom; its events and binding mode provide the next clues.'),
+ ('kubectl describe pvc data-web -n production','Inspect claim details and events','Read the requested access modes, storage class and recent provisioning events. Some classes wait for a consumer to be scheduled before binding; Pending can therefore be an intentional intermediate state.'),
+ ('kubectl get storageclass','List storage classes and binding modes','Identify the claim’s named storage class and its volume binding mode. A missing default class or a different class name can lead to different provisioning behavior.'),
+ ('kubectl get pods -n production -o wide','Inspect workload scheduling','Identify the pod using the claim and inspect its scheduling state. With WaitForFirstConsumer, placement and storage topology influence provisioning; do not treat an unbound claim in isolation as a failure.'),
+ ('kubectl get pv','Inspect persistent volumes','If the claim is bound, match its volume name to the PV and compare capacity, access mode and reclaim policy. A PV object does not prove that a filesystem is mounted or the backing storage is healthy.')],
+ ('A workload is pending with an unbound claim','A new application pod waits while its data claim remains Pending.',[(0,'Confirm cluster and namespace before inspecting the affected workload.'),(1,'Capture the exact claim status and storage class name.'),(2,'Read recent claim events and requested access modes.'),(3,'Compare the storage class binding mode with the pod scheduling state.')],
+ 'Illustrative findings: the claim uses WaitForFirstConsumer and the consumer pod cannot be scheduled because no node satisfies its placement constraints.',
+ 'The claim waiting for scheduling is consistent with the configured binding mode in this example. Resolve the scheduling evidence before assuming the storage provisioner is broken.',
+ 'After the workload owner resolves the approved scheduling issue, verify the claim binds, the pod starts and the application can access its expected data.',
+ 'Provide namespace, claim name, storage class, binding mode and sanitized events to the platform and storage owners.'))
+NEW_GUIDES[-1]['updated']='2026-11-11'
+
+guide('Git branch and upstream tracking inspection','Git','IT fundamentals',
+ 'Inspect the current branch, upstream tracking and local commit differences before synchronizing a repository.',
+ 'Git in a trusted local repository. Remote-tracking information reflects the last completed fetch.',
+ 'Run in the intended checkout. These commands are read-only local inspections and do not fetch, merge, reset or push.',
+ [('Git branch manual','https://git-scm.com/docs/git-branch'),('Git rev-parse manual','https://git-scm.com/docs/git-rev-parse'),('Git rev-list manual','https://git-scm.com/docs/git-rev-list')],[
+ ('git status --short --branch','Inspect the branch and worktree','Read the branch header and file status before planning synchronization. Ahead and behind values depend on the locally stored upstream reference, which may be stale.'),
+ ('git branch -vv','Inspect local branch tracking','Compare each local branch with its configured upstream and most recent commit. Missing upstream configuration is different from an upstream branch having no new commits.'),
+ ('git branch -r','List local remote-tracking references','Review the remote-tracking names known to this checkout. This command does not contact the server and can show stale references until a separately authorized fetch or prune.'),
+ ("git rev-parse --abbrev-ref --symbolic-full-name '@{upstream}'",'Identify the current branch upstream','This resolves the configured upstream reference; it can fail for a detached HEAD or a branch without upstream tracking. The single quotes are accepted by PowerShell and POSIX shells.'),
+ ("git rev-list --left-right --count 'HEAD...@{upstream}'",'Count local and upstream-only commits','The two counts compare the local references only; fetch separately before using them as a current server comparison. Quoting protects the upstream syntax in PowerShell.')],
+ ('A branch appears ahead and behind','A developer sees unexpected divergence from the tracked branch before publishing.',[(0,'Record branch status and any uncommitted work before choosing a synchronization strategy.'),(1,'Confirm the intended upstream configured for the current branch.'),(3,'Resolve the upstream reference explicitly using the correct shell quoting.'),(4,'Compare local and upstream-only commit counts, remembering that the upstream reference can be stale.')],
+ 'Illustrative findings: the current branch tracks origin/main and the locally stored references each contain commits absent from the other.',
+ 'The local references have diverged in this example. This does not show current server state until the upstream reference is refreshed, and it does not prescribe a merge or rebase.',
+ 'After an authorized fetch and an agreed integration method, inspect the resulting history and ensure the intended changes are preserved.',
+ 'Provide branch name, upstream and commit identifiers to the repository owner without rewriting or discarding work.'))
+NEW_GUIDES[-1]['updated']='2026-11-11'
+
+guide('Linux IPv6 host path inspection','Linux','Networking',
+ 'Inspect IPv6 addresses, route selection, neighbors and listeners on a Linux host.',
+ 'Linux with iproute2 and ss. Results depend on the host network namespace.',
+ 'Run in the affected host or workload network namespace. Replace 2001:db8::25 with an authorized destination; these commands inspect local state and do not send probes.',
+ [('Linux ip-address manual','https://man7.org/linux/man-pages/man8/ip-address.8.html'),('Linux ip-route manual','https://man7.org/linux/man-pages/man8/ip-route.8.html'),('Linux ip-neighbour manual','https://man7.org/linux/man-pages/man8/ip-neighbour.8.html'),('Linux ss manual','https://man7.org/linux/man-pages/man8/ss.8.html')],[
+ ('ip -6 address show','Inspect IPv6 addresses','Compare global and link-local addresses, prefixes and address states with the intended interface. A link-local address is scoped to its link and does not establish global connectivity.'),
+ ('ip -6 route show','List IPv6 routes','Identify destination prefixes, default routes and next-hop interfaces. A route being present does not prove that the next hop or remote application is reachable.'),
+ ('ip -6 route get 2001:db8::25','Inspect route selection for a destination','Replace the documentation address with the real approved IPv6 destination. Note the selected interface, source address and next hop; check the return path and policy separately.'),
+ ('ip -6 neigh show','Inspect IPv6 neighbor state','Compare the selected directly connected next hop with its neighbor state. An absent entry can be normal before traffic; FAILED or INCOMPLETE states are clues to investigate on the local link.'),
+ ('ss -6 -ltn','List IPv6 TCP listeners','Compare local IPv6 listener addresses and ports with the intended application. IPv4-mapped behavior can depend on socket and system settings, so verify the actual service configuration.')],
+ ('An application fails only over IPv6','Clients receive an IPv6 address for a service but their IPv6 connection fails.',[(0,'Confirm the affected host has the expected IPv6 address on the intended interface.'),(1,'Inspect the IPv6 routing table for the relevant destination prefix.'),(2,'Check the selected source address, route and next hop for the service.'),(3,'Inspect neighbor state for the directly connected next hop.')],
+ 'Illustrative findings: the destination route selects the intended interface, but the next-hop neighbor remains INCOMPLETE during the incident.',
+ 'The neighbor state points toward a local-link or peer-resolution investigation in this example. It does not establish a specific switch, firewall or host fault.',
+ 'After the network owner resolves the issue, repeat the route and neighbor checks and test the approved application over IPv6.',
+ 'Provide the host namespace, interface, selected route, next-hop address and timestamped neighbor state to the network owner.'))
+NEW_GUIDES[-1]['updated']='2026-11-11'
+
+guide('Linux systemd timer troubleshooting','Linux','Infrastructure',
+ 'Inspect timer schedules, unit settings and service results when scheduled work does not run.',
+ 'Linux distributions using systemd timers; commands inspect the system manager.',
+ 'Replace backup.timer and backup.service with the actual units. Use an account permitted to read their journals. These commands do not start or change timers.',
+ [('systemctl manual','https://www.freedesktop.org/software/systemd/man/latest/systemctl.html'),('systemd.timer manual','https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html'),('journalctl manual','https://www.freedesktop.org/software/systemd/man/latest/journalctl.html')],[
+ ('systemctl list-timers --all --no-pager','List loaded timers and next runs','Compare NEXT and LAST with the expected schedule. The list includes loaded timers; absence alone does not prove no timer unit file exists on disk.'),
+ ('systemctl status backup.timer --no-pager --full','Inspect a particular timer','Check the loaded path, active state and trigger information. A timer being active does not prove its associated service completed successfully.'),
+ ('systemctl cat backup.timer','Review the timer and its drop-ins','Inspect the unit and drop-in files on disk, including scheduling directives and any Unit target. On-disk changes may differ from the manager state until configuration is reloaded.'),
+ ('systemctl status backup.service --no-pager --full','Inspect the triggered service','Compare the last result and exit status with the expected job. A successful start is not necessarily a successful backup; verify the job output and backup artifact.'),
+ ('journalctl -u backup.service --since "24 hours ago" -n 100 --no-pager','Read the service journal','Correlate the first error with the expected execution window. Journal permissions and retention affect which records appear, so no entries are not proof that nothing happened.')],
+ ('A scheduled backup is missing','The backup owner reports that the expected daily job did not produce a new backup.',[(0,'Record the timer listing and compare the next and last trigger with the schedule.'),(1,'Inspect the exact timer active state and configured target.'),(3,'Check the corresponding service result and timestamp.'),(4,'Review service journal messages from the reported job window.')],
+ 'Illustrative findings: the timer fired on schedule, but the backup service exited with an error.',
+ 'The timer fired in this example; the service failure is the next investigation. The result does not establish that older backups are restorable.',
+ 'After an approved service correction, verify the next scheduled run, inspect its result and validate the backup through the normal restore-check process.',
+ 'Provide unit names, trigger time, exit result and sanitized error messages to the backup owner.'))
+NEW_GUIDES[-1]['updated']='2026-11-11'
