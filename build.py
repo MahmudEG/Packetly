@@ -45,7 +45,7 @@ UPDATED = max(s['updated'] for s in data)
 
 # Search engine ownership verification. Paste the token only (the content="..."
 # value from the HTML tag method), then rebuild and push. Empty means no tag.
-GOOGLE_VERIFY = ''
+GOOGLE_VERIFY = 'uyA0gp5cAEzX3VMe_ldHXcZLLz-H3jNKjg9TGF1vplg'
 BING_VERIFY = ''
 
 groups = {}
