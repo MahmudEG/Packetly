@@ -126,6 +126,7 @@ def page(title, desc, path, main, extra='', robots=None, ads=True):
             '<meta name="description" content="' + e(desc) + '">'
             '<meta name="robots" content="' + r + '">'
             '<link rel="canonical" href="' + url + '">'
+            '<link rel="alternate" type="application/atom+xml" title="Packetly guide updates" href="/feed.xml">'
             '<meta name="theme-color" content="#101310">'
             + ('<meta name="google-site-verification" content="' + GOOGLE_VERIFY + '">'
                if GOOGLE_VERIFY else '')
@@ -279,6 +280,29 @@ for s in data:
         page(s['title'] + ' cheat sheet | Packetly', s['description'],
              '/sheets/' + s['id'] + '/', art,
              ld({'@context': 'https://schema.org', '@graph': graph})), encoding='utf-8')
+
+# A standards-based update feed using actual editorial dates, not build time.
+from xml.etree.ElementTree import Element, SubElement, ElementTree, register_namespace
+register_namespace('', 'http://www.w3.org/2005/Atom')
+def atom(parent, name, text=None, **attrs):
+    node = SubElement(parent, '{http://www.w3.org/2005/Atom}' + name, attrs)
+    node.text = text
+    return node
+feed = Element('{http://www.w3.org/2005/Atom}feed')
+atom(feed, 'id', BASE + '/')
+atom(feed, 'title', 'Packetly guide updates')
+atom(feed, 'link', href=BASE + '/feed.xml', rel='self')
+atom(feed, 'link', href=BASE + '/')
+atom(feed, 'updated', max(s['updated'] for s in data) + 'T00:00:00Z')
+atom(atom(feed, 'author'), 'name', 'Packetly')
+for s in sorted(data, key=lambda s: (s['updated'], s['id']), reverse=True):
+    entry = atom(feed, 'entry')
+    atom(entry, 'id', BASE + '/sheets/' + s['id'] + '/')
+    atom(entry, 'title', s['title'] + ' cheat sheet')
+    atom(entry, 'link', href=BASE + '/sheets/' + s['id'] + '/')
+    atom(entry, 'updated', s['updated'] + 'T00:00:00Z')
+    atom(entry, 'summary', s['description'])
+ElementTree(feed).write(p / 'feed.xml', encoding='utf-8', xml_declaration=True)
 
 # ==============================================================  info pages
 INFO_DESC = {
