@@ -117,7 +117,7 @@ def body(main, nsheets):
             '</footer></div><div id="toast" role="status"></div></body></html>')
 
 
-def page(title, desc, path, main, extra='', robots=None, ads=True):
+def page(title, desc, path, main, extra='', robots=None, ads=False):
     url = BASE + path
     kind = 'article' if path.startswith('/sheets/') else 'website'
     r = robots or 'index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1'
@@ -279,7 +279,7 @@ for s in data:
     (d / 'index.html').write_text(
         page(s['title'] + ' cheat sheet | Packetly', s['description'],
              '/sheets/' + s['id'] + '/', art,
-             ld({'@context': 'https://schema.org', '@graph': graph})), encoding='utf-8')
+             ld({'@context': 'https://schema.org', '@graph': graph}), ads=True), encoding='utf-8')
 
 # A standards-based update feed using actual editorial dates, not build time.
 from xml.etree.ElementTree import Element, SubElement, ElementTree, register_namespace
