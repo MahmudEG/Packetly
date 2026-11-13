@@ -2,7 +2,7 @@
 
 > Free cheat sheets for IT, cybersecurity and network engineers. Inspection commands for Windows, Active Directory, Entra ID, Azure, FortiGate, Cisco, Juniper, Sophos, Ubiquiti, HPE, Dell and Linux, each with a plain-English walkthrough.
 
-Packetly publishes 77 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
+Packetly publishes 82 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
 
 ## Cheat sheets
 
@@ -14,6 +14,7 @@ Cloud references for Azure, AWS, Kubernetes and Terraform: inventory, virtual ne
 - [Azure subscription and resource inventory](https://packetly.ly/sheets/azure-subscription-and-resource-inventory/): Check CLI context and inventory resources in the intended subscription.
 - [Azure virtual network inspection](https://packetly.ly/sheets/azure-virtual-network-inspection/): Inspect virtual networks, subnets and security group inventory.
 - [Cloud network fundamentals](https://packetly.ly/sheets/cloud-network-fundamentals/): Connect subnets, routes, security rules, and DNS into one model.
+- [Kubernetes cluster DNS service investigation](https://packetly.ly/sheets/kubernetes-cluster-dns-service-investigation/): Inspect the cluster DNS Service, EndpointSlices, DNS pods and logs when workloads cannot resolve names.
 - [Kubernetes deployment rollout investigation](https://packetly.ly/sheets/kubernetes-deployment-rollout-investigation/): Inspect deployment rollout status, ReplicaSets, pod readiness and events during a stalled release.
 - [Kubernetes persistent volume claim investigation](https://packetly.ly/sheets/kubernetes-persistent-volume-claim-investigation/): Investigate a pending persistent volume claim using claim events, storage classes and bound volumes.
 - [Kubernetes pod crash and readiness investigation](https://packetly.ly/sheets/kubernetes-pod-crash-and-readiness-investigation/): Trace a failing pod through context, scheduling, container state, current logs, previous logs and namespace events.
@@ -35,6 +36,7 @@ Security inspection references for FortiGate, Sophos and Kali Linux: firewall an
 - [Sophos Firewall CLI health checks](https://packetly.ly/sheets/sophos-firewall-cli-health-checks/): Gather appliance version, uptime and resource diagnostics in Device Console.
 - [Sophos Firewall traffic investigation](https://packetly.ly/sheets/sophos-firewall-traffic-investigation/): Use log filters to connect a connection failure with firewall decisions.
 - [TLS certificate inspection with OpenSSL](https://packetly.ly/sheets/tls-certificate-inspection-with-openssl/): Inspect the presented TLS certificate, hostname validation and certificate expiration using OpenSSL.
+- [Windows certificate store inspection](https://packetly.ly/sheets/windows-certificate-store-inspection/): Inspect certificate stores, expiration dates and thumbprints when investigating a Windows service certificate.
 - [Windows firewall policy inspection](https://packetly.ly/sheets/windows-firewall-policy-inspection/): Inspect active Windows firewall profiles, rules and port filters when investigating a blocked connection.
 
 ### [IT fundamentals cheat sheets](https://packetly.ly/topics/it-fundamentals/)
@@ -44,6 +46,7 @@ Everyday troubleshooting references for Windows and Linux hosts: addressing, DNS
 - [Git branch and upstream tracking inspection](https://packetly.ly/sheets/git-branch-and-upstream-tracking-inspection/): Inspect the current branch, upstream tracking and local commit differences before synchronizing a repository.
 - [Git working tree and merge conflict inspection](https://packetly.ly/sheets/git-working-tree-and-merge-conflict-inspection/): Separate staged, unstaged, untracked and conflicted files before choosing a commit or recovery action.
 - [Linux network essentials](https://packetly.ly/sheets/linux-network-essentials/): A small toolkit for inspecting a Linux host’s network.
+- [Linux system clock synchronization inspection](https://packetly.ly/sheets/linux-system-clock-synchronization-inspection/): Inspect system time, synchronization status and the time service on a systemd-based Linux host.
 - [Linux systemd service failure triage](https://packetly.ly/sheets/linux-systemd-service-failure-triage/): Connect service state, exit codes, unit configuration and journal events without hiding evidence behind a restart.
 - [Windows DNS resolution investigation](https://packetly.ly/sheets/windows-dns-resolution-investigation/): Separate resolver selection, stale cache, missing records and service reachability in a Windows DNS incident.
 - [Windows TCP listener and process investigation](https://packetly.ly/sheets/windows-tcp-listener-and-process-investigation/): Map a TCP listener to its owning process and compare local binding with a remote connectivity test.
@@ -55,6 +58,7 @@ Everyday troubleshooting references for Windows and Linux hosts: addressing, DNS
 
 Identity and Microsoft 365 references for Active Directory, Entra ID, Microsoft Graph and Exchange Online: users and groups, replication health, sign-in investigation, mailboxes, message tracing and Group Policy application.
 
+- [Active Directory domain controller discovery](https://packetly.ly/sheets/active-directory-domain-controller-discovery/): Inspect domain controller discovery, DNS service records and site selection from a Windows client.
 - [Active Directory replication health](https://packetly.ly/sheets/active-directory-replication-health/): Compare domain-controller replication and locate recent failures.
 - [Active Directory users and groups](https://packetly.ly/sheets/active-directory-users-and-groups/): Inspect domain identity, user status and group membership using RSAT.
 - [Entra ID devices and tenant overview](https://packetly.ly/sheets/entra-id-devices-and-tenant-overview/): Inspect tenant context, device identities and join state without changing access.
@@ -77,6 +81,7 @@ Infrastructure references for servers, storage, databases and automation: HPE an
 - [Docker Compose service state investigation](https://packetly.ly/sheets/docker-compose-service-state-investigation/): Inspect the effective Compose service model, container state and recent service logs.
 - [Docker container health and restart investigation](https://packetly.ly/sheets/docker-container-health-and-restart-investigation/): Inspect container exit state, health checks, bounded logs, resource usage and published ports during a restart incident.
 - [Docker network connectivity inspection](https://packetly.ly/sheets/docker-network-connectivity-inspection/): Inspect container network membership, addressing, port publication and bounded application logs.
+- [Docker volume mount inspection](https://packetly.ly/sheets/docker-volume-mount-inspection/): Trace a container mount to its Docker volume and inspect its driver and attachment.
 - [HPE ProLiant iLO health overview](https://packetly.ly/sheets/hpe-proliant-ilo-health-overview/): Read ProLiant health and hardware events through iLO.
 - [Linux disk space and inode investigation](https://packetly.ly/sheets/linux-disk-space-and-inode-investigation/): Distinguish exhausted bytes, exhausted inodes, mount layout and directory growth before deleting any files.
 - [Linux memory pressure investigation](https://packetly.ly/sheets/linux-memory-pressure-investigation/): Compare available memory, swap, process usage and kernel messages when a Linux host slows down.

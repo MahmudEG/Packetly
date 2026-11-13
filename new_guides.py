@@ -916,3 +916,89 @@ guide('Linux systemd timer troubleshooting','Linux','Infrastructure',
  'After an approved service correction, verify the next scheduled run, inspect its result and validate the backup through the normal restore-check process.',
  'Provide unit names, trigger time, exit result and sanitized error messages to the backup owner.'))
 NEW_GUIDES[-1]['updated']='2026-11-11'
+
+guide('Active Directory domain controller discovery','Active Directory','Identity & Microsoft 365',
+ 'Inspect domain controller discovery, DNS service records and site selection from a Windows client.',
+ 'Windows with the ActiveDirectory and DnsClient PowerShell modules. Directory visibility depends on authorization.',
+ 'Run on the affected domain-connected client and replace corp.example with the actual domain. Discovery and DNS queries contact directory services; no directory settings are changed.',
+ [('Microsoft domain controller discovery','https://learn.microsoft.com/en-us/powershell/module/activedirectory/get-addomaincontroller'),('Microsoft nltest','https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/cc731935(v=ws.11)'),('Microsoft Resolve-DnsName','https://learn.microsoft.com/en-us/powershell/module/dnsclient/resolve-dnsname')],[
+ ('Get-ADDomain','Inspect the current domain context','Record the domain DNS root and relevant controller information. The command depends on directory access and current credentials; a failure does not uniquely identify a DNS issue.'),
+ ('Get-ADDomainController -Filter *','List visible domain controllers','Compare controller names and site properties with the approved inventory. This lists directory objects visible to the account, not proof that each controller currently accepts client requests.'),
+ ("Get-ADDomainController -Discover -DomainName 'corp.example'",'Discover a domain controller','Replace the domain and record the selected controller and site returned by discovery. Client location, DNS and directory configuration can affect the result; one successful discovery does not establish replication health.'),
+ ('nltest /dsgetsite','Identify the client AD site','Run on the affected client and record the site that Windows reports. Compare it with the expected subnet-to-site mapping; an incorrect or unknown site can affect controller selection.'),
+ ("Resolve-DnsName -Name '_ldap._tcp.dc._msdcs.corp.example' -Type SRV -DnsOnly",'Inspect domain controller DNS records','Replace the domain and inspect SRV targets and ports returned by the client DNS path. An advertised record alone does not prove that a target is reachable or healthy.')],
+ ('A branch client chooses an unexpected controller','A branch workstation discovers a distant controller and experiences slow domain sign-in.',[(0,'Confirm the domain context and directory access from the affected workstation.'),(2,'Record the controller and site returned by domain controller discovery.'),(3,'Compare the reported client site with the branch network inventory.'),(4,'Inspect the domain controller SRV records returned by the client resolver.')],
+ 'Illustrative findings: the client reports an unexpected AD site and discovers a controller associated with that site.',
+ 'Site selection is a useful lead in this example; verify subnet mappings, DNS and controller availability before changing directory configuration.',
+ 'After the directory owner corrects the approved configuration, repeat discovery and verify the normal sign-in experience from the branch.',
+ 'Provide the client subnet, reported site, discovered controller and timestamped DNS results to the directory owner.'))
+NEW_GUIDES[-1]['updated']='2026-11-13'
+
+guide('Docker volume mount inspection','Docker','Infrastructure',
+ 'Trace a container mount to its Docker volume and inspect its driver and attachment.',
+ 'Docker Engine CLI with read access to the intended daemon; bind mounts and volumes are distinct mount types.',
+ 'Confirm the Docker context and replace web and app-data with the actual container and volume. Inspect output can contain internal paths and configuration; these commands do not remove data.',
+ [('Docker volume list','https://docs.docker.com/reference/cli/docker/volume/ls/'),('Docker volume inspect','https://docs.docker.com/reference/cli/docker/volume/inspect/'),('Docker volumes','https://docs.docker.com/engine/storage/volumes/'),('Docker container inspect','https://docs.docker.com/reference/cli/docker/container/inspect/')],[
+ ('docker context show','Confirm the Docker context','Compare the active context with the incident environment. A similarly named volume can exist on another daemon; check for endpoint overrides before interpreting results.'),
+ ('docker volume ls','List volumes on the daemon','Find the exact volume name and driver. Listing a volume does not prove that a particular container uses it or that its application data is current.'),
+ ('docker volume inspect app-data','Inspect the selected volume','Record the exact name, driver, scope and mountpoint. Driver behavior varies, and the daemon host mountpoint is not necessarily a path on a Docker Desktop client.'),
+ ('docker inspect --format "{{json .Mounts}}" web','Inspect container mount attachments','Compare mount type, source or volume name, destination and read-write state. Bind mounts use host paths while Docker-managed volumes are identified by volume names.'),
+ ('docker ps -a --filter volume=app-data','List containers referencing the volume','Compare container IDs and names with the expected workload. A reference does not establish that a service is healthy or that the application is writing to the expected path.')],
+ ('Application data looks empty after recreation','A newly recreated container starts, but the application displays no previous data.',[(0,'Confirm the CLI targets the intended Docker daemon.'),(1,'Identify the exact volume name expected for the application.'),(3,'Compare the recreated container mount destination and volume name with the expected configuration.'),(4,'Check which containers reference the original named volume.')],
+ 'Illustrative findings: the old container references app-data, while the replacement mounts a differently named volume.',
+ 'The mount mismatch explains why the replacement sees a different data location in this example. Do not delete either volume; verify the authoritative data and deployment configuration first.',
+ 'After the owner corrects the approved deployment, verify the mount and application data through its normal read path and backup procedures.',
+ 'Provide daemon context, container IDs, volume names and mount destinations to the application owner without sharing data contents.'))
+NEW_GUIDES[-1]['updated']='2026-11-13'
+
+guide('Kubernetes cluster DNS service investigation','Kubernetes','Cloud',
+ 'Inspect the cluster DNS Service, EndpointSlices, DNS pods and logs when workloads cannot resolve names.',
+ 'Kubernetes with kubectl read access to kube-system DNS resources. The common DNS Service is named kube-dns even when CoreDNS provides it.',
+ 'Confirm the target cluster and authorized access. Labels and deployment names can vary; check the Service selector and pod labels before filtering. Commands inspect resources and logs without changing DNS configuration.',
+ [('Kubernetes DNS debugging','https://kubernetes.io/docs/tasks/administer-cluster/dns-debugging-resolution/'),('Kubernetes DNS for services and pods','https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/')],[
+ ('kubectl config current-context','Confirm the selected cluster','Compare the local context with the approved cluster inventory. Context names are local labels and do not independently establish the target environment.'),
+ ('kubectl get service kube-dns -n kube-system -o wide','Inspect the cluster DNS Service','Record the ClusterIP, exposed ports and selector. An assigned address does not prove that the service has ready backends or that clients can reach them.'),
+ ('kubectl describe service kube-dns -n kube-system','Inspect DNS Service configuration','Review the actual selector, ports and endpoint summary. Use the selector returned by your environment rather than assuming every cluster uses the same DNS pod label.'),
+ ('kubectl get endpointslice -n kube-system -l kubernetes.io/service-name=kube-dns','Inspect DNS EndpointSlices','Compare the returned addresses and ports with the expected DNS backends. No endpoints can indicate a selector or readiness issue, but must be interpreted with the pod and Service state.'),
+ ('kubectl get pods -n kube-system -o wide','Inspect system pod readiness','Identify the actual DNS pods from their names and labels, then check readiness, restarts and node placement. A running pod is not necessarily ready or answering queries.'),
+ ('kubectl logs -n kube-system deployment/coredns --since=30m --tail=100','Review bounded CoreDNS logs','Use this only if deployment/coredns exists in your environment; otherwise select the appropriate DNS workload. Redact internal names before sharing logs and correlate with the incident time.')],
+ ('Workloads cannot resolve service names','Multiple pods report DNS timeouts while their applications remain running.',[(0,'Verify the cluster context before examining system resources.'),(1,'Confirm the kube-dns Service and its expected address and ports.'),(2,'Read the Service selector and compare it with the actual DNS pods.'),(3,'Inspect the EndpointSlices for ready backend addresses.'),(4,'Review DNS pod readiness and recent restarts in the same namespace.')],
+ 'Illustrative findings: the DNS Service exists but its EndpointSlice has no ready addresses because the selected DNS pods are unready.',
+ 'Missing ready backends can explain failed queries through the Service in this example. Pod logs and readiness events are needed to establish why the DNS pods are unready.',
+ 'After the platform owner restores the DNS workload, verify ready EndpointSlices and repeat an approved name lookup from an affected workload.',
+ 'Provide cluster, DNS Service selector, endpoint state, pod readiness and sanitized timestamps to the platform owner.'))
+NEW_GUIDES[-1]['updated']='2026-11-13'
+
+guide('Linux system clock synchronization inspection','Linux','IT fundamentals',
+ 'Inspect system time, synchronization status and the time service on a systemd-based Linux host.',
+ 'Linux running systemd; timesync-status specifically applies to systemd-timesyncd and may not apply to chrony or other time clients.',
+ 'Run on the affected host with authorized journal access. These commands inspect time and service state without changing the clock or synchronization configuration.',
+ [('systemd timedatectl','https://www.freedesktop.org/software/systemd/man/latest/timedatectl.html'),('systemd-timesyncd service','https://www.freedesktop.org/software/systemd/man/latest/systemd-timesyncd.service.html'),('systemctl manual','https://www.freedesktop.org/software/systemd/man/latest/systemctl.html')],[
+ ('timedatectl status','Inspect clock and synchronization status','Record local time, universal time, time zone and synchronization indicators. A configured time zone changes display, while synchronization concerns the underlying clock; treat them as separate checks.'),
+ ('timedatectl show','Read machine-readable clock properties','Compare the reported time zone and synchronization properties with the intended host role. Property availability varies by systemd release and the active synchronization service.'),
+ ('systemctl status systemd-timesyncd.service --no-pager --full','Inspect the timesyncd service','Use this when systemd-timesyncd is the intended client. A host may use chrony or another implementation instead, so an inactive timesyncd service is not automatically a fault.'),
+ ('timedatectl timesync-status','Inspect timesyncd synchronization details','When systemd-timesyncd is active, examine the reported server and synchronization details. This command is specific to that service and may fail or be unavailable when another client is in use.'),
+ ('journalctl -u systemd-timesyncd.service --since "24 hours ago" -n 100 --no-pager','Review recent timesyncd events','Use this only for a host using systemd-timesyncd. Correlate server or network errors with the incident; log access and retention determine what is visible.')],
+ ('A host has an incorrect clock','An application reports time-related errors on a systemd host that should use systemd-timesyncd.',[(0,'Record the clock, time zone and synchronization status.'),(2,'Confirm the intended time synchronization service and its current state.'),(3,'Inspect the selected time server and synchronization details.'),(4,'Review relevant service messages for the incident window.')],
+ 'Illustrative findings: the time zone is correct, but timesyncd is active and reports no successful synchronization with its configured server.',
+ 'The evidence supports investigating time-server reachability or configuration. An active service alone does not prove that the clock is synchronized.',
+ 'After the system owner resolves the approved time path, verify synchronization status and compare timestamps with a trusted reference.',
+ 'Provide host identity, time service, server information and sanitized journal timestamps to the system owner.'))
+NEW_GUIDES[-1]['updated']='2026-11-13'
+
+guide('Windows certificate store inspection','Windows','Cybersecurity',
+ 'Inspect certificate stores, expiration dates and thumbprints when investigating a Windows service certificate.',
+ 'PowerShell Certificate provider on Windows. Store contents and private-key permissions depend on the account and host.',
+ 'Run on the service host using authorized read access. Replace the example thumbprint with the actual public certificate identifier. These commands inspect certificates and do not export private keys or change bindings.',
+ [('Microsoft Certificate provider','https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/about/about_certificate_provider'),('Microsoft certificate store management','https://learn.microsoft.com/en-us/windows-server/identity/ad-cs/inspect-certificates-manage-certificate-stores')],[
+ (r'Get-ChildItem Cert:\LocalMachine','List machine certificate stores','Inspect available machine-level stores and choose the store used by the service. A user-level store is separate, and store presence does not prove that a service is configured to use it.'),
+ (r'Get-ChildItem Cert:\LocalMachine\My','List machine personal certificates','Review certificates in the local machine personal store. The list can include certificates for multiple services; match the thumbprint and hostname with the actual service configuration.'),
+ (r'Get-ChildItem Cert:\LocalMachine\My | Select-Object Subject,Thumbprint,NotAfter,HasPrivateKey','Inspect certificate identity and expiry','Compare subject, thumbprint, expiration and private-key presence with the intended certificate. HasPrivateKey does not establish that the service account has permission to use the key.'),
+ (r'Get-ChildItem Cert:\LocalMachine\My -ExpiringInDays 30','Find certificates nearing expiration','Review the returned certificates in context; an expiring certificate may be unused or already replaced. Confirm the service binding and complete chain before scheduling renewal work.'),
+ (r'Get-Item Cert:\LocalMachine\My\0123456789ABCDEF0123456789ABCDEF01234567 | Format-List *','Inspect one certificate by thumbprint','Replace the example thumbprint with the certificate identifier and protect the output, which can reveal internal names. This reads certificate metadata; it does not prove which certificate a remote client receives.')],
+ ('A service presents an expired certificate','A Windows-hosted service has a renewed certificate, but clients still report an expiry error.',[(0,'Identify the certificate store used by the affected service.'),(2,'Compare the old and renewed certificate thumbprints and expiration dates.'),(3,'Check the expiring certificates in the machine personal store.'),(4,'Inspect the specific public certificate metadata by its confirmed thumbprint.')],
+ 'Illustrative findings: a valid renewed certificate is present, while the service configuration still references the older expired thumbprint.',
+ 'The binding mismatch explains the reported certificate in this example. Certificate presence alone does not update a service binding or establish private-key access for the service account.',
+ 'After the service owner updates the approved binding, verify the certificate presented to a client, its hostname, chain and expiration using the normal application path.',
+ 'Provide the service name, old and new public thumbprints and expiration dates to the certificate owner; never share private-key material.'))
+NEW_GUIDES[-1]['updated']='2026-11-13'
