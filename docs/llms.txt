@@ -2,7 +2,7 @@
 
 > Free cheat sheets for IT, cybersecurity and network engineers. Inspection commands for Windows, Active Directory, Entra ID, Azure, FortiGate, Cisco, Juniper, Sophos, Ubiquiti, HPE, Dell and Linux, each with a plain-English walkthrough.
 
-Packetly publishes 82 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
+Packetly publishes 87 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
 
 ## Cheat sheets
 
@@ -14,6 +14,7 @@ Cloud references for Azure, AWS, Kubernetes and Terraform: inventory, virtual ne
 - [Azure subscription and resource inventory](https://packetly.ly/sheets/azure-subscription-and-resource-inventory/): Check CLI context and inventory resources in the intended subscription.
 - [Azure virtual network inspection](https://packetly.ly/sheets/azure-virtual-network-inspection/): Inspect virtual networks, subnets and security group inventory.
 - [Cloud network fundamentals](https://packetly.ly/sheets/cloud-network-fundamentals/): Connect subnets, routes, security rules, and DNS into one model.
+- [Kubernetes Gateway API HTTPRoute troubleshooting](https://packetly.ly/sheets/kubernetes-gateway-api-httproute-troubleshooting/): Inspect Gateway and HTTPRoute conditions, listener attachment and Service backends when HTTP traffic fails.
 - [Kubernetes cluster DNS service investigation](https://packetly.ly/sheets/kubernetes-cluster-dns-service-investigation/): Inspect the cluster DNS Service, EndpointSlices, DNS pods and logs when workloads cannot resolve names.
 - [Kubernetes deployment rollout investigation](https://packetly.ly/sheets/kubernetes-deployment-rollout-investigation/): Inspect deployment rollout status, ReplicaSets, pod readiness and events during a stalled release.
 - [Kubernetes persistent volume claim investigation](https://packetly.ly/sheets/kubernetes-persistent-volume-claim-investigation/): Investigate a pending persistent volume claim using claim events, storage classes and bound volumes.
@@ -28,6 +29,7 @@ Security inspection references for FortiGate, Sophos and Kali Linux: firewall an
 - [FortiGate CLI essentials](https://packetly.ly/sheets/fortigate-cli-essentials/): The everyday commands for finding your way around a FortiGate.
 - [FortiGate HA & system health](https://packetly.ly/sheets/fortigate-ha-system-health/): Check cluster membership and baseline appliance health.
 - [FortiGate VPN health](https://packetly.ly/sheets/fortigate-vpn-health/): Inspect IPsec tunnel health and security associations.
+- [FortiGate session clash counter investigation](https://packetly.ly/sheets/fortigate-session-clash-counter-investigation/): Investigate a rising session clash counter by comparing session statistics and routing over time.
 - [FortiGate session inspection](https://packetly.ly/sheets/fortigate-session-inspection/): Connect policy decisions with live traffic sessions.
 - [Kali Burp Suite proxy basics](https://packetly.ly/sheets/kali-burp-suite-proxy-basics/): Inspect requests from a local training application with Burp’s built-in browser.
 - [Kali Nmap discovery essentials](https://packetly.ly/sheets/kali-nmap-discovery-essentials/): Discover a lab host’s exposed TCP services and interpret scan states.
@@ -65,6 +67,7 @@ Identity and Microsoft 365 references for Active Directory, Entra ID, Microsoft 
 - [Entra ID sign-in investigation](https://packetly.ly/sheets/entra-id-sign-in-investigation/): Review recent sign-ins and distinguish authentication from policy failures.
 - [Exchange Online mailbox inspection](https://packetly.ly/sheets/exchange-online-mailbox-inspection/): Connect to Exchange Online and review mailbox identity and quotas.
 - [Exchange Online message tracing](https://packetly.ly/sheets/exchange-online-message-tracing/): Trace a recent sender and examine the events for a specific message.
+- [Microsoft Entra Conditional Access sign-in diagnosis](https://packetly.ly/sheets/microsoft-entra-conditional-access-sign-in-diagnosis/): Use sign-in logs and policy results to investigate why a Conditional Access policy blocked an application sign-in.
 - [Microsoft Graph connection and user lookup](https://packetly.ly/sheets/microsoft-graph-connection-and-user-lookup/): Connect to the correct tenant and inspect directory user records.
 - [Microsoft Graph query and paging basics](https://packetly.ly/sheets/microsoft-graph-query-and-paging-basics/): Find users with server-side filters and handle complete result sets.
 - [Windows Group Policy application investigation](https://packetly.ly/sheets/windows-group-policy-application-investigation/): Compare endpoint policy results, processing events, domain GPO inventory, OU inheritance and configured settings.
@@ -106,11 +109,13 @@ Network references for Cisco, Juniper, FortiGate, HPE Aruba, Ubiquiti, curl and 
 - [Cisco neighbor discovery](https://packetly.ly/sheets/cisco-neighbor-discovery/): Map the devices directly connected to your switch.
 - [Cisco routing basics](https://packetly.ly/sheets/cisco-routing-basics/): Read connected, static, and learned routes with confidence.
 - [DNS record investigation with dig](https://packetly.ly/sheets/dns-record-investigation-with-dig/): Compare DNS answers, authoritative servers, response codes and TCP fallback using dig.
+- [DNSSEC validation failure troubleshooting with dig](https://packetly.ly/sheets/dnssec-validation-failure-troubleshooting-with-dig/): Compare DNSSEC validation responses, delegation signer records and zone keys when a resolver returns SERVFAIL.
 - [FortiGate routing & ARP](https://packetly.ly/sheets/fortigate-routing-arp/): Follow a packet from its next hop to the routing table.
 - [HPE Aruba CX switching essentials](https://packetly.ly/sheets/hpe-aruba-cx-switching-essentials/): Inspect AOS-CX switch interfaces and VLANs with platform-specific commands.
 - [HTTP and TLS troubleshooting with curl](https://packetly.ly/sheets/http-and-tls-troubleshooting-with-curl/): Separate DNS, TCP, certificate validation, redirects and HTTP status with bounded curl requests.
 - [Juniper Junos CLI essentials](https://packetly.ly/sheets/juniper-junos-cli-essentials/): Get oriented in Junos operational mode and inspect the chassis.
 - [Juniper routes and neighbor checks](https://packetly.ly/sheets/juniper-routes-and-neighbor-checks/): Inspect routes, ARP entries and discovered neighbors in Junos.
+- [Junos EX VLAN and MAC learning investigation](https://packetly.ly/sheets/junos-ex-vlan-and-mac-learning-investigation/): Trace an access VLAN and learned MAC addresses on a Juniper EX switch using read-only operational commands.
 - [Linux IPv6 host path inspection](https://packetly.ly/sheets/linux-ipv6-host-path-inspection/): Inspect IPv6 addresses, route selection, neighbors and listeners on a Linux host.
 - [NGINX reverse proxy upstream investigation](https://packetly.ly/sheets/nginx-reverse-proxy-upstream-investigation/): Connect configuration tests, service logs, listener state and direct upstream requests during a reverse-proxy outage.
 - [Ubiquiti UniFi USW Layer 3 discovery and adoption](https://packetly.ly/sheets/ubiquiti-unifi-usw-layer-3-discovery-and-adoption/): Discover and adopt a UniFi USW switch when the UniFi Network application is on another subnet or site.

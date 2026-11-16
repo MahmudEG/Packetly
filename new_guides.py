@@ -1002,3 +1002,91 @@ guide('Windows certificate store inspection','Windows','Cybersecurity',
  'After the service owner updates the approved binding, verify the certificate presented to a client, its hostname, chain and expiration using the normal application path.',
  'Provide the service name, old and new public thumbprints and expiration dates to the certificate owner; never share private-key material.'))
 NEW_GUIDES[-1]['updated']='2026-11-13'
+
+guide('DNSSEC validation failure troubleshooting with dig','BIND','Networking',
+ 'Compare DNSSEC validation responses, delegation signer records and zone keys when a resolver returns SERVFAIL.',
+ 'BIND 9 dig and an authorized validating resolver. Public and internal DNS views can legitimately differ.',
+ 'Replace example.com, www.example.com and 192.0.2.53 with the affected zone and approved resolver. Queries send DNS traffic; the checking-disabled query is diagnostic only and must not replace validation for production applications.',
+ [('Cloudflare DNSSEC troubleshooting','https://developers.cloudflare.com/dns/dnssec/troubleshooting/'),('ISC BIND dig reference','https://bind9.readthedocs.io/en/latest/manpages.html#dig-dns-lookup-utility')],[
+ ('dig @192.0.2.53 www.example.com A +dnssec','Inspect the validating resolver response','Replace the documentation address and hostname. Record the response code, flags and answer. SERVFAIL is a general resolver failure and does not by itself prove a DNSSEC validation problem.'),
+ ('dig @192.0.2.53 www.example.com A +dnssec +cd','Compare with checking disabled','The CD flag requests that the resolver not perform DNSSEC checking for this query. If the response differs, DNSSEC validation deserves investigation; this is not proof of a particular cause and must not become the application setting.'),
+ ('dig example.com DS +dnssec','Inspect the parent delegation signer response','Query the affected zone’s DS record and identify the responding resolver. A cached response or a child-zone view can obscure the parent’s actual delegation; compare with an authoritative parent response when needed.'),
+ ('dig example.com DNSKEY +dnssec','Inspect the zone DNSKEY records','Compare the returned public keys and signatures with the DNS provider’s expected active signing information. Key tags alone are not a complete DS digest validation; coordinate a full chain check with the DNS owner.'),
+ ('dig example.com NS','Identify the zone nameservers','Record the delegation targets and compare them with the intended authoritative provider. Resolver caches, delegation changes and split DNS can make answers differ by location.')],
+ ('A domain fails only on validating resolvers','Clients report intermittent resolution failures after a DNS provider migration.',[(0,'Capture the response and resolver identity from the affected network.'),(1,'Run the checking-disabled diagnostic against the same resolver and compare response codes.'),(2,'Inspect the parent delegation signer record for the affected zone.'),(3,'Compare DNSKEY information with the intended authoritative provider.')],
+ 'Illustrative findings: validation returns SERVFAIL, the checking-disabled query returns an answer, and the DNS owner identifies an outdated parent DS record.',
+ 'The contrasting responses support investigating DNSSEC, and the independently confirmed outdated DS record explains this example. SERVFAIL or a successful CD query alone is not conclusive.',
+ 'After the DNS owner corrects the delegation through the approved process, recheck the chain and query validating resolvers after applicable caching intervals.',
+ 'Provide the domain, resolver, query times, response codes, DS and DNSKEY details to the DNS and registrar owners.'))
+NEW_GUIDES[-1]['updated']='2026-11-16'
+
+guide('FortiGate session clash counter investigation','Fortinet','Cybersecurity',
+ 'Investigate a rising session clash counter by comparing session statistics and routing over time.',
+ 'FortiOS 7.4; command availability and output depend on model, VDOM and administrator privileges.',
+ 'Use an authorized read-only administrative session in the relevant VDOM. Record two samples with timestamps; these commands do not clear sessions or change traffic.',
+ [('Fortinet session counter information','https://community.fortinet.com/fortigate-3/technical-tip-session-counter-information-99341'),('FortiOS CLI troubleshooting','https://docs.fortinet.com/document/fortigate/7.4.0/cli-troubleshooting-cheat-sheet/420966/cli-troubleshooting-cheat-sheet')],[
+ ('get system status','Record version and system context','Record the FortiOS release and device identity so the statistics and troubleshooting guidance can be interpreted against the correct system and software.'),
+ ('get system performance status','Inspect system health and uptime','Record uptime and resource pressure with the time of the sample. A large cumulative counter on a long-running device does not establish that clashes are occurring now.'),
+ ('diagnose sys session stat','Inspect session counters','Record the clash count and other available session statistics. Compare a second sample over a known interval; a nonzero cumulative value alone does not demonstrate an ongoing incident.'),
+ ('get system session status','Inspect session status','Review available session counts and protocol breakdown for context. Command output can vary by release and VDOM; session load does not by itself establish a clash cause.'),
+ ('get router info routing-table all','Review the routing table','Compare the relevant routes and interfaces with the expected traffic path. Routing output is a point-in-time view and does not by itself prove asymmetric forwarding.')],
+ ('A new application has intermittent connections','An administrator sees a nonzero clash counter while investigating intermittent application traffic.',[(0,'Identify the device, relevant VDOM and software version before collecting evidence.'),(1,'Record system uptime and the time of the first observation.'),(2,'Capture two clash counter samples and calculate the increase over the interval.'),(3,'Review session status alongside the counter and the reported failure times.'),(4,'Compare routes for both traffic directions with the documented network path.')],
+ 'Illustrative findings: the counter rises during failures and the network team finds that return traffic follows an unexpected path.',
+ 'The time correlation supports further investigation, while path evidence provides a separate lead. A clash counter alone cannot identify the responsible device or configuration.',
+ 'After the network owner corrects the confirmed path through change control, compare fresh counter samples and application results over a similar period.',
+ 'Share timestamps, sanitized counters, FortiOS version and routing observations with the firewall and network owners.'))
+NEW_GUIDES[-1]['updated']='2026-11-16'
+
+guide('Junos EX VLAN and MAC learning investigation','Juniper','Networking',
+ 'Trace an access VLAN and learned MAC addresses on a Juniper EX switch using read-only operational commands.',
+ 'Junos OS on EX switches; output and available syntax depend on platform, release and switching configuration.',
+ 'Run in operational mode with authorized read access. Inspect the relevant interfaces and VLANs without clearing the forwarding table or changing configuration.',
+ [('Juniper Ethernet switching table','https://www.juniper.net/documentation/us/en/software/junos/cli-reference/topics/ref/command/show-ethernet-switching-table-qfx-series.html'),('Juniper VLAN operational command','https://www.juniper.net/documentation/us/en/software/junos/cli-reference/topics/ref/command/show-vlans-bridging-qfx-series.html'),('Juniper switching interfaces','https://www.juniper.net/documentation/us/en/software/junos/cli-reference/topics/ref/command/show-ethernet-switching-interfaces-qfx-series.html')],[
+ ('show version','Identify the platform and release','Record the switch model and Junos version before comparing output with documentation. EX platform features and output can differ between releases.'),
+ ('show interfaces terse','Check physical and logical interface state','Find the affected interface and inspect administrative and operational state. An up interface confirms link state only; it does not establish VLAN membership or end-to-end reachability.'),
+ ('show vlans','Inspect operational VLAN membership','Find the intended VLAN and compare listed interfaces with the approved design. Tagged uplinks and untagged access ports must be interpreted in the context of the switch configuration.'),
+ ('show ethernet-switching interfaces','Inspect Ethernet switching interfaces','Compare the affected interface and uplink switching information with the expected forwarding domain. Interpret fields according to the installed Junos release and interface configuration.'),
+ ('show ethernet-switching table','Inspect learned Ethernet addresses','Look for the endpoint MAC and VLAN in the forwarding table and record its learned interface. An absent entry may reflect aging or lack of recent traffic, rather than a definite configuration fault.')],
+ ('An endpoint cannot reach its gateway','A workstation is connected to an EX access switch but cannot reach its expected gateway.',[(0,'Confirm the device model and installed Junos release before using platform guidance.'),(1,'Check the affected access interface and the upstream interface operational state.'),(2,'Compare observed VLAN membership with the documented access and uplink design.'),(3,'Review switching interface information for the access port and uplink.'),(4,'Find the endpoint MAC after authorized test traffic and compare its learned VLAN and port.')],
+ 'Illustrative findings: the workstation MAC is learned on the expected port in a VLAN that differs from the approved access design.',
+ 'The observed VLAN mismatch is a specific configuration lead in this example. The forwarding table is dynamic and must be interpreted with recent traffic and the correct VLAN.',
+ 'After the switch owner applies the approved correction, repeat the read-only checks and test connectivity through the expected gateway.',
+ 'Provide the switch model, interface, expected and observed VLAN and sanitized MAC-table evidence to the network owner.'))
+NEW_GUIDES[-1]['updated']='2026-11-16'
+
+guide('Kubernetes Gateway API HTTPRoute troubleshooting','Kubernetes','Cloud',
+ 'Inspect Gateway and HTTPRoute conditions, listener attachment and Service backends when HTTP traffic fails.',
+ 'Kubernetes cluster with Gateway API resources installed and a Gateway implementation. Resource versions and supported features vary by implementation.',
+ 'Replace production, edge, web and web-route with your resources. Use authorized read access to the relevant namespaces. These commands do not modify routes or workloads.',
+ [('Gateway API troubleshooting','https://gateway-api.sigs.k8s.io/docs/concepts/troubleshooting/'),('Gateway API HTTPRoute','https://gateway-api.sigs.k8s.io/reference/api-types/httproute/'),('Kubernetes EndpointSlices','https://kubernetes.io/docs/concepts/services-networking/endpoint-slices/')],[
+ ('kubectl config current-context','Confirm the cluster context','Compare the local context with the approved cluster inventory. A similarly named context can point to another environment, so establish the target before interpreting routing resources.'),
+ ('kubectl get gatewayclass','Inspect available GatewayClasses','Record the class used by the Gateway and its accepted condition. An accepted class alone does not prove that a particular listener or HTTPRoute is programmed or serving requests.'),
+ ('kubectl describe gateway edge -n production','Inspect Gateway listeners and status','Read listener ports, allowed route namespaces, addresses and status conditions. Compare observed generation and condition messages with the current resource specification.'),
+ ('kubectl describe httproute web-route -n production','Inspect route attachment and references','Read parent status, Accepted and ResolvedRefs conditions and their reasons. A route can be accepted by one parent but not another; check the relevant controller and parent entry.'),
+ ('kubectl get service web -n production -o wide','Inspect the backend Service','Compare the HTTPRoute backend reference and port with the actual Service. A valid reference does not establish that the backend has ready endpoints or that the application responds.'),
+ ('kubectl get endpointslice -n production -l kubernetes.io/service-name=web','Inspect backend EndpointSlices','Compare backend addresses and ports with the intended Service and pod readiness. An empty or unready endpoint set is a separate problem from route acceptance.')],
+ ('An HTTPRoute is accepted but requests fail','A new Gateway API route appears accepted, but clients receive backend errors.',[(0,'Confirm the intended cluster and namespace before examining resources.'),(2,'Check the intended Gateway listener and its current conditions.'),(3,'Inspect the route parent entry and resolved reference conditions.'),(4,'Compare the configured backend reference with the actual Service.'),(5,'Inspect the backend EndpointSlices for ready addresses.')],
+ 'Illustrative findings: the route is accepted and references resolve, but the backend Service has no ready endpoints.',
+ 'The empty backend set supports an application or Service readiness investigation. Accepted route status alone does not establish that requests can reach a healthy backend.',
+ 'After the workload owner restores ready backends, repeat the conditions and EndpointSlice checks and test the authorized HTTP route.',
+ 'Provide cluster, Gateway and route names, relevant condition reasons and sanitized backend state to the platform owner.'))
+NEW_GUIDES[-1]['updated']='2026-11-16'
+
+guide('Microsoft Entra Conditional Access sign-in diagnosis','Microsoft','Identity & Microsoft 365',
+ 'Use sign-in logs and policy results to investigate why a Conditional Access policy blocked an application sign-in.',
+ 'Microsoft Entra admin center; access to logs, policy details and features depends on administrative roles, licensing and retention.',
+ 'These are portal procedures rather than commands. Use an authorized administrator account and handle sign-in details as sensitive information. Do not disable a policy to make the test pass.',
+ [('Troubleshoot Conditional Access','https://learn.microsoft.com/en-us/entra/identity/conditional-access/troubleshoot-conditional-access'),('Conditional Access What If tool','https://learn.microsoft.com/en-us/entra/identity/conditional-access/what-if-tool')],[
+ ('Find the affected sign-in','Open Entra sign-in logs and filter by user and time','Find the specific failed event using the user, application and approximate time. Account for time zone and retention; multiple retries can have different policy outcomes.'),
+ ('Inspect the event details','Open the event and review its status and identifiers','Record the error, application, timestamp, correlation ID and sign-in context. Protect personal and device details when sharing the evidence with other teams.'),
+ ('Review Conditional Access results','Open the Conditional Access tab for that event','Identify applied policies and inspect their reported results, including report-only results where available. A policy in report-only mode does not itself enforce a block.'),
+ ('Compare the device and sign-in context','Inspect the relevant event details and policy requirements','Compare device state, application and other recorded conditions with the policy requirements. Missing or unexpected context can explain why a condition or grant control was evaluated differently than expected.'),
+ ('Evaluate a proposed scenario','Use the Conditional Access What If tool with the relevant scenario','Enter the known user and conditions and inspect matching policies. This is a simulation, not proof of the original event outcome; the recorded sign-in remains the primary evidence.'),
+ ('Validate an approved correction','After the owner makes an authorized change, inspect a fresh sign-in','Have the user retry through the normal application flow, then inspect the new event and policy results. Confirm the intended control still applies rather than relying solely on successful access.')],
+ ('A managed user cannot access an application','A user reports that a normally available cloud application suddenly blocks a sign-in.',[(0,'Find the exact failed event by user, application and approximate time.'),(1,'Record its status and correlation identifier for a controlled investigation.'),(2,'Inspect the Conditional Access results for the policy and grant control involved.'),(3,'Compare the recorded device information with the relevant policy requirements.'),(4,'Use What If as a supplemental test with the known scenario details.')],
+ 'Illustrative findings: the event shows a device compliance grant was not satisfied, and the device team confirms that the device has fallen out of compliance.',
+ 'The event and independent device evidence identify the relevant control and a specific remediation lead; a policy match in a simulation alone would not establish the original failure.',
+ 'After the device owner restores compliance, inspect a new sign-in and confirm the expected policy is enforced and satisfied.',
+ 'Share the correlation ID, timestamp, policy name and sanitized device context with the identity and device administrators.'))
+NEW_GUIDES[-1]['updated']='2026-11-16'
+NEW_GUIDES[-1]['kind']='Step'
