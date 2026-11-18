@@ -2,7 +2,7 @@
 
 > Free cheat sheets for IT, cybersecurity and network engineers. Inspection commands for Windows, Active Directory, Entra ID, Azure, FortiGate, Cisco, Juniper, Sophos, Ubiquiti, HPE, Dell and Linux, each with a plain-English walkthrough.
 
-Packetly publishes 87 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
+Packetly publishes 92 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
 
 ## Cheat sheets
 
@@ -14,6 +14,7 @@ Cloud references for Azure, AWS, Kubernetes and Terraform: inventory, virtual ne
 - [Azure subscription and resource inventory](https://packetly.ly/sheets/azure-subscription-and-resource-inventory/): Check CLI context and inventory resources in the intended subscription.
 - [Azure virtual network inspection](https://packetly.ly/sheets/azure-virtual-network-inspection/): Inspect virtual networks, subnets and security group inventory.
 - [Cloud network fundamentals](https://packetly.ly/sheets/cloud-network-fundamentals/): Connect subnets, routes, security rules, and DNS into one model.
+- [Cloudflare 522 origin timeout investigation](https://packetly.ly/sheets/cloudflare-522-origin-timeout-investigation/): Investigate Cloudflare 522 origin connection timeouts using response headers and origin-side evidence.
 - [Kubernetes Gateway API HTTPRoute troubleshooting](https://packetly.ly/sheets/kubernetes-gateway-api-httproute-troubleshooting/): Inspect Gateway and HTTPRoute conditions, listener attachment and Service backends when HTTP traffic fails.
 - [Kubernetes cluster DNS service investigation](https://packetly.ly/sheets/kubernetes-cluster-dns-service-investigation/): Inspect the cluster DNS Service, EndpointSlices, DNS pods and logs when workloads cannot resolve names.
 - [Kubernetes deployment rollout investigation](https://packetly.ly/sheets/kubernetes-deployment-rollout-investigation/): Inspect deployment rollout status, ReplicaSets, pod readiness and events during a stalled release.
@@ -91,6 +92,8 @@ Infrastructure references for servers, storage, databases and automation: HPE an
 - [Linux systemd timer troubleshooting](https://packetly.ly/sheets/linux-systemd-timer-troubleshooting/): Inspect timer schedules, unit settings and service results when scheduled work does not run.
 - [MySQL connection and InnoDB lock investigation](https://packetly.ly/sheets/mysql-connection-and-innodb-lock-investigation/): Inspect MySQL identity, connection saturation, running sessions, active InnoDB transactions and lock dependencies.
 - [PostgreSQL session and blocking investigation](https://packetly.ly/sheets/postgresql-session-and-blocking-investigation/): Inspect database identity, connection counts, wait events, blocking relationships and long transactions using bounded SQL queries.
+- [Prometheus alert pending or missing notification investigation](https://packetly.ly/sheets/prometheus-alert-pending-or-missing-notification-investigation/): Trace an alert from rule evaluation through pending and firing states to Alertmanager notification routing.
+- [Proxmox Backup Server verification failure investigation](https://packetly.ly/sheets/proxmox-backup-server-verification-failure-investigation/): Investigate a failed backup verification using datastore tasks and snapshot status before planning recovery.
 - [Redis memory and latency investigation](https://packetly.ly/sheets/redis-memory-and-latency-investigation/): Compare Redis identity, memory pressure, eviction counters, client connections and slow-command evidence without scanning the keyspace.
 - [VCF 9 ESXi host root password recovery](https://packetly.ly/sheets/vcf-9-esxi-host-root-password-recovery/): Recover a managed ESXi host root account through vCenter and PowerCLI, and reconcile VCF credential management.
 - [VCF 9 ESXi monitoring and troubleshooting commands](https://packetly.ly/sheets/vcf-9-esxi-monitoring-and-troubleshooting-commands/): Inspect ESXi 9 identity, resources, networking, storage and time when investigating a VCF workload issue.
@@ -118,10 +121,12 @@ Network references for Cisco, Juniper, FortiGate, HPE Aruba, Ubiquiti, curl and 
 - [Junos EX VLAN and MAC learning investigation](https://packetly.ly/sheets/junos-ex-vlan-and-mac-learning-investigation/): Trace an access VLAN and learned MAC addresses on a Juniper EX switch using read-only operational commands.
 - [Linux IPv6 host path inspection](https://packetly.ly/sheets/linux-ipv6-host-path-inspection/): Inspect IPv6 addresses, route selection, neighbors and listeners on a Linux host.
 - [NGINX reverse proxy upstream investigation](https://packetly.ly/sheets/nginx-reverse-proxy-upstream-investigation/): Connect configuration tests, service logs, listener state and direct upstream requests during a reverse-proxy outage.
+- [Tailscale direct connection and relay troubleshooting](https://packetly.ly/sheets/tailscale-direct-connection-and-relay-troubleshooting/): Inspect tailnet peer connectivity and compare direct and relayed paths when transfers are slow.
 - [Ubiquiti UniFi USW Layer 3 discovery and adoption](https://packetly.ly/sheets/ubiquiti-unifi-usw-layer-3-discovery-and-adoption/): Discover and adopt a UniFi USW switch when the UniFi Network application is on another subnet or site.
 - [Ubiquiti UniFi device connectivity](https://packetly.ly/sheets/ubiquiti-unifi-device-connectivity/): Follow adoption and management connectivity through the UniFi console.
 - [Ubiquiti UniFi switch port checks](https://packetly.ly/sheets/ubiquiti-unifi-switch-port-checks/): Inspect switch port state, VLAN assignment and PoE budget.
 - [Windows route selection and VPN troubleshooting](https://packetly.ly/sheets/windows-route-selection-and-vpn-troubleshooting/): Inspect route selection, interface metrics and the source path for a destination on a Windows host.
+- [WireGuard handshake and Linux route investigation](https://packetly.ly/sheets/wireguard-handshake-and-linux-route-investigation/): Compare WireGuard peer handshake and transfer counters with Linux routing when a tunnel cannot reach its destination.
 
 ## About
 

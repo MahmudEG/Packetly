@@ -591,6 +591,93 @@ guide('VCF 9 license server deployment and registration', 'VMware VCF', 'Infrast
  ('License allocation fails after a 9.1 upgrade','VCF Operations reports a usage deadline and its License Servers view has no deployed appliance.',[(0,'Confirm that this environment is actually VCF 9.1 and record its entitlement status.'),(1,'Inspect the License Servers view and determine whether an appliance is missing or merely disconnected.'),(2,'Complete the exact release-specific deployment prerequisites with the infrastructure owner.'),(3,'Deploy the required components through the documented VCF upgrade workflow, then register both components.')],
  'Example: VCF Operations 9.1 shows no License Server and warns that a usage report is overdue.', 'A missing appliance is a documented cause of licensing failure in VCF 9.1. Verify connectivity and registration separately when a License Server already exists.', 'Confirm the server appears as registered, report usage using the approved method, and verify active allocations and host licensing state.', 'Escalate entitlement, deployment or registration errors with the VCF version, task ID and sanitized logs. For offline sites follow Broadcom disconnected licensing documentation.'))
 NEW_GUIDES[-1]['kind']='Step'
+
+guide('Tailscale direct connection and relay troubleshooting','Tailscale','Networking',
+ 'Inspect tailnet peer connectivity and compare direct and relayed paths when transfers are slow.',
+ 'Tailscale client on Linux; command output and peer relay support depend on client version and tailnet configuration.',
+ 'Use authorized endpoints and replace server.example with a tailnet device name. Network tests send traffic; output can contain sensitive addresses and hostnames.',
+ [('Tailscale poor performance troubleshooting','https://tailscale.com/docs/reference/troubleshooting/poor-performance-tailnet'),('Tailscale device connectivity','https://tailscale.com/docs/reference/device-connectivity')],[
+ ('tailscale version','Identify the client version','Record the client version on both devices before interpreting differences in supported features or comparing results with the current vendor documentation.'),
+ ('tailscale status','Inspect peers and connection paths','Find the intended peer and note whether the active path is direct or relayed. A relay is a supported fallback and is not by itself evidence of a failed tunnel.'),
+ ('tailscale ping server.example','Test the peer path','Replace the example with the authorized peer name. The ping can initially use a relay before a direct path is established; note each reported result and timestamp.'),
+ ('tailscale netcheck','Inspect network traversal capabilities','Record UDP availability, observed mapping behavior and relay information. Results describe the tested endpoint and network at that time and cannot alone identify the blocking device.'),
+ ('tailscale status --json','Inspect structured peer status','Review the structured status after the ping and compare available peer fields. This output can reveal sensitive device and network information and must be handled accordingly.')],
+ ('A remote transfer is unexpectedly slow','A team notices that transfers to an authorized tailnet server are slower on office Wi-Fi.',[(0,'Record client versions and the affected devices before collecting network evidence.'),(1,'Inspect the peer entry and record its current connection path.'),(2,'Send a test ping to the approved peer and observe whether the reported path changes.'),(3,'Collect netcheck output at the affected endpoint and compare it with a working network.')],
+ 'Illustrative findings: the office client remains on a relay and netcheck reports that UDP is unavailable, while the comparison network permits UDP.',
+ 'The observations identify a useful network-policy lead, but neither a relay path nor a single netcheck proves which firewall or device is responsible.',
+ 'After an approved network change, repeat the same tests from both networks and compare the path and application performance.',
+ 'Share sanitized client versions, timestamps, peer path and netcheck results with the network and tailnet administrators.'))
+NEW_GUIDES[-1]['updated']='2026-11-18'
+
+guide('WireGuard handshake and Linux route investigation','WireGuard','Networking',
+ 'Compare WireGuard peer handshake and transfer counters with Linux routing when a tunnel cannot reach its destination.',
+ 'Linux with wireguard-tools and iproute2; commands require appropriate permissions and an existing authorized interface.',
+ 'Replace wg0 and 10.20.0.10 with the approved interface and remote address. Diagnostic traffic reaches the destination; do not share private keys or full configuration files.',
+ [('WireGuard quick start','https://www.wireguard.com/quickstart/'),('WireGuard overview','https://www.wireguard.com/')],[
+ ('sudo wg show wg0','Inspect peer handshake and counters','Record the peer endpoint, latest handshake, allowed IPs and transfer counters. A recent handshake establishes key exchange but does not prove that application traffic is routed successfully.'),
+ ('ip -brief address show dev wg0','Inspect the tunnel interface address','Confirm that the named interface exists and compare its assigned addresses and state with the approved design. Interface state alone does not prove remote reachability.'),
+ ('ip route get 10.20.0.10','Inspect the Linux route decision','Replace the address with the authorized target and check the selected interface and source. Policy routing and the application network namespace can produce different decisions.'),
+ ('ping -c 3 10.20.0.10','Generate an authorized connectivity test','Send a small test to the approved destination and record the results. ICMP can be filtered, so a failed ping does not conclusively prove that all application traffic fails.'),
+ ('sudo wg show wg0 transfer','Compare peer counters after testing','Recheck peer byte counters after the test. Changes support that some encrypted traffic was exchanged but do not establish that the intended application received it.')],
+ ('A tunnel handshakes but a service is unreachable','A Linux client reports a recent handshake but cannot reach a remote internal service.',[(0,'Record the current handshake and transfer counters for the relevant peer.'),(1,'Confirm the expected tunnel interface and assigned address are present.'),(2,'Check the route selected for the specific remote service address.'),(3,'Send authorized test traffic and compare the resulting WireGuard counters.')],
+ 'Illustrative findings: the peer has a recent handshake, but the target route selects the ordinary LAN interface instead of the tunnel.',
+ 'The observed route mismatch is a concrete lead. Handshake success confirms neither the selected application route nor the return path.',
+ 'After the network owner corrects the approved routing configuration, repeat the route lookup and test the actual service.',
+ 'Share sanitized route output, timestamps and handshake and counter observations with the VPN and network owners.'))
+NEW_GUIDES[-1]['updated']='2026-11-18'
+
+guide('Cloudflare 522 origin timeout investigation','Cloudflare','Cloud',
+ 'Investigate Cloudflare 522 origin connection timeouts using response headers and origin-side evidence.',
+ 'Cloudflare proxied HTTP or HTTPS application with access to the zone and origin service; this does not cover Spectrum-specific status semantics.',
+ 'Replace example.com with an authorized hostname. Commands send HTTPS requests; inspect origin configuration only with the owner and never expose an origin address publicly.',
+ [('Cloudflare error 522','https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-522/'),('Cloudflare error diagnostic headers','https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-error-headers/')],[
+ ('curl -sS -D - -o /dev/null https://example.com/','Capture the response headers','Run against the affected authorized hostname and record the HTTP status, timestamp and any Cloudflare Ray ID. Protect cookies or other sensitive headers if your environment returns them.'),
+ ('curl -sS -o /dev/null -w "%{http_code} %{time_connect} %{time_total}\\n" https://example.com/','Measure an edge request','Record the response code and timings from the client to Cloudflare. These client-side timings do not directly measure the connection from Cloudflare to the origin.'),
+ ('ss -ltn','Inspect origin listening sockets','On the authorized Linux origin, verify that the intended service is listening on the expected address and port. A listening socket does not establish that Cloudflare can reach it.'),
+ ('systemctl status nginx --no-pager','Inspect the origin service status','On an NGINX system, check the service state and recent messages; substitute the actual service name where appropriate. A running service can still be overloaded or unreachable.'),
+ ('journalctl -u nginx --since "30 minutes ago" --no-pager','Review recent service logs','On an NGINX system with journal logging, compare relevant timestamps with the incident. Missing origin logs do not exclude a network or firewall drop before requests arrive.')],
+ ('A proxied site intermittently returns 522','Visitors report intermittent Cloudflare 522 errors while the origin administrator sees an active web service.',[(0,'Capture the failing status, time and Ray ID from an authorized client.'),(1,'Record a repeat request and client-side timing without treating it as an origin latency measurement.'),(2,'Check whether the origin is listening on its configured address and port.'),(3,'Compare service state and origin logs with the incident window.')],
+ 'Illustrative findings: the service is listening, while the network team identifies an origin firewall rule dropping some Cloudflare source traffic.',
+ 'The firewall finding explains this example. A running origin and a 522 response alone do not identify whether routing, filtering or origin overload caused the timeout.',
+ 'After the owner applies an approved correction, test through Cloudflare and check that the error rate returns to baseline.',
+ 'Provide the hostname, timestamps, Ray IDs and sanitized origin and firewall evidence to the hosting and network teams.'))
+NEW_GUIDES[-1]['updated']='2026-11-18'
+
+guide('Proxmox Backup Server verification failure investigation','Proxmox','Infrastructure',
+ 'Investigate a failed backup verification using datastore tasks and snapshot status before planning recovery.',
+ 'Proxmox Backup Server 4.x web interface; labels and access depend on version and permissions.',
+ 'This is a read-only review procedure. Verification and restore jobs consume resources and must follow the backup owner’s approved maintenance and recovery process.',
+ [('Proxmox Backup Server verification','https://pbs.proxmox.com/docs/maintenance.html#verification'),('Proxmox Backup Server restore','https://pbs.proxmox.com/docs/backup-client.html')],[
+ ('Locate the failed verification task','Open the task history for the affected datastore','Identify the verification job and record its time, result and datastore. A failed task can affect one snapshot or several, so inspect its actual scope.'),
+ ('Read the task log','Open the failed task and inspect the detailed log','Record affected snapshot identifiers and error messages. Preserve the complete log for the backup owner and avoid publishing internal hostnames or repository details.'),
+ ('Inspect snapshot verification status','Open the datastore content and locate the affected snapshots','Compare snapshot dates and verification results. A successful backup task and a successful verification are separate observations with different meanings.'),
+ ('Compare related storage health','Review datastore capacity and storage alerts with the storage owner','Correlate the task time with available capacity, hardware or filesystem alerts. A storage warning is a lead, not proof that every backup is corrupt.'),
+ ('Plan a recovery test','Identify an approved isolated restore target and recovery point','Coordinate a test restore with the recovery owner. Verification checks backup data, but a successful verification alone does not prove that the application can be recovered and operated.')],
+ ('A nightly backup verification reports an error','A backup operator sees a failed verification task for a critical virtual machine backup.',[(0,'Identify the datastore and failed verification task in the task history.'),(1,'Read the complete task log and record the affected snapshot identifiers.'),(2,'Compare the verification state and dates of the affected and neighboring snapshots.'),(3,'Correlate storage health alerts with the time of the verification failure.'),(4,'Ask the recovery owner to select an isolated test target and a suitable recovery point.')],
+ 'Illustrative findings: verification identifies an unreadable chunk for one snapshot, and storage monitoring reports an error for the same datastore.',
+ 'The task log identifies a specific affected recovery point and the storage alert provides a separate investigation lead. Neither observation proves the status of every snapshot.',
+ 'After storage remediation, follow the owner’s verification and isolated restore procedures and document the outcome and recovery point.',
+ 'Share the task log, affected snapshots and storage alerts with the backup and storage teams without exposing credentials.'))
+NEW_GUIDES[-1]['updated']='2026-11-18'
+NEW_GUIDES[-1]['kind']='Step'
+
+guide('Prometheus alert pending or missing notification investigation','Prometheus','Infrastructure',
+ 'Trace an alert from rule evaluation through pending and firing states to Alertmanager notification routing.',
+ 'Prometheus and Alertmanager with authorized access to their interfaces; configured intervals and version-specific interfaces may differ.',
+ 'These are inspection procedures and PromQL expressions, not shell commands. Do not silence alerts or change routing without an approved operational process.',
+ [('Prometheus alerting rules','https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/'),('Alertmanager concepts','https://prometheus.io/docs/alerting/latest/alertmanager/')],[
+ ('Inspect the alert rule','Open Prometheus rules and find the affected alert','Record the expression, labels, evaluation interval and any for duration. An alert remains pending until its expression remains active for the configured duration.'),
+ ('Check the current alert state','Open the Prometheus Alerts page and inspect the matching label set','Distinguish inactive, pending and firing states for the actual instance. Different label sets can have different alert states even under the same rule name.'),
+ ('Evaluate the rule expression','Run the rule expression in the Prometheus expression browser','Compare the result and labels with the intended target and time. A missing series, threshold mismatch or changing labels can affect the rule without proving why a notification is absent.'),
+ ('Inspect firing alerts in Alertmanager','Open Alertmanager and find the relevant firing alert and labels','If Prometheus shows firing, verify that Alertmanager receives the matching alert. Confirm that you are inspecting the correct Prometheus and Alertmanager instances.'),
+ ('Review routing and suppression','Inspect matching receiver, group timing, silences and inhibition','Compare alert labels with the routing tree and active silences or inhibition. Notification grouping and delays can explain timing, while delivery failures require receiver-side evidence.')],
+ ('An operator expects an alert notification','An application is above its configured latency threshold, but the on-call team has not received a notification.',[(0,'Find the alert rule and record its expression and configured for duration.'),(1,'Inspect the relevant alert instance and its current pending or firing state.'),(2,'Evaluate the expression and compare the returned labels with the expected target.'),(3,'If firing, locate the matching alert in the correct Alertmanager instance.'),(4,'Inspect the matched routing and any applicable grouping or suppression.')],
+ 'Illustrative findings: the expression has only been continuously active for three minutes and the rule has a ten-minute for duration.',
+ 'The alert is still pending under the configured rule in this example. A pending alert is not evidence of a notification delivery failure.',
+ 'If the condition persists, verify that the same label set becomes firing after the configured duration and trace its notification path.',
+ 'Provide the rule name, label set, evaluation times and sanitized Alertmanager observations to the monitoring owner.'))
+NEW_GUIDES[-1]['updated']='2026-11-18'
+NEW_GUIDES[-1]['kind']='Step'
 NEW_GUIDES[-1]['updated']='2026-11-03'
 
 guide('VCF 9 ESXi monitoring and troubleshooting commands', 'VMware VCF', 'Infrastructure',
