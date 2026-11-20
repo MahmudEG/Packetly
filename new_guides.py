@@ -1177,3 +1177,91 @@ guide('Microsoft Entra Conditional Access sign-in diagnosis','Microsoft','Identi
  'Share the correlation ID, timestamp, policy name and sanitized device context with the identity and device administrators.'))
 NEW_GUIDES[-1]['updated']='2026-11-16'
 NEW_GUIDES[-1]['kind']='Step'
+
+guide('Proxmox VE cluster quorum investigation','Proxmox','Infrastructure',
+ 'Inspect cluster membership and Corosync health when a Proxmox VE cluster loses quorum.',
+ 'Proxmox VE 8 or 9 cluster; output depends on node, release and QDevice configuration.',
+ 'Run read-only commands on authorized cluster nodes. Do not alter expected votes or cluster configuration during diagnosis; compare node views before arranging an approved recovery.',
+ [('Proxmox cluster manager documentation','https://pve.proxmox.com/pve-docs/pvecm.1.html'),('Proxmox VE administration guide','https://pve.proxmox.com/pve-docs/pve-admin-guide.pdf')],[
+ ('pveversion','Identify the Proxmox release','Record the installed release and node identity before comparing cluster output with release-specific documentation and the approved configuration.'),
+ ('pvecm status','Inspect quorum and votes','Record the current quorum status, expected votes and membership from this node. A partition may show a different view on another node; never infer its state from one node alone.'),
+ ('pvecm nodes','Inspect the node membership view','Compare node IDs and vote counts with the documented membership. Review each accessible node separately to detect differing views or missing members.'),
+ ('systemctl status corosync --no-pager','Inspect the Corosync service','Check service state and recent messages on the affected node. A running process does not prove that all cluster links are healthy or that the cluster has quorum.'),
+ ('journalctl -u corosync --since "30 minutes ago" --no-pager','Review recent Corosync events','Compare timestamps and membership changes with the incident window. Logs may reveal a lost peer or link but should be correlated with network and node evidence.')],
+ ('A three-node cluster becomes non-quorate','An operator cannot make routine cluster changes after two Proxmox nodes become unreachable.',[(0,'Identify the software release and the specific node providing each observation.'),(1,'Record quorum, expected votes and current membership on every accessible node.'),(2,'Compare the displayed node list with the approved cluster inventory.'),(3,'Inspect Corosync service state and messages around the loss of quorum.')],
+ 'Illustrative findings: one node reports itself as the only visible voter and network monitoring independently shows the other nodes are unreachable.',
+ 'The membership view and independent network evidence point toward node or network recovery. Forcing votes without understanding partitions can create serious consistency risks.',
+ 'After the owners restore the failed nodes or network through the approved recovery plan, compare membership and quorum on all nodes.',
+ 'Share node-specific status, timestamps and sanitized Corosync logs with the virtualization and network teams.'))
+NEW_GUIDES[-1]['updated']='2026-11-20'
+
+guide('Docker host disk usage investigation','Docker','Infrastructure',
+ 'Investigate a full Docker host by comparing filesystem usage, daemon storage and container logging configuration.',
+ 'Docker Engine on Linux; data-root location, storage driver and logging driver vary by installation.',
+ 'Use an authorized host and daemon context. These commands inspect state and do not prune images, delete volumes or modify Docker-managed files.',
+ [('Docker system disk usage','https://docs.docker.com/reference/cli/docker/system/df/'),('Docker storage drivers','https://docs.docker.com/engine/storage/drivers/'),('Docker logging configuration','https://docs.docker.com/engine/logging/configure/')],[
+ ('df -h','Inspect filesystem capacity','Find the full filesystem and compare its mount point with the Docker data root. Filesystems can fill for reasons unrelated to Docker, so identify the affected mount first.'),
+ ('docker info','Identify daemon storage configuration','Review Docker Root Dir, storage driver and logging driver for the daemon being queried. The client may target a remote daemon, so confirm the host and context.'),
+ ('docker system df','Summarize daemon disk usage','Review image, container, volume and build cache estimates. Reclaimable is not a recommendation to delete data; the report is not a complete account of all host filesystem usage.'),
+ ('docker system df -v','Inspect detailed usage','Compare image shared and unique sizes, container sizes and volume details. Avoid adding shared image sizes together as if every image consumed independent blocks.'),
+ ('docker inspect --format "{{.HostConfig.LogConfig.Type}}" app','Identify one container logging driver','Replace app with the affected container name and inspect its logging driver. Driver configuration is not a measurement of log size, and changing or deleting managed files directly can disrupt Docker.')],
+ ('A Docker host filesystem is nearly full','A host alert reports low free space and an operator suspects container images.',[(0,'Identify which filesystem is full before attributing usage to Docker.'),(1,'Record the daemon data root and storage and logging driver information.'),(2,'Compare the daemon disk usage summary with actual filesystem capacity.'),(3,'Inspect detailed image and volume estimates without removing any data.'),(4,'Check the affected container logging driver and ask the owner to review its logging policy.')],
+ 'Illustrative findings: image usage is modest, while the operations team identifies unbounded logs on the full filesystem.',
+ 'The independent log finding explains this example; docker system df alone does not account for every file consuming host storage.',
+ 'After the service owner applies an approved logging and capacity fix, compare filesystem free space and application health over time.',
+ 'Share sanitized filesystem usage, Docker storage details and relevant application logging observations with the host owner.'))
+NEW_GUIDES[-1]['updated']='2026-11-20'
+
+guide('Kubernetes ImagePullBackOff private registry investigation','Kubernetes','Cloud',
+ 'Trace image pull failures through Pod events, image references, service accounts and registry Secret metadata.',
+ 'Kubernetes with kubectl and RBAC permitting Pod and Secret metadata inspection; registry authentication varies by provider.',
+ 'Replace production, web-pod, default and regcred with actual names. Do not print Secret data or registry credentials. Commands inspect resources without changing workloads.',
+ [('Kubernetes container images','https://kubernetes.io/docs/concepts/containers/images/'),('Pull an image from a private registry','https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/')],[
+ ('kubectl config current-context','Confirm the cluster context','Compare the current context with the approved cluster inventory before interpreting Pod and namespace details from the API server.'),
+ ('kubectl describe pod web-pod -n production','Inspect Pod events and image reference','Read the container image, node, service account and recent pull error events. ImagePullBackOff is a retry state; the preceding error gives the more specific diagnostic lead.'),
+ ('kubectl get pod web-pod -n production -o jsonpath="{.spec.imagePullSecrets[*].name}"','Inspect referenced image pull secrets','Compare Secret names in the Pod specification with the intended registry credentials. A name alone does not prove that credentials are valid or have repository access.'),
+ ('kubectl describe serviceaccount default -n production','Inspect the service account','Replace default with the Pod service account and inspect its image pull Secret references. The effective Pod specification and admission behavior must still be checked.'),
+ ('kubectl get secret regcred -n production -o jsonpath="{.metadata.name} {.type}"','Check Secret name and type without values','Confirm the referenced Secret exists in the Pod namespace and inspect only its type. This avoids displaying credentials and cannot verify their validity or registry permissions.')],
+ ('A new deployment cannot pull its image','A new Pod remains in ImagePullBackOff while an existing deployment still runs.',[(0,'Confirm the target cluster before collecting Pod evidence.'),(1,'Inspect Pod events for the exact registry response and image reference.'),(2,'Read the Pod image pull Secret references in the affected namespace.'),(3,'Compare the service account and referenced Secret metadata with the approved registry setup.')],
+ 'Illustrative findings: the Pod references a Secret that is absent from its namespace and its events report an image pull authentication failure.',
+ 'The missing namespaced reference is a concrete lead. Existing Pods can keep running cached images and do not prove that new pulls can authenticate.',
+ 'After the registry owner restores approved credentials, watch a fresh pull attempt and verify the Pod starts with the intended image.',
+ 'Share sanitized event reasons, image registry hostname, namespace and Secret name with the platform owner; never share Secret values.'))
+NEW_GUIDES[-1]['updated']='2026-11-20'
+
+guide('cert-manager ACME challenge and renewal investigation','cert-manager','Cloud',
+ 'Inspect certificate, request, order and challenge status when cert-manager ACME issuance or renewal stalls.',
+ 'Kubernetes with cert-manager and an ACME Issuer or ClusterIssuer; resource status and solver configuration depend on the installed version.',
+ 'Replace production and example-tls with actual resources. Use authorized read access. Do not print TLS Secret data, delete challenges or repeatedly trigger issuance during diagnosis.',
+ [('cert-manager ACME troubleshooting','https://cert-manager.io/docs/troubleshooting/acme/'),('ACME Orders and Challenges','https://cert-manager.io/docs/concepts/acme-orders-challenges/')],[
+ ('kubectl config current-context','Confirm the Kubernetes context','Compare the active context with the approved cluster inventory before reading certificate resources. A similarly named cluster may use a different issuer or DNS view.'),
+ ('kubectl describe certificate example-tls -n production','Inspect certificate status','Record Ready conditions, issuer reference, renewal details and events. An existing certificate can still be served while a renewal attempt is failing, so inspect both status and expiry.'),
+ ('kubectl get certificaterequests -n production','Identify related certificate requests','Find the request associated with the relevant certificate and issuance attempt. Names and revisions vary; use owner references and events rather than assuming the newest name is correct.'),
+ ('kubectl get orders -n production','Inspect ACME order status','Identify the order associated with the request and record its state. Orders are specific to ACME issuance; other issuer types use different workflows.'),
+ ('kubectl get challenges -n production','Find pending ACME challenges','List challenge resources associated with the order and note their state. A missing challenge may mean the workflow has not reached that stage or has already completed.'),
+ ('kubectl describe challenge CHALLENGE_NAME -n production','Inspect the challenge reason','Replace the placeholder with the relevant challenge and read its reason and solver type. Treat self-check or validation errors as leads to investigate with the DNS or ingress owner.')],
+ ('An ACME certificate fails to renew','An operator notices that a certificate is approaching expiry while its replacement remains pending.',[(0,'Confirm the correct cluster and namespace before collecting certificate evidence.'),(1,'Inspect certificate conditions, issuer reference and recent events.'),(2,'Follow the associated certificate request and ACME order for the current attempt.'),(3,'Identify and inspect the relevant challenge status and reason.')],
+ 'Illustrative findings: the HTTP-01 challenge reports a self-check failure and the ingress owner confirms the challenge path is routed to the wrong backend.',
+ 'The challenge reason and independent ingress evidence identify a specific routing lead; a pending certificate alone does not identify the failed component.',
+ 'After the ingress owner applies the approved fix, monitor the challenge and certificate status and verify the certificate actually presented by the service.',
+ 'Share the namespace, resource names, challenge reason and sanitized ingress evidence with the certificate and platform owners.'))
+NEW_GUIDES[-1]['updated']='2026-11-20'
+
+guide('Microsoft Entra guest MFA registration failure investigation','Microsoft','Identity & Microsoft 365',
+ 'Investigate guest user MFA registration failures using resource tenant sign-in logs and authentication method policy.',
+ 'Microsoft Entra ID B2B collaboration with authorized resource tenant access; features depend on roles, licensing and cross-tenant settings.',
+ 'These are portal procedures, not commands. Examine the affected guest and tenant context without disabling MFA or changing security policies during evidence collection.',
+ [('External user authentication and Conditional Access','https://learn.microsoft.com/en-us/entra/external-id/authentication-conditional-access'),('Manage authentication methods','https://learn.microsoft.com/en-us/entra/identity/authentication/concept-authentication-methods-manage')],[
+ ('Identify the guest and resource tenant','Find the affected guest account and target tenant','Record the resource tenant, guest account and affected application. A guest authentication event can involve a home tenant and resource tenant with different policy settings.'),
+ ('Locate the failing sign-in','Find the relevant sign-in in the resource tenant logs','Filter by user, application and time, then record the status, error and correlation ID. Protect personal data and distinguish retries that may have different results.'),
+ ('Inspect policy and authentication details','Review the event Conditional Access and authentication details','Identify the applied controls and the recorded authentication step. An MFA registration error does not by itself prove that a specific Conditional Access policy caused it.'),
+ ('Review authentication methods policy','Inspect enabled methods and the affected guest scope','Compare included and excluded groups and supported methods with the guest account and the intended security design. Policy targeting must be checked in the tenant enforcing registration.'),
+ ('Review cross-tenant trust settings','Inspect the applicable cross-tenant access settings','Coordinate with both tenant owners to determine whether the resource tenant accepts qualifying MFA claims from the home tenant. Trust settings and authentication strengths interact.'),
+ ('Check an authorized retry','After the owner corrects the confirmed policy issue, inspect a new event','Have the guest retry the intended flow and review the resulting sign-in and policy details. Confirm that the required MFA protection is satisfied in the intended tenant.')],
+ ('A guest cannot register an MFA method','An invited partner reaches an MFA registration prompt but cannot select an available method.',[(0,'Identify the guest identity and resource tenant involved in the application sign-in.'),(1,'Find the exact failing event and preserve its error and correlation identifier.'),(2,'Inspect authentication and Conditional Access results for the relevant event.'),(3,'Compare the guest scope with the resource tenant authentication methods policy.'),(4,'Review applicable cross-tenant MFA trust with both tenant owners.')],
+ 'Illustrative findings: MFA trust is not enabled for the partner tenant and the resource tenant method policy excludes the guest from its approved registration methods.',
+ 'The combined tenant settings explain why this example requires local registration without an available method. The error alone does not identify the policy at fault.',
+ 'After an approved policy correction, review a fresh sign-in and verify the guest completes the intended MFA requirement.',
+ 'Provide sanitized timestamps, correlation ID and policy scope to the identity administrators of the relevant tenants.'))
+NEW_GUIDES[-1]['updated']='2026-11-20'
+NEW_GUIDES[-1]['kind']='Step'

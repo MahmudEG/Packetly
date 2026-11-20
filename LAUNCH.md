@@ -38,7 +38,7 @@ property on `https://packetly.ly/` covers the whole site.
 6. **Sitemaps** → submit `sitemap.xml`.
 7. **URL Inspection** → enter `https://packetly.ly/` → **Request indexing**.
    Do the same for two or three sheets you care most about. The quota is small;
-   don't try to submit all 104.
+   don't try to submit all 109.
 
 Expect nothing for days, then partial coverage. "Discovered – currently not indexed"
 is normal for a new domain and does not mean something is broken.

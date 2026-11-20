@@ -2,7 +2,7 @@
 
 > Free cheat sheets for IT, cybersecurity and network engineers. Inspection commands for Windows, Active Directory, Entra ID, Azure, FortiGate, Cisco, Juniper, Sophos, Ubiquiti, HPE, Dell and Linux, each with a plain-English walkthrough.
 
-Packetly publishes 92 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
+Packetly publishes 97 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
 
 ## Cheat sheets
 
@@ -16,12 +16,14 @@ Cloud references for Azure, AWS, Kubernetes and Terraform: inventory, virtual ne
 - [Cloud network fundamentals](https://packetly.ly/sheets/cloud-network-fundamentals/): Connect subnets, routes, security rules, and DNS into one model.
 - [Cloudflare 522 origin timeout investigation](https://packetly.ly/sheets/cloudflare-522-origin-timeout-investigation/): Investigate Cloudflare 522 origin connection timeouts using response headers and origin-side evidence.
 - [Kubernetes Gateway API HTTPRoute troubleshooting](https://packetly.ly/sheets/kubernetes-gateway-api-httproute-troubleshooting/): Inspect Gateway and HTTPRoute conditions, listener attachment and Service backends when HTTP traffic fails.
+- [Kubernetes ImagePullBackOff private registry investigation](https://packetly.ly/sheets/kubernetes-imagepullbackoff-private-registry-investigation/): Trace image pull failures through Pod events, image references, service accounts and registry Secret metadata.
 - [Kubernetes cluster DNS service investigation](https://packetly.ly/sheets/kubernetes-cluster-dns-service-investigation/): Inspect the cluster DNS Service, EndpointSlices, DNS pods and logs when workloads cannot resolve names.
 - [Kubernetes deployment rollout investigation](https://packetly.ly/sheets/kubernetes-deployment-rollout-investigation/): Inspect deployment rollout status, ReplicaSets, pod readiness and events during a stalled release.
 - [Kubernetes persistent volume claim investigation](https://packetly.ly/sheets/kubernetes-persistent-volume-claim-investigation/): Investigate a pending persistent volume claim using claim events, storage classes and bound volumes.
 - [Kubernetes pod crash and readiness investigation](https://packetly.ly/sheets/kubernetes-pod-crash-and-readiness-investigation/): Trace a failing pod through context, scheduling, container state, current logs, previous logs and namespace events.
 - [Kubernetes service endpoint troubleshooting](https://packetly.ly/sheets/kubernetes-service-endpoint-troubleshooting/): Trace a Service through selectors, pod readiness, EndpointSlices and service ports.
 - [Terraform workspace and state inspection](https://packetly.ly/sheets/terraform-workspace-and-state-inspection/): Verify the active workspace, provider requirements, configuration validity and recorded resources before planning infrastructure changes.
+- [cert-manager ACME challenge and renewal investigation](https://packetly.ly/sheets/cert-manager-acme-challenge-and-renewal-investigation/): Inspect certificate, request, order and challenge status when cert-manager ACME issuance or renewal stalls.
 
 ### [Cybersecurity cheat sheets](https://packetly.ly/topics/cybersecurity/)
 
@@ -69,6 +71,7 @@ Identity and Microsoft 365 references for Active Directory, Entra ID, Microsoft 
 - [Exchange Online mailbox inspection](https://packetly.ly/sheets/exchange-online-mailbox-inspection/): Connect to Exchange Online and review mailbox identity and quotas.
 - [Exchange Online message tracing](https://packetly.ly/sheets/exchange-online-message-tracing/): Trace a recent sender and examine the events for a specific message.
 - [Microsoft Entra Conditional Access sign-in diagnosis](https://packetly.ly/sheets/microsoft-entra-conditional-access-sign-in-diagnosis/): Use sign-in logs and policy results to investigate why a Conditional Access policy blocked an application sign-in.
+- [Microsoft Entra guest MFA registration failure investigation](https://packetly.ly/sheets/microsoft-entra-guest-mfa-registration-failure-investigation/): Investigate guest user MFA registration failures using resource tenant sign-in logs and authentication method policy.
 - [Microsoft Graph connection and user lookup](https://packetly.ly/sheets/microsoft-graph-connection-and-user-lookup/): Connect to the correct tenant and inspect directory user records.
 - [Microsoft Graph query and paging basics](https://packetly.ly/sheets/microsoft-graph-query-and-paging-basics/): Find users with server-side filters and handle complete result sets.
 - [Windows Group Policy application investigation](https://packetly.ly/sheets/windows-group-policy-application-investigation/): Compare endpoint policy results, processing events, domain GPO inventory, OU inheritance and configured settings.
@@ -84,6 +87,7 @@ Infrastructure references for servers, storage, databases and automation: HPE an
 - [Dell PowerEdge iDRAC health checks](https://packetly.ly/sheets/dell-poweredge-idrac-health-checks/): Read PowerEdge identity, power state and hardware event history.
 - [Docker Compose service state investigation](https://packetly.ly/sheets/docker-compose-service-state-investigation/): Inspect the effective Compose service model, container state and recent service logs.
 - [Docker container health and restart investigation](https://packetly.ly/sheets/docker-container-health-and-restart-investigation/): Inspect container exit state, health checks, bounded logs, resource usage and published ports during a restart incident.
+- [Docker host disk usage investigation](https://packetly.ly/sheets/docker-host-disk-usage-investigation/): Investigate a full Docker host by comparing filesystem usage, daemon storage and container logging configuration.
 - [Docker network connectivity inspection](https://packetly.ly/sheets/docker-network-connectivity-inspection/): Inspect container network membership, addressing, port publication and bounded application logs.
 - [Docker volume mount inspection](https://packetly.ly/sheets/docker-volume-mount-inspection/): Trace a container mount to its Docker volume and inspect its driver and attachment.
 - [HPE ProLiant iLO health overview](https://packetly.ly/sheets/hpe-proliant-ilo-health-overview/): Read ProLiant health and hardware events through iLO.
@@ -94,6 +98,7 @@ Infrastructure references for servers, storage, databases and automation: HPE an
 - [PostgreSQL session and blocking investigation](https://packetly.ly/sheets/postgresql-session-and-blocking-investigation/): Inspect database identity, connection counts, wait events, blocking relationships and long transactions using bounded SQL queries.
 - [Prometheus alert pending or missing notification investigation](https://packetly.ly/sheets/prometheus-alert-pending-or-missing-notification-investigation/): Trace an alert from rule evaluation through pending and firing states to Alertmanager notification routing.
 - [Proxmox Backup Server verification failure investigation](https://packetly.ly/sheets/proxmox-backup-server-verification-failure-investigation/): Investigate a failed backup verification using datastore tasks and snapshot status before planning recovery.
+- [Proxmox VE cluster quorum investigation](https://packetly.ly/sheets/proxmox-ve-cluster-quorum-investigation/): Inspect cluster membership and Corosync health when a Proxmox VE cluster loses quorum.
 - [Redis memory and latency investigation](https://packetly.ly/sheets/redis-memory-and-latency-investigation/): Compare Redis identity, memory pressure, eviction counters, client connections and slow-command evidence without scanning the keyspace.
 - [VCF 9 ESXi host root password recovery](https://packetly.ly/sheets/vcf-9-esxi-host-root-password-recovery/): Recover a managed ESXi host root account through vCenter and PowerCLI, and reconcile VCF credential management.
 - [VCF 9 ESXi monitoring and troubleshooting commands](https://packetly.ly/sheets/vcf-9-esxi-monitoring-and-troubleshooting-commands/): Inspect ESXi 9 identity, resources, networking, storage and time when investigating a VCF workload issue.
