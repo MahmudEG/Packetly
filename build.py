@@ -30,7 +30,7 @@ for i,(title,vendor,cat,desc,rows) in enumerate(specs):
  data.append(dict(id=slug,title=title,vendor=vendor,category=cat,description=desc,rows=[x.split('|') for x in rows.split(';')],source=F if vendor=='Fortinet' else C if vendor=='Cisco' else 'https://man7.org/linux/man-pages/man8/ip.8.html' if vendor=='Linux' else 'https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html',level='Beginner',time=4+i%4))
 for s in data:
  s['product']='FortiGate' if s['vendor']=='Fortinet' else s['vendor']
- s['updated']='2026-11-01'
+ s['updated']='2026-11-02'
 data.extend(GUIDES)
 enrich(data)
 

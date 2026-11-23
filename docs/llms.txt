@@ -116,6 +116,7 @@ Infrastructure references for servers, storage, databases and automation: HPE an
 
 Network references for Cisco, Juniper, FortiGate, HPE Aruba, Ubiquiti, curl and NGINX: interfaces, VLANs, routes, neighbors, ARP, HTTP redirects, TLS certificates and reverse-proxy upstream investigation.
 
+- [Aruba CX switch commands](https://packetly.ly/sheets/hpe-aruba-cx-switching-essentials/): Quick reference for Aruba AOS-CX show commands. Check port status, VLAN membership, LLDP neighbors and the switch software version.
 - [Cisco IOS essentials](https://packetly.ly/sheets/cisco-ios-essentials/): Get oriented, inspect interfaces, and understand your device.
 - [Cisco VLANs & trunks](https://packetly.ly/sheets/cisco-vlans-trunks/): Understand access VLANs, tagged links, and Layer 2 boundaries.
 - [Cisco interface diagnostics](https://packetly.ly/sheets/cisco-interface-diagnostics/): Find link failures and read the counters that matter.
@@ -124,7 +125,6 @@ Network references for Cisco, Juniper, FortiGate, HPE Aruba, Ubiquiti, curl and 
 - [DNS record investigation with dig](https://packetly.ly/sheets/dns-record-investigation-with-dig/): Compare DNS answers, authoritative servers, response codes and TCP fallback using dig.
 - [DNSSEC validation failure troubleshooting with dig](https://packetly.ly/sheets/dnssec-validation-failure-troubleshooting-with-dig/): Compare DNSSEC validation responses, delegation signer records and zone keys when a resolver returns SERVFAIL.
 - [FortiGate routing & ARP](https://packetly.ly/sheets/fortigate-routing-arp/): Follow a packet from its next hop to the routing table.
-- [HPE Aruba CX switching essentials](https://packetly.ly/sheets/hpe-aruba-cx-switching-essentials/): Inspect AOS-CX switch interfaces and VLANs with platform-specific commands.
 - [HTTP and TLS troubleshooting with curl](https://packetly.ly/sheets/http-and-tls-troubleshooting-with-curl/): Separate DNS, TCP, certificate validation, redirects and HTTP status with bounded curl requests.
 - [Juniper Junos CLI essentials](https://packetly.ly/sheets/juniper-junos-cli-essentials/): Get oriented in Junos operational mode and inspect the chassis.
 - [Juniper routes and neighbor checks](https://packetly.ly/sheets/juniper-routes-and-neighbor-checks/): Inspect routes, ARP entries and discovered neighbors in Junos.
