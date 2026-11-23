@@ -113,7 +113,7 @@ def body(main, nsheets):
             '<span>Practical knowledge. One sheet away.</span><div>'
             '<a href="/editorial/">Editorial policy</a><a href="/privacy/">Privacy</a>'
             '<a href="/terms/">Terms</a><a href="/contact/">Contact</a>'
-            '<a href="/feed.xml">Guide updates (Atom)</a></div>'
+            '<a href="/tools/subnet-calculator/">IPv4 subnet calculator</a><a href="/feed.xml">Guide updates (Atom)</a></div>'
             '<small>\u00a9 2026 Packetly \u00b7 Independent reference. Not affiliated with vendors.</small>'
             '</footer></div><div id="toast" role="status"></div></body></html>')
 
@@ -385,7 +385,17 @@ robots += ''.join('User-agent: %s\nAllow: /\n\n' % b for b in AI_BOTS)
 robots += 'Sitemap: %s/sitemap.xml\n' % BASE
 (p / 'robots.txt').write_bytes(robots.encode('utf-8'))
 
-urls = ([('/', UPDATED)]
+tool_path = '/tools/subnet-calculator/'
+tool_dir = p / tool_path.strip('/')
+tool_dir.mkdir(parents=True, exist_ok=True)
+(tool_dir / 'index.html').write_text(page(
+    'IPv4 Subnet Calculator | CIDR Mask and Host Range | Packetly',
+    'Calculate the subnet mask, network, broadcast and usable IPv4 host range for any CIDR prefix. Includes a worked /26 example and /31 point-to-point support.',
+    tool_path, (p.parent / 'subnet.html').read_text(encoding='utf-8'),
+    '<script defer src="/subnet.js"></script>'
+), encoding='utf-8')
+
+urls = ([('/', UPDATED), (tool_path, '2026-11-23')]
         + [('/topics/%s/' % SLUG[c], max(s['updated'] for s in groups[c]))
            for c in sorted(groups)]
         + [('/sheets/%s/' % s['id'], s['updated']) for s in data]
