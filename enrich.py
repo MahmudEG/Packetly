@@ -45,7 +45,7 @@ def enrich(sheets):
                                      else s['walkthrough'][i])
                                 for n, i in enumerate(order)],
                          interpretation=interpretation, verification=verification)
-        s['updated'] = '2026-11-02'
+        s.setdefault('updated', '2026-11-02')
     sheets.extend(NEW_GUIDES)
     for s in sheets:
         words = len(' '.join(s['walkthrough']).split())
