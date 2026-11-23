@@ -1,0 +1,15 @@
+<article class="detail prose">
+<a href="/topics/networking/">Networking cheat sheets</a>
+<h1>IPv4 subnet calculator</h1>
+<p>Enter an IPv4 address and CIDR prefix to find its subnet mask, network boundary and usable address range. The calculation runs in your browser.</p>
+<form id="cidr-form"><label for="cidr-input">IPv4 address / prefix</label>
+<input id="cidr-input" value="192.0.2.70/26" required spellcheck="false" autocomplete="off" style="padding:.7em;font:inherit;max-width:100%;box-sizing:border-box">
+<button class="primary" type="submit">Calculate subnet</button></form>
+<div id="cidr-result" aria-live="polite"></div>
+<h2>How to read a /26 subnet</h2>
+<p>For 192.0.2.70/26, six bits remain for addresses. That gives 64 addresses per block and a mask of 255.255.255.192. The final octet, 70, falls in the block from 64 through 127.</p>
+<p>The network address is 192.0.2.64 and the broadcast address is 192.0.2.127. On a conventional LAN, hosts can use 192.0.2.65 through 192.0.2.126.</p>
+<h2>What changes for /31 and /32?</h2>
+<p>A /31 on a point-to-point link uses both addresses as endpoints. A /32 identifies one address, commonly used in a host route. The calculator handles these prefixes separately.</p>
+<p><a href="/sheets/cloud-network-fundamentals/">Cloud network fundamentals</a> · <a href="/sheets/cisco-routing-basics/">Cisco routing basics</a> · <a href="https://www.rfc-editor.org/rfc/rfc3021">RFC 3021 on point-to-point links</a></p>
+</article>

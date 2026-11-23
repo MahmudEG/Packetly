@@ -108,10 +108,10 @@ for s in sheets:
 # ---- sitemap, robots, llms, assets -------------------------------------
 root = ET.parse(p / 'sitemap.xml').getroot()
 ns = '{http://www.sitemaps.org/schemas/sitemap/0.9}'
-assert len(root) == 114, len(root)
+assert len(root) == 115, len(root)
 assert all(u.find(ns + 'lastmod') is not None for u in root)
 locs = {u.find(ns + 'loc').text for u in root}
-assert locs == ({BASE + '/'} | {BASE + '/sheets/%s/' % s['id'] for s in sheets}
+assert locs == ({BASE + '/', BASE + '/tools/subnet-calculator/'} | {BASE + '/sheets/%s/' % s['id'] for s in sheets}
                 | {BASE + '/%s/' % n for n in INFO}
                 | {BASE + '/topics/%s/' % c for c in TOPICS})
 
@@ -148,6 +148,6 @@ assert 'noindex' in head_of(read('404.html'))
 assert 'adsbygoogle' not in read('404.html')
 assert 'reports.js' not in home
 
-print('PASS: %d sheets with aligned walkthroughs and worked cases, %d pages, unique titles/descriptions, canonical + OG + Twitter on all 114 '
+print('PASS: %d sheets with aligned walkthroughs and worked cases, %d pages, unique titles/descriptions, canonical + OG + Twitter on all 115 '
       'URLs, structured data, crumbs, related links, sitemap lastmod, AI crawler rules, llms.txt, '
       'og.png, %d topic hubs.' % (len(sheets), len(pages), len(TOPICS)))
