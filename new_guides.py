@@ -1265,3 +1265,88 @@ guide('Microsoft Entra guest MFA registration failure investigation','Microsoft'
  'Provide sanitized timestamps, correlation ID and policy scope to the identity administrators of the relevant tenants.'))
 NEW_GUIDES[-1]['updated']='2026-11-20'
 NEW_GUIDES[-1]['kind']='Step'
+
+guide('Kubernetes Pod pending scheduler investigation','Kubernetes','Cloud',
+ 'Investigate FailedScheduling events, node allocatable resources, taints and Pod placement constraints.',
+ 'Kubernetes with kubectl and authorized read access to Pods and Nodes; scheduler and autoscaler behavior varies by cluster.',
+ 'Replace production, web-pod and worker-1 with actual resource names. These commands inspect resources and do not change scheduling or workloads.',
+ [('Debug Kubernetes Pods','https://kubernetes.io/docs/tasks/debug/debug-application/debug-pods/'),('Manage container resources','https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/')],[
+ ('kubectl config current-context','Confirm the target cluster','Compare the current context against the approved cluster inventory before interpreting events and node capacity from the API server.'),
+ ('kubectl describe pod web-pod -n production','Inspect scheduler events','Read the node assignment, resource requests, tolerations and recent events. Pending can also mean image or volume setup, so confirm FailedScheduling before focusing on placement.'),
+ ('kubectl get nodes -o wide','List available nodes','Compare node readiness and names with the intended node pool. Ready status alone does not establish sufficient allocatable resources or compatible placement constraints.'),
+ ('kubectl describe node worker-1','Inspect node capacity and allocations','Review allocatable resources, requested totals, taints and conditions. Scheduling is based on requests and constraints rather than a simple reading of current CPU utilization.'),
+ ('kubectl get pod web-pod -n production -o yaml','Inspect the Pod placement specification','Review requests, node selectors, affinity and tolerations for the affected Pod. Output may include environment configuration, so sanitize it before sharing.')],
+ ('A Pod remains pending on apparently idle nodes','A deployment has a pending Pod even though node CPU graphs appear mostly idle.',[(0,'Confirm the cluster and namespace of the pending workload.'),(1,'Read the FailedScheduling events and identify the reported constraints.'),(2,'Compare available nodes and their readiness with the eligible node pool.'),(3,'Review allocatable CPU and requested totals on a relevant node.'),(4,'Compare the Pod requests and placement rules with the node details.')],
+ 'Illustrative findings: eligible nodes have enough unused CPU at the moment, but their existing requested CPU leaves insufficient allocatable capacity for the new Pod.',
+ 'The scheduler event and request totals explain this example. Low observed usage alone does not show that the scheduler can place the Pod.',
+ 'After the platform owner approves a capacity or request change, inspect fresh scheduling events and verify the Pod becomes ready.',
+ 'Share sanitized scheduler messages, requested resources and node allocation details with the workload and platform owners.'))
+NEW_GUIDES[-1]['updated']='2026-11-23'
+
+guide('Cloudflare Tunnel error 1033 connector investigation','Cloudflare','Cloud',
+ 'Investigate Cloudflare Tunnel error 1033 by checking connector state, logs and network discovery.',
+ 'Cloudflare Tunnel using a cloudflared systemd service on Linux; containerized and remotely managed deployments use different service controls.',
+ 'Run on an authorized connector host. Do not publish tunnel tokens, credentials or unredacted service configuration; these commands do not restart the connector.',
+ [('Cloudflare Tunnel troubleshooting','https://developers.cloudflare.com/tunnel/troubleshooting/'),('Cloudflare One Tunnel errors','https://developers.cloudflare.com/cloudflare-one/troubleshooting/tunnel/')],[
+ ('cloudflared --version','Record the connector version','Record the installed cloudflared version and host identity. Version and deployment method help the operator select relevant support guidance.'),
+ ('systemctl is-active cloudflared','Check the service state','Determine whether the systemd service is running on this host. An active process alone does not prove that a healthy connector is registered with Cloudflare.'),
+ ('journalctl -u cloudflared --since "30 minutes ago" --no-pager','Inspect connector logs','Review recent registration, DNS or transport errors and record timestamps. Logs can contain hostnames and other sensitive configuration, so sanitize them before sharing.'),
+ ('dig SRV _v2-origintunneld._tcp.argotunnel.com','Check connector discovery DNS','Query the SRV record using the host resolver and record the result. DNS success does not prove the connector can reach Cloudflare over its configured transport.'),
+ ('curl -sS -D - -o /dev/null https://example.com/','Capture the public error response','Replace example.com with the authorized hostname and record status, time and any Ray ID. This request reaches Cloudflare and must be correlated with connector-side evidence.')],
+ ('A published application returns error 1033','Users receive a Cloudflare Tunnel error even though the connector service appears active.',[(0,'Record the connector version and affected host before collecting logs.'),(1,'Check whether the expected connector service is running on the host.'),(2,'Review recent registration and network errors without sharing tokens.'),(3,'Test DNS discovery using the connector host resolver.'),(4,'Capture a public request timestamp and any Ray ID for correlation.')],
+ 'Illustrative findings: the service is running, but logs and DNS testing show that the host resolver cannot resolve the connector discovery SRV record.',
+ 'Cloudflare reports 1033 when it cannot find a healthy connector. The DNS evidence supplies a specific lead in this example, while process state alone cannot establish connector health.',
+ 'After the DNS owner corrects the confirmed resolver issue, verify connector health in the Cloudflare dashboard and test the authorized application.',
+ 'Share sanitized connector version, timestamps, DNS result, log errors and Ray ID with the network and tunnel owners.'))
+NEW_GUIDES[-1]['updated']='2026-11-23'
+
+guide('Proxmox VE LVM thin pool capacity investigation','Proxmox','Infrastructure',
+ 'Compare Proxmox storage status with LVM thin pool data and metadata usage before a virtual disk runs out of space.',
+ 'Proxmox VE 8 or 9 using a local LVM-thin storage backend; other backends require different capacity checks.',
+ 'Use authorized read access on the node hosting the local pool. Do not resize, remove volumes or run filesystem repair commands during evidence collection.',
+ [('Proxmox VE storage administration','https://pve.proxmox.com/pve-docs/pve-admin-guide.pdf'),('LVM thin provisioning manual','https://man7.org/linux/man-pages/man7/lvmthin.7.html')],[
+ ('pveversion','Identify the Proxmox release','Record the node identity and installed Proxmox release so the storage backend and documentation can be interpreted in context.'),
+ ('pvesm status','Inspect Proxmox storage capacity','Record the affected storage ID, type and usage on the relevant node. Storage pools and the root filesystem can report different capacity because they are distinct allocations.'),
+ ('lvs -a -o lv_name,vg_name,lv_attr,lv_size,data_percent,metadata_percent','Inspect thin pool usage','Find the correct pool and record data and metadata utilization separately. Thin provisioned virtual disk sizes can exceed currently allocated physical data capacity.'),
+ ('vgs','Inspect volume group free capacity','Record the volume group size and free extents. Available volume group capacity does not automatically enlarge a thin pool and must be reviewed with the storage owner.'),
+ ('df -h','Compare mounted filesystem capacity','Inspect filesystem usage for comparison with the affected pool. A healthy root filesystem does not prove that a separate LVM-thin data or metadata pool has free space.')],
+ ('Virtual disks report low storage while root has space','An operator sees a nearly full Proxmox storage pool even though the root filesystem has substantial free space.',[(0,'Identify the Proxmox node and release that owns the affected local storage.'),(1,'Locate the affected storage ID and its backend in the Proxmox status output.'),(2,'Inspect the corresponding thin pool data and metadata percentages.'),(3,'Review free extents in the volume group and compare root filesystem usage.')],
+ 'Illustrative findings: the root filesystem has free space, while the local thin pool data usage is near capacity and the volume group has limited free extents.',
+ 'The measurements identify a pool-specific capacity problem. Free space in a separate filesystem cannot automatically satisfy thin pool writes.',
+ 'After the storage owner completes an approved capacity plan, recheck pool data and metadata utilization and monitor guest health.',
+ 'Provide the storage ID, node, sanitized pool usage and volume group capacity to the virtualization and storage teams.'))
+NEW_GUIDES[-1]['updated']='2026-11-23'
+
+guide('FortiGate IPsec tunnel up but no traffic investigation','Fortinet','Cybersecurity',
+ 'Compare IPsec security associations, traffic counters and routing when a tunnel is up but applications fail.',
+ 'FortiOS 7.6; command output and available fields depend on appliance, VDOM and tunnel configuration.',
+ 'Use authorized read-only access in the correct VDOM. Generate only approved test traffic and do not clear sessions, reset tunnels or change offloading during diagnosis.',
+ [('FortiOS diagnose VPN tunnel reference','https://docs.fortinet.com/document/fortigate/7.6.5/cli-reference/537874326/diagnose-vpn-tunnel'),('FortiOS IPsec troubleshooting','https://docs.fortinet.com/document/fortigate/7.6.6/administration-guide/137844/vpn-ipsec-troubleshooting')],[
+ ('get system status','Record system identity and version','Capture the FortiOS version and device identity and confirm the relevant VDOM with the administrator. Behavior and diagnostic fields can differ between releases.'),
+ ('get vpn ipsec tunnel summary','Inspect tunnel summary','Find the intended tunnel and record its current status. A displayed up state does not prove that application traffic matches the correct selector or returns successfully.'),
+ ('diagnose vpn tunnel list','Inspect security associations and counters','Find the intended tunnel and compare selectors, security associations and available encryption and decryption counters. Handle peer addresses and internal networks as sensitive data.'),
+ ('get router info routing-table all','Inspect active routes','Compare the destination route and selected tunnel interface with the documented path. A route listing alone cannot establish firewall policy, selector match or remote return routing.'),
+ ('diagnose vpn ike gateway list','Inspect IKE gateway state','Record the relevant peer and gateway state and compare it with the tunnel observations. IKE establishment is one part of the path and does not guarantee forwarding.')],
+ ('An established tunnel cannot reach a remote application','A branch tunnel shows up after a maintenance window but clients cannot reach a remote service.',[(0,'Confirm the FortiGate version, device and VDOM before comparing results.'),(1,'Record the affected tunnel state and the time of the user report.'),(2,'Compare selector details and counters before and after approved test traffic.'),(3,'Review the active destination route and compare it with the intended tunnel path.'),(4,'Record the related IKE gateway state and correlate with remote-side evidence.')],
+ 'Illustrative findings: tunnel security associations exist, but the network team confirms that the remote subnet has a route through the wrong interface.',
+ 'A route mismatch is a specific lead in this example. Tunnel state alone cannot establish whether selectors, policy, routing or the remote endpoint is responsible.',
+ 'After the network owner applies an approved route correction, repeat the counter comparison and verify the application from both ends.',
+ 'Share sanitized tunnel identifiers, timestamps, counter deltas and routing evidence with both VPN administrators.'))
+NEW_GUIDES[-1]['updated']='2026-11-23'
+
+guide('Windows Kerberos clock skew investigation','Active Directory','Identity & Microsoft 365',
+ 'Inspect cached Kerberos tickets and Windows Time state when authentication reports excessive clock skew.',
+ 'Domain-joined Windows 10 or 11 and Windows Server 2016 through 2025; event and access availability varies by host and permissions.',
+ 'Run in the affected logon context with authorized access. Commands inspect tickets and time service state; they do not purge tickets or change the system clock.',
+ [('Microsoft Kerberos authentication troubleshooting','https://learn.microsoft.com/en-us/troubleshoot/windows-server/windows-security/kerberos-authentication-troubleshooting-guidance'),('Windows klist reference','https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/klist'),('Windows Time tools','https://learn.microsoft.com/en-us/windows-server/networking/windows-time-service/windows-time-service-tools-and-settings')],[
+ ('klist','Inspect cached tickets','Review ticket names and validity times in the current logon session. A cached ticket is evidence for that session, not proof that the failing application uses the same session.'),
+ ('klist tgt','Inspect the ticket granting ticket','Review the current session ticket granting ticket and available time-skew information. Missing tickets can have several causes and do not by themselves establish clock drift.'),
+ ('w32tm /query /status','Inspect time service status','Record the source, last successful synchronization and other status fields. A recent synchronization does not automatically prove alignment with the actual service or domain controller.'),
+ ('w32tm /query /source','Identify the active time source','Compare the current source with the approved time hierarchy. A source different from expectations is a diagnostic lead and should be assessed in its operational context.'),
+ ('w32tm /query /peers','Inspect configured time peers','Record peer status and compare it with the intended hierarchy. Check the relevant domain controller and target server separately when determining the actual time difference.')],
+ ('A domain user cannot authenticate to an internal service','A workstation receives a Kerberos clock skew error when accessing a domain service.',[(0,'Inspect cached tickets in the same logon context as the affected user.'),(1,'Review the ticket granting ticket and any reported time-skew field.'),(2,'Record the Windows Time source and last successful synchronization.'),(3,'Compare configured peers with the approved domain time hierarchy.'),(4,'Ask the domain owner to compare client, domain controller and service clocks.')],
+ 'Illustrative findings: the affected client is several minutes out of alignment with the target service, and its time source is not the approved domain hierarchy.',
+ 'The error and independently measured clock difference support a time synchronization investigation. A ticket listing or source name alone would not prove the root cause.',
+ 'After the time owner restores synchronization using the approved process, compare clocks and retry the affected authentication flow.',
+ 'Share sanitized event details, affected host names, timestamps and time-source observations with the domain administrators.'))
+NEW_GUIDES[-1]['updated']='2026-11-23'

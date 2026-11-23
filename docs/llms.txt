@@ -2,7 +2,7 @@
 
 > Free cheat sheets for IT, cybersecurity and network engineers. Inspection commands for Windows, Active Directory, Entra ID, Azure, FortiGate, Cisco, Juniper, Sophos, Ubiquiti, HPE, Dell and Linux, each with a plain-English walkthrough.
 
-Packetly publishes 97 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
+Packetly publishes 102 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
 
 ## Cheat sheets
 
@@ -15,8 +15,10 @@ Cloud references for Azure, AWS, Kubernetes and Terraform: inventory, virtual ne
 - [Azure virtual network inspection](https://packetly.ly/sheets/azure-virtual-network-inspection/): Inspect virtual networks, subnets and security group inventory.
 - [Cloud network fundamentals](https://packetly.ly/sheets/cloud-network-fundamentals/): Connect subnets, routes, security rules, and DNS into one model.
 - [Cloudflare 522 origin timeout investigation](https://packetly.ly/sheets/cloudflare-522-origin-timeout-investigation/): Investigate Cloudflare 522 origin connection timeouts using response headers and origin-side evidence.
+- [Cloudflare Tunnel error 1033 connector investigation](https://packetly.ly/sheets/cloudflare-tunnel-error-1033-connector-investigation/): Investigate Cloudflare Tunnel error 1033 by checking connector state, logs and network discovery.
 - [Kubernetes Gateway API HTTPRoute troubleshooting](https://packetly.ly/sheets/kubernetes-gateway-api-httproute-troubleshooting/): Inspect Gateway and HTTPRoute conditions, listener attachment and Service backends when HTTP traffic fails.
 - [Kubernetes ImagePullBackOff private registry investigation](https://packetly.ly/sheets/kubernetes-imagepullbackoff-private-registry-investigation/): Trace image pull failures through Pod events, image references, service accounts and registry Secret metadata.
+- [Kubernetes Pod pending scheduler investigation](https://packetly.ly/sheets/kubernetes-pod-pending-scheduler-investigation/): Investigate FailedScheduling events, node allocatable resources, taints and Pod placement constraints.
 - [Kubernetes cluster DNS service investigation](https://packetly.ly/sheets/kubernetes-cluster-dns-service-investigation/): Inspect the cluster DNS Service, EndpointSlices, DNS pods and logs when workloads cannot resolve names.
 - [Kubernetes deployment rollout investigation](https://packetly.ly/sheets/kubernetes-deployment-rollout-investigation/): Inspect deployment rollout status, ReplicaSets, pod readiness and events during a stalled release.
 - [Kubernetes persistent volume claim investigation](https://packetly.ly/sheets/kubernetes-persistent-volume-claim-investigation/): Investigate a pending persistent volume claim using claim events, storage classes and bound volumes.
@@ -31,6 +33,7 @@ Security inspection references for FortiGate, Sophos and Kali Linux: firewall an
 
 - [FortiGate CLI essentials](https://packetly.ly/sheets/fortigate-cli-essentials/): The everyday commands for finding your way around a FortiGate.
 - [FortiGate HA & system health](https://packetly.ly/sheets/fortigate-ha-system-health/): Check cluster membership and baseline appliance health.
+- [FortiGate IPsec tunnel up but no traffic investigation](https://packetly.ly/sheets/fortigate-ipsec-tunnel-up-but-no-traffic-investigation/): Compare IPsec security associations, traffic counters and routing when a tunnel is up but applications fail.
 - [FortiGate VPN health](https://packetly.ly/sheets/fortigate-vpn-health/): Inspect IPsec tunnel health and security associations.
 - [FortiGate session clash counter investigation](https://packetly.ly/sheets/fortigate-session-clash-counter-investigation/): Investigate a rising session clash counter by comparing session statistics and routing over time.
 - [FortiGate session inspection](https://packetly.ly/sheets/fortigate-session-inspection/): Connect policy decisions with live traffic sessions.
@@ -75,6 +78,7 @@ Identity and Microsoft 365 references for Active Directory, Entra ID, Microsoft 
 - [Microsoft Graph connection and user lookup](https://packetly.ly/sheets/microsoft-graph-connection-and-user-lookup/): Connect to the correct tenant and inspect directory user records.
 - [Microsoft Graph query and paging basics](https://packetly.ly/sheets/microsoft-graph-query-and-paging-basics/): Find users with server-side filters and handle complete result sets.
 - [Windows Group Policy application investigation](https://packetly.ly/sheets/windows-group-policy-application-investigation/): Compare endpoint policy results, processing events, domain GPO inventory, OU inheritance and configured settings.
+- [Windows Kerberos clock skew investigation](https://packetly.ly/sheets/windows-kerberos-clock-skew-investigation/): Inspect cached Kerberos tickets and Windows Time state when authentication reports excessive clock skew.
 
 ### [Infrastructure cheat sheets](https://packetly.ly/topics/infrastructure/)
 
@@ -98,6 +102,7 @@ Infrastructure references for servers, storage, databases and automation: HPE an
 - [PostgreSQL session and blocking investigation](https://packetly.ly/sheets/postgresql-session-and-blocking-investigation/): Inspect database identity, connection counts, wait events, blocking relationships and long transactions using bounded SQL queries.
 - [Prometheus alert pending or missing notification investigation](https://packetly.ly/sheets/prometheus-alert-pending-or-missing-notification-investigation/): Trace an alert from rule evaluation through pending and firing states to Alertmanager notification routing.
 - [Proxmox Backup Server verification failure investigation](https://packetly.ly/sheets/proxmox-backup-server-verification-failure-investigation/): Investigate a failed backup verification using datastore tasks and snapshot status before planning recovery.
+- [Proxmox VE LVM thin pool capacity investigation](https://packetly.ly/sheets/proxmox-ve-lvm-thin-pool-capacity-investigation/): Compare Proxmox storage status with LVM thin pool data and metadata usage before a virtual disk runs out of space.
 - [Proxmox VE cluster quorum investigation](https://packetly.ly/sheets/proxmox-ve-cluster-quorum-investigation/): Inspect cluster membership and Corosync health when a Proxmox VE cluster loses quorum.
 - [Redis memory and latency investigation](https://packetly.ly/sheets/redis-memory-and-latency-investigation/): Compare Redis identity, memory pressure, eviction counters, client connections and slow-command evidence without scanning the keyspace.
 - [VCF 9 ESXi host root password recovery](https://packetly.ly/sheets/vcf-9-esxi-host-root-password-recovery/): Recover a managed ESXi host root account through vCenter and PowerCLI, and reconcile VCF credential management.
