@@ -112,7 +112,8 @@ def body(main, nsheets):
             '<main id="main">' + main + '</main><footer><a class="brand" href="/">\u25b0 packetly.</a>'
             '<span>Practical knowledge. One sheet away.</span><div>'
             '<a href="/editorial/">Editorial policy</a><a href="/privacy/">Privacy</a>'
-            '<a href="/terms/">Terms</a><a href="/contact/">Contact</a></div>'
+            '<a href="/terms/">Terms</a><a href="/contact/">Contact</a>'
+            '<a href="/feed.xml">Guide updates (Atom)</a></div>'
             '<small>\u00a9 2026 Packetly \u00b7 Independent reference. Not affiliated with vendors.</small>'
             '</footer></div><div id="toast" role="status"></div></body></html>')
 
@@ -149,6 +150,19 @@ def page(title, desc, path, main, extra='', robots=None, ads=False):
             + ICON + FONT + CONSENT + GTAG + (ADS if ads else '') + ASSETS + extra)
     return '<!doctype html><html lang="en"><head>' + head + '</head>' + body(main, len(data))
 
+
+# Use the same related links in the static HTML and interactive guide.
+by_id = {sheet['id']: sheet for sheet in data}
+for sheet in data:
+    candidates = [other for other in data if other is not sheet and (
+        other['product'] == sheet['product'] or other['category'] == sheet['category']
+    )]
+    candidates.sort(key=lambda other: (
+        other['product'] != sheet['product'],
+        other['category'] != sheet['category'],
+        other['title'],
+    ))
+    sheet['related'] = [other['id'] for other in candidates[:4]]
 
 # ===============================================================  client data
 (p / 'data.js').write_text(
@@ -197,9 +211,7 @@ for s in data:
     d = p / 'sheets' / s['id']
     d.mkdir(parents=True, exist_ok=True)
 
-    rel = [x for x in data if x['id'] != s['id'] and x['vendor'] == s['vendor']]
-    rel += [x for x in data if x['id'] != s['id'] and x['category'] == s['category'] and x not in rel]
-    rel = rel[:4]
+    rel = [by_id[sheet_id] for sheet_id in s['related']]
 
     kind = s.get('kind', 'Command')
     label = kind if kind != 'Command' else ('Concept' if s['vendor'] == 'Vendor neutral' else 'Command')
