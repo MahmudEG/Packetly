@@ -36,6 +36,7 @@ enrich(data)
 
 # ===========================================================  site constants
 BASE = 'https://packetly.ly'
+SUBNET_CALCULATOR = '/tools/subnet-calculator/'
 NAME = 'Packetly'
 BLURB = ('Free cheat sheets for IT, cybersecurity and network engineers. '
          'Inspection commands for Windows, Active Directory, Entra ID, Azure, '
@@ -164,6 +165,11 @@ for sheet in data:
     ))
     sheet['related'] = [other['id'] for other in candidates[:4]]
 
+by_id['cloud-network-fundamentals']['practiceLink'] = {
+    'url': SUBNET_CALCULATOR,
+    'label': 'Calculate the address range for an IPv4 CIDR block',
+}
+
 # ===============================================================  client data
 (p / 'data.js').write_text(
     'window.SHEETS=' + json.dumps(data, ensure_ascii=False) + ';'
@@ -221,6 +227,9 @@ for s in data:
            '<span>/</span>' + e(s['title']) + '</nav>'
            '<h1>' + e(s['title']) + ' cheat sheet</h1>'
            '<p>' + e(s['description']) + '</p>')
+    if practice_link := s.get('practiceLink'):
+        art += ('<p><a href="' + e(practice_link['url']) + '">'
+                + e(practice_link['label']) + '</a></p>')
     if s.get('scope'):
         art += '<p>' + e(s['scope']) + '</p>'
     art += ('<p>Updated <time datetime="' + s['updated'] + '">' + s['updated'] + '</time> \u00b7 '
@@ -385,7 +394,7 @@ robots += ''.join('User-agent: %s\nAllow: /\n\n' % b for b in AI_BOTS)
 robots += 'Sitemap: %s/sitemap.xml\n' % BASE
 (p / 'robots.txt').write_bytes(robots.encode('utf-8'))
 
-tool_path = '/tools/subnet-calculator/'
+tool_path = SUBNET_CALCULATOR
 tool_dir = p / tool_path.strip('/')
 tool_dir.mkdir(parents=True, exist_ok=True)
 (tool_dir / 'index.html').write_text(page(
