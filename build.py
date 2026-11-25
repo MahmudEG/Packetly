@@ -8,6 +8,7 @@ import json, pathlib, html, re
 from guides import GUIDES
 from pages import INFO
 from enrich import enrich
+from diagnostic_tables import DIAGNOSTIC_TABLES
 p = pathlib.Path(__file__).parent / 'docs'; p.mkdir(exist_ok=True)
 F='https://docs.fortinet.com/document/fortigate/7.4.0/cli-troubleshooting-cheat-sheet/420966/cli-troubleshooting-cheat-sheet'
 C='https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst9400/software/release/26-x/command_reference/b_26x_9400_cr/interface_and_hardware_commands.html'
@@ -244,6 +245,14 @@ for s in data:
         for i, ((a, b), step) in enumerate(zip(s['rows'], s['walkthrough']), 1):
             art += ('<section id="step-' + str(i) + '"><h3>Step ' + str(i) + ': ' + e(b) + '</h3>'
                     '<p><code>' + e(a) + '</code></p><p>' + e(step) + '</p></section>')
+
+    if diagnostic_rows := DIAGNOSTIC_TABLES.get(s['id']):
+        art += ('<section id="diagnostic-decisions"><h2>Choose the next check from the evidence</h2>'
+                '<table><thead><tr><th>What you observe</th><th>What to check next</th></tr>'
+                '</thead><tbody>'
+                + ''.join('<tr><td>' + e(observation) + '</td><td>' + e(next_check) + '</td></tr>'
+                          for observation, next_check in diagnostic_rows)
+                + '</tbody></table></section>')
 
     case = s['case']
     art += ('<section class="case-study" id="practical-case"><p class="eyebrow">WORKED INCIDENT</p>'
