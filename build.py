@@ -38,6 +38,7 @@ enrich(data)
 # ===========================================================  site constants
 BASE = 'https://packetly.ly'
 SUBNET_CALCULATOR = '/tools/subnet-calculator/'
+SMB_PLANNER = '/tools/smb-access-planner/'
 NAME = 'Packetly'
 BLURB = ('Free cheat sheets for IT, cybersecurity and network engineers. '
          'Inspection commands for Windows, Active Directory, Entra ID, Azure, '
@@ -115,7 +116,9 @@ def body(main, nsheets):
             '<span>Practical knowledge. One sheet away.</span><div>'
             '<a href="/editorial/">Editorial policy</a><a href="/privacy/">Privacy</a>'
             '<a href="/terms/">Terms</a><a href="/contact/">Contact</a>'
-            '<a href="/tools/subnet-calculator/">IPv4 subnet calculator</a><a href="/feed.xml">Guide updates (Atom)</a></div>'
+            '<a href="/tools/subnet-calculator/">IPv4 subnet calculator</a>'
+            '<a href="/tools/smb-access-planner/">SMB investigation planner</a>'
+            '<a href="/feed.xml">Guide updates (Atom)</a></div>'
             '<small>\u00a9 2026 Packetly \u00b7 Independent reference. Not affiliated with vendors.</small>'
             '</footer></div><div id="toast" role="status"></div></body></html>')
 
@@ -131,6 +134,7 @@ def page(title, desc, path, main, extra='', robots=None, ads=False):
             '<link rel="canonical" href="' + url + '">'
             '<link rel="alternate" type="application/atom+xml" title="Packetly guide updates" href="/feed.xml">'
             '<meta name="theme-color" content="#101310">'
+            '<meta name="google-adsense-account" content="ca-pub-4081538671702116">'
             + ('<meta name="google-site-verification" content="' + GOOGLE_VERIFY + '">'
                if GOOGLE_VERIFY else '')
             + ('<meta name="msvalidate.01" content="' + BING_VERIFY + '">'
@@ -184,6 +188,7 @@ home = ('<section><h1>IT, cybersecurity and network cheat sheets</h1>'
         '<p>Every sheet lists the command, what it inspects, and how to read the output, '
         'with a step-by-step walkthrough and a link to the vendor\u2019s own documentation. '
         'All ' + str(len(data)) + ' are free, need no account, and print cleanly.</p>')
+home += (p.parent / 'tools-feature.html').read_text(encoding='utf-8')
 home += ('<section class="home-group"><h2>Recently added</h2><ul>'
          + ''.join('<li><a href="/sheets/' + e(s['id']) + '/">' + e(s['title']) + '</a> — ' + e(s['description']) + '</li>' for s in reversed(data[-5:]))
          + '</ul></section>')
@@ -413,7 +418,16 @@ tool_dir.mkdir(parents=True, exist_ok=True)
     '<script defer src="/subnet.js"></script>'
 ), encoding='utf-8')
 
-urls = ([('/', UPDATED), (tool_path, '2026-11-23')]
+smb_dir = p / SMB_PLANNER.strip('/')
+smb_dir.mkdir(parents=True, exist_ok=True)
+(smb_dir / 'index.html').write_text(page(
+    'SMB Access Investigation Planner | Packetly',
+    'Turn Windows SMB access observations into a focused investigation plan. Compare DNS, TCP 445 and share access, then download a Markdown handoff.',
+    SMB_PLANNER, (p.parent / 'smb-triage.html').read_text(encoding='utf-8'),
+    '<link rel="stylesheet" href="/smb-triage.css"><script defer src="/smb-triage.js"></script>'
+), encoding='utf-8')
+
+urls = ([('/', UPDATED), (tool_path, '2026-11-23'), (SMB_PLANNER, '2026-11-25')]
         + [('/topics/%s/' % SLUG[c], max(s['updated'] for s in groups[c]))
            for c in sorted(groups)]
         + [('/sheets/%s/' % s['id'], s['updated']) for s in data]
