@@ -1350,3 +1350,88 @@ guide('Windows Kerberos clock skew investigation','Active Directory','Identity &
  'After the time owner restores synchronization using the approved process, compare clocks and retry the affected authentication flow.',
  'Share sanitized event details, affected host names, timestamps and time-source observations with the domain administrators.'))
 NEW_GUIDES[-1]['updated']='2026-11-23'
+
+guide('Kubernetes OOMKilled and memory limit investigation','Kubernetes','Cloud',
+ 'Trace a container OOMKilled restart through its memory limit, previous logs and node conditions.',
+ 'Kubernetes with kubectl; metrics commands require Metrics Server and appropriate access.',
+ 'Replace production, web and worker-1 with authorized resources. Commands inspect the cluster and do not change limits.',
+ [('Kubernetes memory management','https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'),('Kubernetes node pressure eviction','https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-eviction/')],[
+ ('kubectl config current-context','Confirm the cluster','Compare the selected context with the approved cluster inventory before reading workload details or interpreting events.'),
+ ('kubectl describe pod web -n production','Inspect termination and limits','Review last termination reason, exit code, requests, limits and events. OOMKilled requires investigation and does not alone identify the exact memory consumer.'),
+ ('kubectl logs web -n production --previous','Read previous container logs','Inspect the previous container instance where available. Logs may not contain the kernel kill reason and can include sensitive application data.'),
+ ('kubectl top pod web -n production --containers','Inspect current usage','Compare current usage with the configured limit when Metrics Server is available. A current sample may miss the peak preceding the restart.'),
+ ('kubectl describe node worker-1','Inspect node pressure','Compare node conditions and recent events with the affected Pod. Node pressure eviction and a container OOM kill are related but distinct events.')],
+ ('A container repeatedly restarts','A service restarts during traffic spikes and its Pod reports OOMKilled.',[(0,'Confirm the affected cluster and namespace before collecting evidence.'),(1,'Record the previous termination reason and configured memory limit.'),(2,'Inspect previous logs and protect sensitive application details.'),(3,'Compare current container usage and node pressure with the incident time.')],
+ 'Illustrative findings: the container was OOMKilled and monitoring independently shows a memory peak near its configured limit.',
+ 'The measurements support investigating workload memory demand and sizing; a current usage sample alone cannot reconstruct a previous peak.',
+ 'After the owner applies an approved correction, monitor restarts, memory peaks and application health under comparable load.',
+ 'Share sanitized termination details, limits and time-correlated metrics with the workload owner.'))
+NEW_GUIDES[-1]['updated']='2026-11-25'
+
+guide('Docker Compose environment interpolation investigation','Docker','Infrastructure',
+ 'Inspect Compose variable interpolation when a service receives an unexpected configuration value.',
+ 'Docker Compose plugin on Linux; run from the same project directory and context used for deployment.',
+ 'Rendered configuration and interpolation values can expose passwords. Inspect locally in a protected session and never publish raw output.',
+ [('Docker Compose interpolation','https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/'),('Docker Compose precedence','https://docs.docker.com/compose/how-tos/environment-variables/envvars-precedence/')],[
+ ('docker compose version','Identify Compose version','Record the installed plugin version so option availability and interpolation behavior can be checked against the correct documentation.'),
+ ('docker compose config --quiet','Validate the Compose model','Validate the resolved project configuration without printing the model. This does not prove that an existing container was created with the current values.'),
+ ('docker compose config --variables','List interpolation variables','Inspect declared variables and defaults for the project. Treat output as sensitive because defaults may contain configuration values.'),
+ ('docker compose config --environment','Inspect interpolation inputs','Review the values Compose uses for interpolation in a protected session. Shell variables and environment files can have different precedence; redact secrets.'),
+ ('docker compose ps','Inspect current project containers','Identify the actual service and container state. A running container may still reflect an earlier configuration until recreated through an approved deployment.')],
+ ('A service uses the wrong image tag','An operator changes an environment file but the running service still uses the previous image.',[(0,'Record the Compose version and confirm the project directory.'),(1,'Validate the current model without exposing the full configuration.'),(2,'Inspect the interpolation variable names and protected input values.'),(3,'Compare the current project containers with the approved deployment record.')],
+ 'Illustrative findings: a shell variable overrides the edited environment file, and the running container was created before the change.',
+ 'The input precedence and container creation history explain this example; editing a file alone does not update an existing container.',
+ 'After an approved deployment with corrected inputs, verify the rendered model and running image through the normal release process.',
+ 'Share the variable name, source and sanitized deployment evidence without exposing secrets.'))
+NEW_GUIDES[-1]['updated']='2026-11-25'
+
+guide('Tailscale split DNS resolution investigation','Tailscale','Networking',
+ 'Compare Linux resolver routing and tailnet connectivity when an internal domain does not resolve.',
+ 'Linux using systemd-resolved and Tailscale; DNS management differs on other Linux configurations.',
+ 'Replace host.internal.example and server.example with approved names. DNS queries and peer tests send network traffic.',
+ [('Tailscale Linux DNS','https://tailscale.com/docs/reference/linux-dns'),('Tailscale DNS troubleshooting','https://tailscale.com/docs/reference/troubleshooting/resolve-domain-names-failure')],[
+ ('tailscale version','Record client version','Record the client version and host so the observed resolver behavior can be compared with the installed release and configuration.'),
+ ('tailscale status','Inspect tailnet connectivity','Confirm the relevant peer is visible and record its state. An active peer does not establish that an internal DNS resolver or domain is reachable.'),
+ ('resolvectl status','Inspect resolver routing','Review DNS servers and routing domains per interface. The resolver configuration can differ by distribution and must be compared with the intended split DNS domain.'),
+ ('resolvectl query host.internal.example','Query the affected name','Replace the example with the approved internal hostname and record the answer or error. The result reflects the local resolver path at the time of the test.'),
+ ('tailscale ping server.example','Test an authorized peer','Test the intended tailnet peer and compare direct or relayed connectivity. A successful peer ping does not prove that its DNS service or port is reachable.')],
+ ('An internal name fails on a remote laptop','A remote user can reach a tailnet peer but an internal service name does not resolve.',[(0,'Identify the affected client version and network environment.'),(1,'Inspect peer status and local resolver routing domains.'),(2,'Query the internal name using the system resolver and record the error.'),(3,'Test the approved tailnet peer to separate basic peer reachability from name resolution.')],
+ 'Illustrative findings: peer connectivity works, but the internal domain is absent from the configured resolver routing domains.',
+ 'The missing route is a specific DNS configuration lead; tailnet connectivity alone does not establish that the internal resolver is used.',
+ 'After the DNS owner corrects the approved split DNS configuration, repeat the query and test the application.',
+ 'Share sanitized resolver domains, query result and peer status with the tailnet and DNS administrators.'))
+NEW_GUIDES[-1]['updated']='2026-11-25'
+
+guide('Windows Update failure event investigation','Windows','Infrastructure',
+ 'Investigate a failed Windows update through update history, service state and event logs.',
+ 'Windows 10 or 11 and Windows Server with PowerShell; event retention and permissions vary.',
+ 'Run with authorized read access. Record exact error codes and update identifiers; these commands do not reset update components or remove updates.',
+ [('Windows Update logs','https://learn.microsoft.com/en-us/windows/deployment/update/windows-update-logs'),('Windows Update troubleshooting','https://learn.microsoft.com/en-us/troubleshoot/windows-client/installing-updates-features-roles/troubleshoot-windows-update-errors')],[
+ ('Get-ComputerInfo | Select-Object WindowsProductName,WindowsVersion,OsBuildNumber','Identify the Windows build','Record the product and build so update applicability and the correct vendor guidance can be checked against the affected machine.'),
+ ('Get-Service wuauserv,bits','Inspect update service state','Record the Windows Update and BITS service states. A stopped service is contextual evidence and does not alone establish why a particular update failed.'),
+ ('Get-HotFix | Sort-Object InstalledOn -Descending | Select-Object -First 10','Review installed hotfixes','Compare recent installed hotfixes with the update identifier and official update history. This command does not list every type of Windows update.'),
+ ('Get-WinEvent -LogName Microsoft-Windows-WindowsUpdateClient/Operational -MaxEvents 30','Inspect recent update events','Read recent operational events and correlate error codes, update identifiers and timestamps. Event retention and access permissions can limit the results.'),
+ ('Get-WinEvent -LogName System -MaxEvents 50','Inspect recent system events','Review nearby system events for related service or storage errors. Correlation supplies a lead but does not prove that an event caused the update failure.')],
+ ('An update repeatedly fails to install','A server reports that a cumulative update failed during its maintenance window.',[(0,'Record the Windows build and the precise update identifier.'),(1,'Inspect relevant service state and recent installed hotfixes.'),(2,'Read Windows Update operational events around the failure.'),(3,'Correlate the error and timestamp with relevant system events.')],
+ 'Illustrative findings: the update event reports insufficient disk space and monitoring confirms that the system volume was full during installation.',
+ 'The exact error and independent capacity evidence identify a specific lead. Service state alone would not explain the failed installation.',
+ 'After the owner resolves the confirmed capacity issue, retry under the approved update process and inspect the new result.',
+ 'Share the build, update ID, exact error and sanitized event timestamps with the Windows administration team.'))
+NEW_GUIDES[-1]['updated']='2026-11-25'
+
+guide('Proxmox VM backup task failure investigation','Proxmox','Infrastructure',
+ 'Review a Proxmox VE backup task, VM status and destination capacity when a scheduled backup fails.',
+ 'Proxmox VE 8 or 9 with QEMU virtual machines; backup destination and configuration affect available details.',
+ 'Use authorized read access on the relevant node. Do not remove locks, delete backups or launch recovery operations during diagnosis.',
+ [('Proxmox VE administration guide','https://pve.proxmox.com/pve-docs/pve-admin-guide.pdf'),('Proxmox backup documentation','https://pve.proxmox.com/pve-docs/vzdump.1.html')],[
+ ('pveversion','Record the installed version','Record the node and installed Proxmox version before comparing backup behavior and output with the relevant documentation.'),
+ ('qm status 100','Inspect the affected virtual machine','Replace 100 with the approved VM ID and record its status. A running VM does not establish that a backup job completed successfully.'),
+ ('qm config 100','Inspect VM configuration','Review configured disks and any visible lock information. Configuration may reveal network or storage details, so sanitize output before sharing.'),
+ ('pvesm status','Inspect storage availability','Compare the relevant backup destination and VM storage with the documented configuration. Availability and free capacity are separate from the integrity of a recovery point.'),
+ ('journalctl --since "1 hour ago" --no-pager','Review relevant node events','Correlate node events with the backup time and task log. System logs can be extensive and contain sensitive details; filter and share only relevant evidence.')],
+ ('A nightly VM backup fails','An operator sees a failed scheduled backup for a running virtual machine.',[(0,'Identify the node, Proxmox version and affected VM.'),(1,'Check the VM state and inspect its configuration for relevant backup context.'),(2,'Compare destination storage status and free capacity with the task log.'),(3,'Review relevant node events around the failed backup time.')],
+ 'Illustrative findings: the backup task reports a destination write failure and the storage owner confirms the destination is full.',
+ 'The task error and independent storage evidence identify a specific failure path; a running VM alone says nothing about backup recoverability.',
+ 'After the storage owner resolves the confirmed issue, run the approved backup process and verify the result and recovery procedure.',
+ 'Share the VM ID, task time and sanitized storage and log details with the backup and virtualization owners.'))
+NEW_GUIDES[-1]['updated']='2026-11-25'

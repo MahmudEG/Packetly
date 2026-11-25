@@ -2,7 +2,7 @@
 
 > Free cheat sheets for IT, cybersecurity and network engineers. Inspection commands for Windows, Active Directory, Entra ID, Azure, FortiGate, Cisco, Juniper, Sophos, Ubiquiti, HPE, Dell and Linux, each with a plain-English walkthrough.
 
-Packetly publishes 102 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
+Packetly publishes 107 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
 
 ## Cheat sheets
 
@@ -18,6 +18,7 @@ Cloud references for Azure, AWS, Kubernetes and Terraform: inventory, virtual ne
 - [Cloudflare Tunnel error 1033 connector investigation](https://packetly.ly/sheets/cloudflare-tunnel-error-1033-connector-investigation/): Investigate Cloudflare Tunnel error 1033 by checking connector state, logs and network discovery.
 - [Kubernetes Gateway API HTTPRoute troubleshooting](https://packetly.ly/sheets/kubernetes-gateway-api-httproute-troubleshooting/): Inspect Gateway and HTTPRoute conditions, listener attachment and Service backends when HTTP traffic fails.
 - [Kubernetes ImagePullBackOff private registry investigation](https://packetly.ly/sheets/kubernetes-imagepullbackoff-private-registry-investigation/): Trace image pull failures through Pod events, image references, service accounts and registry Secret metadata.
+- [Kubernetes OOMKilled and memory limit investigation](https://packetly.ly/sheets/kubernetes-oomkilled-and-memory-limit-investigation/): Trace a container OOMKilled restart through its memory limit, previous logs and node conditions.
 - [Kubernetes Pod pending scheduler investigation](https://packetly.ly/sheets/kubernetes-pod-pending-scheduler-investigation/): Investigate FailedScheduling events, node allocatable resources, taints and Pod placement constraints.
 - [Kubernetes cluster DNS service investigation](https://packetly.ly/sheets/kubernetes-cluster-dns-service-investigation/): Inspect the cluster DNS Service, EndpointSlices, DNS pods and logs when workloads cannot resolve names.
 - [Kubernetes deployment rollout investigation](https://packetly.ly/sheets/kubernetes-deployment-rollout-investigation/): Inspect deployment rollout status, ReplicaSets, pod readiness and events during a stalled release.
@@ -89,6 +90,7 @@ Infrastructure references for servers, storage, databases and automation: HPE an
 - [Dell Data Domain replication checks](https://packetly.ly/sheets/dell-data-domain-replication-checks/): Inspect replication contexts and distinguish idle replication from a stalled copy.
 - [Dell PowerEdge hardware inventory](https://packetly.ly/sheets/dell-poweredge-hardware-inventory/): Capture firmware and hardware inventory before planning maintenance.
 - [Dell PowerEdge iDRAC health checks](https://packetly.ly/sheets/dell-poweredge-idrac-health-checks/): Read PowerEdge identity, power state and hardware event history.
+- [Docker Compose environment interpolation investigation](https://packetly.ly/sheets/docker-compose-environment-interpolation-investigation/): Inspect Compose variable interpolation when a service receives an unexpected configuration value.
 - [Docker Compose service state investigation](https://packetly.ly/sheets/docker-compose-service-state-investigation/): Inspect the effective Compose service model, container state and recent service logs.
 - [Docker container health and restart investigation](https://packetly.ly/sheets/docker-container-health-and-restart-investigation/): Inspect container exit state, health checks, bounded logs, resource usage and published ports during a restart incident.
 - [Docker host disk usage investigation](https://packetly.ly/sheets/docker-host-disk-usage-investigation/): Investigate a full Docker host by comparing filesystem usage, daemon storage and container logging configuration.
@@ -104,6 +106,7 @@ Infrastructure references for servers, storage, databases and automation: HPE an
 - [Proxmox Backup Server verification failure investigation](https://packetly.ly/sheets/proxmox-backup-server-verification-failure-investigation/): Investigate a failed backup verification using datastore tasks and snapshot status before planning recovery.
 - [Proxmox VE LVM thin pool capacity investigation](https://packetly.ly/sheets/proxmox-ve-lvm-thin-pool-capacity-investigation/): Compare Proxmox storage status with LVM thin pool data and metadata usage before a virtual disk runs out of space.
 - [Proxmox VE cluster quorum investigation](https://packetly.ly/sheets/proxmox-ve-cluster-quorum-investigation/): Inspect cluster membership and Corosync health when a Proxmox VE cluster loses quorum.
+- [Proxmox VM backup task failure investigation](https://packetly.ly/sheets/proxmox-vm-backup-task-failure-investigation/): Review a Proxmox VE backup task, VM status and destination capacity when a scheduled backup fails.
 - [Redis memory and latency investigation](https://packetly.ly/sheets/redis-memory-and-latency-investigation/): Compare Redis identity, memory pressure, eviction counters, client connections and slow-command evidence without scanning the keyspace.
 - [VCF 9 ESXi host root password recovery](https://packetly.ly/sheets/vcf-9-esxi-host-root-password-recovery/): Recover a managed ESXi host root account through vCenter and PowerCLI, and reconcile VCF credential management.
 - [VCF 9 ESXi monitoring and troubleshooting commands](https://packetly.ly/sheets/vcf-9-esxi-monitoring-and-troubleshooting-commands/): Inspect ESXi 9 identity, resources, networking, storage and time when investigating a VCF workload issue.
@@ -111,6 +114,7 @@ Infrastructure references for servers, storage, databases and automation: HPE an
 - [VCF 9 vCenter appliance root password recovery](https://packetly.ly/sheets/vcf-9-vcenter-appliance-root-password-recovery/): Reset a forgotten vCenter Server Appliance root password through an authorized SSO administrator and reconcile the VCF credential.
 - [Windows DHCP scope and lease investigation](https://packetly.ly/sheets/windows-dhcp-scope-and-lease-investigation/): Inspect DHCP scope capacity, leases, reservations, options and failover before changing a production scope.
 - [Windows SMB share access investigation](https://packetly.ly/sheets/windows-smb-share-access-investigation/): Separate TCP reachability, client SMB connections, share permissions, filesystem ACLs and server-side sessions.
+- [Windows Update failure event investigation](https://packetly.ly/sheets/windows-update-failure-event-investigation/): Investigate a failed Windows update through update history, service state and event logs.
 
 ### [Networking cheat sheets](https://packetly.ly/topics/networking/)
 
@@ -132,6 +136,7 @@ Network references for Cisco, Juniper, FortiGate, HPE Aruba, Ubiquiti, curl and 
 - [Linux IPv6 host path inspection](https://packetly.ly/sheets/linux-ipv6-host-path-inspection/): Inspect IPv6 addresses, route selection, neighbors and listeners on a Linux host.
 - [NGINX reverse proxy upstream investigation](https://packetly.ly/sheets/nginx-reverse-proxy-upstream-investigation/): Connect configuration tests, service logs, listener state and direct upstream requests during a reverse-proxy outage.
 - [Tailscale direct connection and relay troubleshooting](https://packetly.ly/sheets/tailscale-direct-connection-and-relay-troubleshooting/): Inspect tailnet peer connectivity and compare direct and relayed paths when transfers are slow.
+- [Tailscale split DNS resolution investigation](https://packetly.ly/sheets/tailscale-split-dns-resolution-investigation/): Compare Linux resolver routing and tailnet connectivity when an internal domain does not resolve.
 - [Ubiquiti UniFi USW Layer 3 discovery and adoption](https://packetly.ly/sheets/ubiquiti-unifi-usw-layer-3-discovery-and-adoption/): Discover and adopt a UniFi USW switch when the UniFi Network application is on another subnet or site.
 - [Ubiquiti UniFi device connectivity](https://packetly.ly/sheets/ubiquiti-unifi-device-connectivity/): Follow adoption and management connectivity through the UniFi console.
 - [Ubiquiti UniFi switch port checks](https://packetly.ly/sheets/ubiquiti-unifi-switch-port-checks/): Inspect switch port state, VLAN assignment and PoE budget.
