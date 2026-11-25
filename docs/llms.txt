@@ -85,7 +85,7 @@ Identity and Microsoft 365 references for Active Directory, Entra ID, Microsoft 
 Infrastructure references for servers, storage, databases and automation: HPE and Dell health, Linux capacity, Windows DHCP and SMB, Docker, Ansible, Redis, PostgreSQL and MySQL investigations.
 
 - [Ansible inventory and playbook preflight](https://packetly.ly/sheets/ansible-inventory-and-playbook-preflight/): Check configuration, inventory groups, resolved host variables and selected playbook hosts before running automation.
-- [Dell Data Domain capacity and health](https://packetly.ly/sheets/dell-data-domain-capacity-and-health/): Inspect filesystem state, capacity and active protection-appliance alerts.
+- [Dell Data Domain capacity and health](https://packetly.ly/sheets/dell-data-domain-capacity-and-health/): Check PowerProtect DD capacity with DD OS CLI commands. Read Active Tier free space, track physical usage over time and review current alerts.
 - [Dell Data Domain replication checks](https://packetly.ly/sheets/dell-data-domain-replication-checks/): Inspect replication contexts and distinguish idle replication from a stalled copy.
 - [Dell PowerEdge hardware inventory](https://packetly.ly/sheets/dell-poweredge-hardware-inventory/): Capture firmware and hardware inventory before planning maintenance.
 - [Dell PowerEdge iDRAC health checks](https://packetly.ly/sheets/dell-poweredge-idrac-health-checks/): Read PowerEdge identity, power state and hardware event history.
