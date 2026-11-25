@@ -1,5 +1,5 @@
 // Cookie consent banner. Consent Mode v2 defaults are set inline in the page
-// head, before gtag.js and AdSense load, so nothing is stored until a choice
+// head, before gtag.js and AdSense load, with storage consent denied until a choice
 // is made here. Hand-authored; build.py does not generate this file.
 (() => {
   const KEY = 'packetly-consent';
@@ -24,7 +24,7 @@
   bar.setAttribute('role', 'dialog');
   bar.setAttribute('aria-label', 'Cookie choices');
   bar.innerHTML = '<p>Packetly uses Google Analytics and Google AdSense, which set cookies. '
-    + 'Decline and they stay switched off. Your bookmarks and theme are kept on this device either way. '
+    + 'Accept permits analytics and advertising storage; Decline keeps storage consent denied. Google scripts may still make network requests. Your bookmarks and theme stay on this device. '
     + '<a href="/privacy/">How we handle data</a></p>'
     + '<div class="consent-actions">'
     + '<button class="secondary" data-consent="denied">Decline</button>'

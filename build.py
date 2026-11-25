@@ -8,6 +8,7 @@ import json, pathlib, html, re
 from guides import GUIDES
 from pages import INFO
 from enrich import enrich
+from foundation_review import apply_foundation_review
 from diagnostic_tables import DIAGNOSTIC_TABLES
 p = pathlib.Path(__file__).parent / 'docs'; p.mkdir(exist_ok=True)
 F='https://docs.fortinet.com/document/fortigate/7.4.0/cli-troubleshooting-cheat-sheet/420966/cli-troubleshooting-cheat-sheet'
@@ -34,6 +35,7 @@ for s in data:
  s['updated']='2026-11-02'
 data.extend(GUIDES)
 enrich(data)
+apply_foundation_review(data)
 
 # ===========================================================  site constants
 BASE = 'https://packetly.ly'
@@ -266,8 +268,12 @@ for s in data:
             '<h3>Situation</h3><p>' + e(case['symptom']) + '</p>'
             '<h3>Investigation sequence</h3>')
     for i, step in enumerate(case['steps'], 1):
+        walkthrough_index = next((n for n, row in enumerate(s['rows'], 1) if row[0] == step['action']), None)
+        detail = ('<p><a href="#step-' + str(walkthrough_index) + '">Read the interpretation in walkthrough step ' + str(walkthrough_index) + '</a></p>'
+                  if step['detail'] in s.get('walkthrough', []) and walkthrough_index
+                  else '<p>' + e(step['detail']) + '</p>')
         art += ('<section class="step"><h3>' + str(i) + '. ' + e(step['purpose'])
-                + '</h3><code>' + e(step['action']) + '</code><p>' + e(step['detail']) + '</p></section>')
+                + '</h3><code>' + e(step['action']) + '</code>' + detail + '</section>')
     if case.get('evidence'):
         art += '<h3>Example findings</h3><p>' + e(case['evidence']) + '</p>'
     art += ('<h3>Interpret the findings</h3><p>' + e(case['interpretation']) + '</p>'
@@ -275,10 +281,13 @@ for s in data:
     if case.get('escalation'):
         art += '<h3>Escalation handoff</h3><p>' + e(case['escalation']) + '</p>'
     art += '</section>'
+    references = {s['source']: s.get('sourceLabel', 'Primary documentation')}
     for source in s.get('sources', []):
-        art += '<p><a href="' + e(source['url']) + '" rel="noopener" target="_blank">' + e(source['label']) + '</a></p>'
-    art += ('<p><a href="' + e(s['source']) + '" rel="nofollow noopener" target="_blank">'
-            + e(s.get('sourceLabel', 'Official documentation')) + '</a></p>')
+        references[source['url']] = source['label']
+    art += '<section class="sources"><h2>Primary references</h2><ul>'
+    for url, label in references.items():
+        art += '<li><a href="' + e(url) + '" rel="noopener" target="_blank">' + e(label) + '</a></li>'
+    art += '</ul><p>Documented reference; examples above are teaching scenarios. Confirm behavior against your deployed version.</p></section>'
     if rel:
         art += ('<nav class="related-static"><h2>Related cheat sheets</h2><ul>'
                 + ''.join('<li><a href="/sheets/' + x['id'] + '/">' + e(x['title']) + '</a></li>'
@@ -357,6 +366,7 @@ for name, copy in INFO.items():
     crumbs = ld({'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
         {'@type': 'ListItem', 'position': 1, 'name': 'All cheat sheets', 'item': BASE + '/'},
         {'@type': 'ListItem', 'position': 2, 'name': title}]})
+    art += '<p><a href="https://github.com/MahmudEG/Packetly">Public source and revision history</a> · <a href="https://github.com/MahmudEG/Packetly/issues">Corrections and topic requests</a></p>'
     (d / 'index.html').write_text(
         page(title.rstrip('.') + ' | Packetly', INFO_DESC[name], '/' + name + '/', art, crumbs),
         encoding='utf-8')

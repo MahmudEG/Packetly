@@ -44,3 +44,4 @@ DIAGNOSTIC_TABLES = {
          'Capture which resolver answers the affected namespace before editing any adapter settings.'),
     ),
 }
+

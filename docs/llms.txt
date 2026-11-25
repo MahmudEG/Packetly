@@ -145,8 +145,8 @@ Network references for Cisco, Juniper, FortiGate, HPE Aruba, Ubiquiti, curl and 
 
 ## About
 
-- [A field guide for connected minds](https://packetly.ly/about/): What Packetly is, who it is for, and how the cheat sheets are put together.
-- [Useful references, clear scope](https://packetly.ly/editorial/): How Packetly sources, scopes and revises its command references.
+- [A practical reference for the next support ticket](https://packetly.ly/about/): What Packetly is, who it is for, and how the cheat sheets are put together.
+- [Evidence before a proposed fix](https://packetly.ly/editorial/): How Packetly sources, scopes and revises its command references.
 - [Privacy, in plain language](https://packetly.ly/privacy/): What Packetly stores, what Google Analytics and AdSense collect, and how to opt out.
 - [Use the guide with context](https://packetly.ly/terms/): Terms of use for Packetly’s educational command references.
 - [Help make the next sheet better](https://packetly.ly/contact/): How to report an error in a cheat sheet or request a new reference.
