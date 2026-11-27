@@ -1435,3 +1435,90 @@ guide('Proxmox VM backup task failure investigation','Proxmox','Infrastructure',
  'After the storage owner resolves the confirmed issue, run the approved backup process and verify the result and recovery procedure.',
  'Share the VM ID, task time and sanitized storage and log details with the backup and virtualization owners.'))
 NEW_GUIDES[-1]['updated']='2026-11-25'
+
+guide('Kubernetes probe failure and restart investigation','Kubernetes','Cloud',
+ 'Distinguish startup, readiness and liveness probe failures when a container repeatedly restarts.',
+ 'Kubernetes with kubectl and read access to the affected namespace; probe behavior depends on the Pod specification.',
+ 'Replace production and web with approved resources. These commands inspect the workload without changing probes or restarting containers.',
+ [('Kubernetes probe concepts','https://kubernetes.io/docs/concepts/workloads/pods/probes/'),('Configure probes','https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/')],[
+ ('kubectl config current-context','Confirm cluster context','Compare the current context with the approved cluster inventory before interpreting workload status and events.'),
+ ('kubectl describe pod web -n production','Inspect probe events','Review container state, restart count and recent probe failure events. Record the probe type and response rather than assuming every restart is a probe failure.'),
+ ('kubectl get pod web -n production -o yaml','Inspect configured probes','Review the startup, liveness and readiness probes, ports and timing. Sanitize the output because environment settings can contain sensitive information.'),
+ ('kubectl logs web -n production --previous','Inspect previous container logs','Review the previous container instance for startup timing or application errors. Logs can be absent or omit the exact cause of a failed probe.'),
+ ('kubectl get endpointslice -n production','Inspect Service endpoints','Compare relevant Service EndpointSlices and readiness with the expected backend. A running container can be excluded from normal Service traffic while unready.')],
+ ('A slow application repeatedly restarts','A newly deployed application restarts while warming its cache.',[(0,'Confirm the cluster and namespace before collecting the workload evidence.'),(1,'Read the Pod events and identify the failing probe type and timing.'),(2,'Compare probe configuration with the application startup behavior.'),(3,'Review previous container logs and relevant Service endpoint readiness.')],
+ 'Illustrative findings: liveness probes fail during a long startup, and application logs show initialization finishes later than the configured window.',
+ 'The time correlation supports reviewing startup probe design. Readiness failures alone do not trigger container restarts.',
+ 'After an approved probe adjustment, observe a fresh rollout and verify both restart count and readiness.',
+ 'Share sanitized events, probe settings and startup timings with the application and platform teams.'))
+NEW_GUIDES[-1]['updated']='2026-11-28'
+
+guide('Windows DNS forwarder failure investigation','Windows','Networking',
+ 'Compare Windows DNS forwarding configuration and upstream responses when external names fail to resolve.',
+ 'Windows Server DNS with the DnsServer PowerShell module and authorized administrative read access.',
+ 'Replace example.com and 192.0.2.53 with an approved test name and forwarder address. Queries send DNS traffic and do not change DNS configuration.',
+ [('Microsoft DNS forwarding diagnosis','https://learn.microsoft.com/en-us/troubleshoot/windows-server/networking/troubleshoot-dns-forwarders-related-failures'),('Configure DNS forwarding','https://learn.microsoft.com/en-us/windows-server/networking/dns/configure-dns-forwarding')],[
+ ('Get-DnsServerForwarder','Inspect server forwarders','Record forwarder addresses, timeout and root hint fallback settings from the affected DNS server. Conditional forwarders are configured separately.'),
+ ('Get-DnsServerZone','Inspect configured zones','Identify whether the queried namespace is locally hosted or uses a conditional forwarder. Choose the correct path before interpreting general forwarder settings.'),
+ ('Resolve-DnsName example.com -Server 127.0.0.1 -DnsOnly','Query the local DNS server','Run on the DNS server with an approved name and record the result. Cached answers or root hint fallback mean success does not prove which upstream answered.'),
+ ('Resolve-DnsName example.com -Server 192.0.2.53 -DnsOnly','Query the configured forwarder directly','Replace the example address with the approved forwarder and compare responses from the DNS server host. A direct query is a separate test from the server forwarding path.'),
+ ('Get-WinEvent -LogName "DNS Server" -MaxEvents 30','Inspect DNS server events','Review recent DNS Server log events and correlate timestamps with failures. Access and event retention affect what this command can show.')],
+ ('Internal names resolve but external names fail','Clients can resolve internal records but external lookups time out.',[(0,'Record the DNS server forwarding settings and intended upstream addresses.'),(1,'Check whether the queried namespace has a separate zone or conditional forwarder.'),(2,'Query the local DNS server and the configured forwarder from the same host.'),(3,'Review relevant DNS server events around the observed failure.')],
+ 'Illustrative findings: local queries time out and direct queries to the configured forwarder also fail from the DNS server.',
+ 'The comparison provides a network or upstream lead; it does not by itself identify the device dropping traffic.',
+ 'After the DNS and network owners correct the confirmed issue, retest with an uncached name and a representative client.',
+ 'Share sanitized upstream addresses, query results and event times with the DNS and network teams.'))
+NEW_GUIDES[-1]['updated']='2026-11-28'
+
+guide('Docker published port conflict investigation','Docker','Infrastructure',
+ 'Find which host listener or container owns a port when Docker reports that a published port is already allocated.',
+ 'Docker Engine on Linux with iproute2; rootless, remote daemon and Docker Desktop networking differ.',
+ 'Replace 8080 and web with the actual approved port and container. Commands inspect state and do not stop processes or change port bindings.',
+ [('Docker port publishing','https://docs.docker.com/engine/network/port-publishing/'),('Docker container port','https://docs.docker.com/reference/cli/docker/container/port/')],[
+ ('docker context show','Identify the Docker context','Confirm which daemon the client targets. Host socket inspection must run on the daemon host to be comparable to container port information.'),
+ ('docker ps --format "table {{.Names}}\\t{{.Ports}}"','Inspect running container ports','Find containers publishing the affected host port. Port mappings show configured publishing and should be interpreted alongside actual host listener information.'),
+ ('docker port web','Inspect one container mapping','Replace web with the relevant running container and review its published mappings. A missing mapping on one container does not exclude another host process.'),
+ ('sudo ss -ltnp','Inspect TCP listeners','Review local listening addresses, ports and process information with appropriate permissions. A wildcard binding may conflict with a more specific address depending on socket configuration.'),
+ ('docker inspect web --format "{{json .HostConfig.PortBindings}}"','Inspect configured port bindings','Review the selected container host bindings without printing its full configuration. This describes the chosen container and may not identify another process holding the port.')],
+ ('A service cannot bind its published port','A new Docker service fails to start because its requested host TCP port is already allocated.',[(0,'Confirm the Docker context and identify the corresponding daemon host.'),(1,'Inspect published ports of running containers for the requested binding.'),(2,'Compare the affected container mapping and the host listener information.'),(3,'Inspect the intended binding before coordinating an approved port change.')],
+ 'Illustrative findings: an existing container already publishes the same host address and TCP port required by the new service.',
+ 'The existing mapping explains the conflict in this example. Port ownership must be checked on the actual daemon host.',
+ 'After the service owner approves a nonconflicting mapping, deploy through the normal process and verify application connectivity.',
+ 'Share sanitized daemon context, port mapping and listener evidence with the container and host owners.'))
+NEW_GUIDES[-1]['updated']='2026-11-28'
+
+guide('Microsoft Intune device compliance failure investigation','Microsoft','Identity & Microsoft 365',
+ 'Trace a noncompliant device through check-in, assigned policies and individual setting results.',
+ 'Microsoft Intune admin center; access, reporting and policy details depend on roles, licensing and platform.',
+ 'These are portal procedures. Review the affected device using authorized access without disabling Conditional Access or changing policies during evidence collection.',
+ [('Microsoft Intune troubleshooting','https://learn.microsoft.com/en-us/troubleshoot/mem/intune/device-configuration/troubleshoot-policies-in-microsoft-intune'),('Monitor device compliance','https://learn.microsoft.com/en-us/mem/intune/protect/compliance-policy-monitor')],[
+ ('Identify the affected device','Find the device and user in Intune','Confirm the device identity, operating system and owner before comparing policy results. Duplicate or stale device records can lead to the wrong investigation.'),
+ ('Review check-in time','Inspect the device last check-in','Compare the last check-in with the incident and report freshness. A device that cannot check in may not have reported its current policy state.'),
+ ('Inspect assigned compliance policies','Open the device compliance policy results','Identify the applicable policies and their reported statuses. Pending, noncompliant and error statuses have different meanings and require different follow-up.'),
+ ('Inspect individual settings','Open the relevant policy and setting details','Record the specific setting and reported reason for noncompliance. Protect device and user details when sharing the evidence with other administrators.'),
+ ('Compare Conditional Access evidence','Review the related Entra sign-in event','Compare the device and compliance context recorded for the failed sign-in. A noncompliant policy result alone does not prove which access policy blocked a particular event.')],
+ ('A managed laptop cannot access a cloud application','A user reports that access is blocked after a device compliance warning.',[(0,'Confirm the correct device record and affected user before investigating.'),(1,'Record the latest check-in and policy report timestamps.'),(2,'Inspect assigned policy results and the exact failing setting.'),(3,'Compare the device context with the related Entra sign-in event.')],
+ 'Illustrative findings: the device has checked in recently and reports that its encryption requirement is not satisfied.',
+ 'The specific policy result directs the device team to the encryption control; the sign-in log is needed to establish how access was evaluated.',
+ 'After the device owner resolves the confirmed issue, inspect a fresh compliance report and sign-in event.',
+ 'Share sanitized device identifier, policy name, setting result and event time with the device and identity teams.'))
+NEW_GUIDES[-1]['updated']='2026-11-28'
+NEW_GUIDES[-1]['kind']='Step'
+
+guide('AWS EC2 status check failure investigation','AWS','Cloud',
+ 'Distinguish EC2 system, instance and attached EBS status check failures before selecting a recovery path.',
+ 'Amazon EC2 console with permissions to inspect instances and status checks; check availability depends on instance and volume type.',
+ 'These are read-only console procedures. Reboot, stop, recovery and replacement actions require the workload owner’s approved plan.',
+ [('EC2 status checks','https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitoring-system-instance-status-check.html'),('Troubleshoot failed EC2 checks','https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/TroubleshootingInstances.html')],[
+ ('Confirm the instance','Select the affected instance in the correct account and Region','Record the instance ID, Region and workload ownership. Similar instance names can exist in different accounts or Regions.'),
+ ('Review individual status checks','Open the instance status and alarms information','Identify whether system, instance or attached EBS checks are impaired. A running instance state is separate from the individual health checks.'),
+ ('Review the timing','Compare the failure start time with monitoring and changes','Record the first observed failure and correlate with metrics and recent changes. Correlation is a lead and does not alone establish a cause.'),
+ ('Inspect available system logs','Use the console system log for the affected Linux instance','Review available boot and operating system messages for relevant errors, taking care to protect sensitive output. A log can be incomplete or stale.'),
+ ('Coordinate the recovery decision','Provide the evidence to the instance and storage owners','Choose the documented recovery path for the specific failed check and workload. Rebooting or replacing an instance can affect availability and must follow the approved plan.')],
+ ('A running instance fails a health check','An operator sees an impaired EC2 instance while its lifecycle state still reads running.',[(0,'Confirm the correct account, Region and exact instance ID.'),(1,'Identify which individual instance status check is failing.'),(2,'Compare the failure time with monitoring and the change record.'),(3,'Inspect available system log evidence and involve the workload owner.')],
+ 'Illustrative findings: the instance status check fails and the guest system log independently reports a boot-time filesystem error.',
+ 'The check and log support a guest operating system investigation. The running lifecycle state does not prove that the guest is healthy.',
+ 'After the owner completes the approved recovery, verify the individual checks and application service health.',
+ 'Share the instance ID, Region, failed check, timestamps and sanitized log evidence with the cloud and workload teams.'))
+NEW_GUIDES[-1]['updated']='2026-11-28'
+NEW_GUIDES[-1]['kind']='Step'

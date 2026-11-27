@@ -2,7 +2,7 @@
 
 > Free cheat sheets for IT, cybersecurity and network engineers. Inspection commands for Windows, Active Directory, Entra ID, Azure, FortiGate, Cisco, Juniper, Sophos, Ubiquiti, HPE, Dell and Linux, each with a plain-English walkthrough.
 
-Packetly publishes 107 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
+Packetly publishes 112 command references for IT, cybersecurity and network engineers. Each sheet pairs a command with what it inspects and how to interpret the output, and links to the vendor documentation it is based on. Content is editorial, not vendor certification material.
 
 ## Cheat sheets
 
@@ -11,6 +11,7 @@ Packetly publishes 107 command references for IT, cybersecurity and network engi
 Cloud references for Azure, AWS, Kubernetes and Terraform: inventory, virtual networks, effective routes, security groups, pod readiness, workspaces and recorded infrastructure state, with practical investigation cases.
 
 - [AWS EC2 network path inspection](https://packetly.ly/sheets/aws-ec2-network-path-inspection/): Connect AWS identity, instance state, subnets, route tables, security groups and network ACLs in one inspection workflow.
+- [AWS EC2 status check failure investigation](https://packetly.ly/sheets/aws-ec2-status-check-failure-investigation/): Distinguish EC2 system, instance and attached EBS status check failures before selecting a recovery path.
 - [Azure subscription and resource inventory](https://packetly.ly/sheets/azure-subscription-and-resource-inventory/): Check CLI context and inventory resources in the intended subscription.
 - [Azure virtual network inspection](https://packetly.ly/sheets/azure-virtual-network-inspection/): Inspect virtual networks, subnets and security group inventory.
 - [Cloud network fundamentals](https://packetly.ly/sheets/cloud-network-fundamentals/): Connect subnets, routes, security rules, and DNS into one model.
@@ -24,6 +25,7 @@ Cloud references for Azure, AWS, Kubernetes and Terraform: inventory, virtual ne
 - [Kubernetes deployment rollout investigation](https://packetly.ly/sheets/kubernetes-deployment-rollout-investigation/): Inspect deployment rollout status, ReplicaSets, pod readiness and events during a stalled release.
 - [Kubernetes persistent volume claim investigation](https://packetly.ly/sheets/kubernetes-persistent-volume-claim-investigation/): Investigate a pending persistent volume claim using claim events, storage classes and bound volumes.
 - [Kubernetes pod crash and readiness investigation](https://packetly.ly/sheets/kubernetes-pod-crash-and-readiness-investigation/): Trace a failing pod through context, scheduling, container state, current logs, previous logs and namespace events.
+- [Kubernetes probe failure and restart investigation](https://packetly.ly/sheets/kubernetes-probe-failure-and-restart-investigation/): Distinguish startup, readiness and liveness probe failures when a container repeatedly restarts.
 - [Kubernetes service endpoint troubleshooting](https://packetly.ly/sheets/kubernetes-service-endpoint-troubleshooting/): Trace a Service through selectors, pod readiness, EndpointSlices and service ports.
 - [Terraform workspace and state inspection](https://packetly.ly/sheets/terraform-workspace-and-state-inspection/): Verify the active workspace, provider requirements, configuration validity and recorded resources before planning infrastructure changes.
 - [cert-manager ACME challenge and renewal investigation](https://packetly.ly/sheets/cert-manager-acme-challenge-and-renewal-investigation/): Inspect certificate, request, order and challenge status when cert-manager ACME issuance or renewal stalls.
@@ -78,6 +80,7 @@ Identity and Microsoft 365 references for Active Directory, Entra ID, Microsoft 
 - [Microsoft Entra guest MFA registration failure investigation](https://packetly.ly/sheets/microsoft-entra-guest-mfa-registration-failure-investigation/): Investigate guest user MFA registration failures using resource tenant sign-in logs and authentication method policy.
 - [Microsoft Graph connection and user lookup](https://packetly.ly/sheets/microsoft-graph-connection-and-user-lookup/): Connect to the correct tenant and inspect directory user records.
 - [Microsoft Graph query and paging basics](https://packetly.ly/sheets/microsoft-graph-query-and-paging-basics/): Find users with server-side filters and handle complete result sets.
+- [Microsoft Intune device compliance failure investigation](https://packetly.ly/sheets/microsoft-intune-device-compliance-failure-investigation/): Trace a noncompliant device through check-in, assigned policies and individual setting results.
 - [Windows Group Policy application investigation](https://packetly.ly/sheets/windows-group-policy-application-investigation/): Compare endpoint policy results, processing events, domain GPO inventory, OU inheritance and configured settings.
 - [Windows Kerberos clock skew investigation](https://packetly.ly/sheets/windows-kerberos-clock-skew-investigation/): Inspect cached Kerberos tickets and Windows Time state when authentication reports excessive clock skew.
 
@@ -95,6 +98,7 @@ Infrastructure references for servers, storage, databases and automation: HPE an
 - [Docker container health and restart investigation](https://packetly.ly/sheets/docker-container-health-and-restart-investigation/): Inspect container exit state, health checks, bounded logs, resource usage and published ports during a restart incident.
 - [Docker host disk usage investigation](https://packetly.ly/sheets/docker-host-disk-usage-investigation/): Investigate a full Docker host by comparing filesystem usage, daemon storage and container logging configuration.
 - [Docker network connectivity inspection](https://packetly.ly/sheets/docker-network-connectivity-inspection/): Inspect container network membership, addressing, port publication and bounded application logs.
+- [Docker published port conflict investigation](https://packetly.ly/sheets/docker-published-port-conflict-investigation/): Find which host listener or container owns a port when Docker reports that a published port is already allocated.
 - [Docker volume mount inspection](https://packetly.ly/sheets/docker-volume-mount-inspection/): Trace a container mount to its Docker volume and inspect its driver and attachment.
 - [HPE ProLiant iLO health overview](https://packetly.ly/sheets/hpe-proliant-ilo-health-overview/): Read ProLiant health and hardware events through iLO.
 - [Linux disk space and inode investigation](https://packetly.ly/sheets/linux-disk-space-and-inode-investigation/): Distinguish exhausted bytes, exhausted inodes, mount layout and directory growth before deleting any files.
@@ -140,6 +144,7 @@ Network references for Cisco, Juniper, FortiGate, HPE Aruba, Ubiquiti, curl and 
 - [Ubiquiti UniFi USW Layer 3 discovery and adoption](https://packetly.ly/sheets/ubiquiti-unifi-usw-layer-3-discovery-and-adoption/): Discover and adopt a UniFi USW switch when the UniFi Network application is on another subnet or site.
 - [Ubiquiti UniFi device connectivity](https://packetly.ly/sheets/ubiquiti-unifi-device-connectivity/): Follow adoption and management connectivity through the UniFi console.
 - [Ubiquiti UniFi switch port checks](https://packetly.ly/sheets/ubiquiti-unifi-switch-port-checks/): Inspect switch port state, VLAN assignment and PoE budget.
+- [Windows DNS forwarder failure investigation](https://packetly.ly/sheets/windows-dns-forwarder-failure-investigation/): Compare Windows DNS forwarding configuration and upstream responses when external names fail to resolve.
 - [Windows route selection and VPN troubleshooting](https://packetly.ly/sheets/windows-route-selection-and-vpn-troubleshooting/): Inspect route selection, interface metrics and the source path for a destination on a Windows host.
 - [WireGuard handshake and Linux route investigation](https://packetly.ly/sheets/wireguard-handshake-and-linux-route-investigation/): Compare WireGuard peer handshake and transfer counters with Linux routing when a tunnel cannot reach its destination.
 
